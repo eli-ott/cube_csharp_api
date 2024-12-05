@@ -2,12 +2,12 @@
 #------------------------------------------------------------
 #        Script MySQL.
 #------------------------------------------------------------
+DROP DATABASE IF EXISTS gestion_stock;
 CREATE DATABASE IF NOT EXISTS gestion_stock;
 USE gestion_stock;
 #------------------------------------------------------------
 # Table: Statut
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Statut;
 CREATE TABLE IF NOT EXISTS Statut(
     id_statut INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (50) NOT NULL,
@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS Statut(
 #------------------------------------------------------------
 # Table: Famille
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Famille;
 CREATE TABLE IF NOT EXISTS Famille(
     id_famille INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (50) NOT NULL,
@@ -31,7 +30,6 @@ CREATE TABLE IF NOT EXISTS Famille(
 #------------------------------------------------------------
 # Table: Fonction
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Fonction;
 CREATE TABLE IF NOT EXISTS Fonction(
     id_fonction INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (50) NOT NULL,
@@ -43,7 +41,6 @@ CREATE TABLE IF NOT EXISTS Fonction(
 #------------------------------------------------------------
 # Table: Mot_de_passe
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Mot_de_passe;
 CREATE TABLE IF NOT EXISTS Mot_de_passe(
     id_mot_de_passe INT AUTO_INCREMENT NOT NULL,
     mdp_hash TEXT NOT NULL,
@@ -57,7 +54,6 @@ CREATE TABLE IF NOT EXISTS Mot_de_passe(
 #------------------------------------------------------------
 # Table: Adresse
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Adresse;
 CREATE TABLE IF NOT EXISTS Adresse(
     id_adresse INT AUTO_INCREMENT NOT NULL,
     numero_rue INT NOT NULL,
@@ -73,7 +69,6 @@ CREATE TABLE IF NOT EXISTS Adresse(
 #------------------------------------------------------------
 # Table: Client
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Client;
 CREATE TABLE IF NOT EXISTS Client(
     id_client INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (255) NOT NULL,
@@ -93,7 +88,6 @@ CREATE TABLE IF NOT EXISTS Client(
 #------------------------------------------------------------
 # Table: Commande
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Commande;
 CREATE TABLE IF NOT EXISTS Commande(
     id_commande INT AUTO_INCREMENT NOT NULL,
     date_livraison DATETIME DEFAULT NULL,
@@ -109,7 +103,6 @@ CREATE TABLE IF NOT EXISTS Commande(
 #------------------------------------------------------------
 # Table: Fournisseur
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Fournisseur;
 CREATE TABLE IF NOT EXISTS Fournisseur(
     id_fournisseur INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (255) NOT NULL,
@@ -130,7 +123,6 @@ CREATE TABLE IF NOT EXISTS Fournisseur(
 #------------------------------------------------------------
 # Table: Produit
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Produit;
 CREATE TABLE IF NOT EXISTS Produit(
     id_produit INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (255) NOT NULL,
@@ -152,9 +144,44 @@ CREATE TABLE IF NOT EXISTS Produit(
     CONSTRAINT id_fournisseur_produit_fk FOREIGN KEY (id_fournisseur) REFERENCES Fournisseur(id_fournisseur)
 ) ENGINE = InnoDB;
 #------------------------------------------------------------
+# Table: Evaluer
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Evaluer(
+    id_client INT NOT NULL,
+    id_produit INT NOT NULL,
+    note FLOAT NOT NULL,
+    commentaire TEXT DEFAULT NULL,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,    
+    CONSTRAINT id_client_evaluer_fk FOREIGN KEY (id_client) REFERENCES Client(id_client),
+    CONSTRAINT id_produit_evaluer_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
+);
+#------------------------------------------------------------
+# Table: Panier
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Panier(
+    id_panier INT AUTO_INCREMENT NOT NULL,
+    id_client INT NOT NULL,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT id_panier_pk PRIMARY KEY (id_panier),
+    CONSTRAINT id_client_panier_fk FOREIGN KEY (id_client) REFERENCES Client(id_client)
+);
+#------------------------------------------------------------
+# Table: Ligne_panier
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Ligne_panier(
+    id_produit INT NOT NULL,
+    id_panier INT NOT NULL,
+    quantite INT NOT NULL,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT id_produit_ligne_panier_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit),
+    CONSTRAINT id_panier_ligne_panier_fk FOREIGN KEY (id_panier) REFERENCES Panier(id_panier)
+);
+#------------------------------------------------------------
 # Table: Employe
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Employe;
 CREATE TABLE IF NOT EXISTS Employe(
     id_employe INT AUTO_INCREMENT NOT NULL,
     nom VARCHAR (255) NOT NULL,
@@ -175,7 +202,6 @@ CREATE TABLE IF NOT EXISTS Employe(
 #------------------------------------------------------------
 # Table: Commande_Fournisseur
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Commande_Fournisseur;
 CREATE TABLE IF NOT EXISTS Commande_Fournisseur(
     id_commande INT AUTO_INCREMENT NOT NULL,
     date_livraison DATETIME DEFAULT NULL,
@@ -189,30 +215,28 @@ CREATE TABLE IF NOT EXISTS Commande_Fournisseur(
     CONSTRAINT id_statut_commande_fournisseur_fk FOREIGN KEY (id_statut) REFERENCES Statut(id_statut)
 ) ENGINE = InnoDB;
 #------------------------------------------------------------
-# Table: Concerner
+# Table: Ligne_commande
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Concerner;
-CREATE TABLE IF NOT EXISTS Concerner(
+CREATE TABLE IF NOT EXISTS Ligne_commande(
     id_commande INT NOT NULL,
     id_produit INT NOT NULL,
     quantite INT NOT NULL,
     prix_unitaire FLOAT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT id_commande_concerner_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
-    CONSTRAINT id_produit_concerner_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
+    CONSTRAINT id_commande_ligne_commande_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
+    CONSTRAINT id_produit_ligne_commande_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 ) ENGINE = InnoDB;
 #------------------------------------------------------------
-# Table: Concerner_Fournisseur
+# Table: Ligne_commande_fournisseur
 #------------------------------------------------------------
-DROP TABLE IF EXISTS Concerner_Fournisseur;
-CREATE TABLE IF NOT EXISTS Concerner_Fournisseur(
+CREATE TABLE IF NOT EXISTS Ligne_commande_fournisseur(
     id_commande INT NOT NULL,
     id_produit INT NOT NULL,
     quantite INT NOT NULL,
     prix_unitaire FLOAT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT id_commande_concerner_fournisseur_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
-    CONSTRAINT id_produit_concerner_fournisseur_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
+    CONSTRAINT id_commande_ligne_commande_fournisseur_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
+    CONSTRAINT id_produit_ligne_commande_fournisseur_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 ) ENGINE = InnoDB;
