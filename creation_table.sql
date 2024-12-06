@@ -147,13 +147,14 @@ CREATE TABLE IF NOT EXISTS Produit(
 # Table: Evaluer
 #------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Evaluer(
-    id_client INT NOT NULL,
+    id_utilisateur INT NOT NULL,
     id_produit INT NOT NULL,
     note FLOAT NOT NULL,
     commentaire TEXT DEFAULT NULL,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT id_client_evaluer_fk FOREIGN KEY (id_client) REFERENCES Client(id_client),
+    CONSTRAINT id_utilisateur_client_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Client(id_client),
+    CONSTRAINT id_utilisateur_fournisseur_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Fournisseur(id_fournisseur),
     CONSTRAINT id_produit_evaluer_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 );
 #------------------------------------------------------------
