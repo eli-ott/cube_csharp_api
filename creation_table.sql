@@ -133,7 +133,6 @@ CREATE TABLE IF NOT EXISTS Produit(
     prix_unitaire FLOAT,
     prix_carton FLOAT,
     quantite INT NOT NULL,
-    promotion FLOAT DEFAULT NULL,
     reaprovisionnement_auto BOOLEAN NOT NULL DEFAULT 0,
     date_suppression DATETIME DEFAULT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -143,6 +142,21 @@ CREATE TABLE IF NOT EXISTS Produit(
     CONSTRAINT Produit_PK PRIMARY KEY (id_produit),
     CONSTRAINT id_famille_produit_fk FOREIGN KEY (id_famille) REFERENCES Famille(id_famille),
     CONSTRAINT id_fournisseur_produit_fk FOREIGN KEY (id_fournisseur) REFERENCES Fournisseur(id_fournisseur)
+);
+#------------------------------------------------------------
+# Table: Promotion
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Promotion(
+    id_promotion INT AUTO_INCREMENT NOT NULL,
+    nom VARCHAR(50) NOT NULL,
+    valeur INT NOT NULL,
+    date_debut DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_fin DATETIME NOT NULL,
+    creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_produit INT NOT NULL,
+    CONSTRAINT id_promotion PRIMARY KEY (id_promotion),
+    CONSTRAINT id_produit_promotion_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 );
 #------------------------------------------------------------
 # Table: Image
