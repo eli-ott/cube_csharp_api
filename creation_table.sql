@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS Statut(
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Statut_PK PRIMARY KEY (id_statut)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Famille
 #------------------------------------------------------------
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Famille(
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Famille_PK PRIMARY KEY (id_famille)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Fonction
 #------------------------------------------------------------
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Fonction(
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Fonction_PK PRIMARY KEY (id_fonction)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Mot_de_passe
 #------------------------------------------------------------
@@ -50,22 +50,22 @@ CREATE TABLE IF NOT EXISTS Mot_de_passe(
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT Mot_de_passe_PK PRIMARY KEY (id_mot_de_passe)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Adresse
 #------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Adresse(
     id_adresse INT AUTO_INCREMENT NOT NULL,
-    numero_rue INT NOT NULL,
-    nom_rue VARCHAR (255) NOT NULL,
+    adresse VARCHAR(255) NOT NULL,
+    ville VARCHAR (255) NOT NULL,
     code_postal INT NOT NULL,
     pays VARCHAR (255) NOT NULL,
-    complément VARCHAR(255) DEFAULT NULL,
+    complement VARCHAR(255) DEFAULT NULL,
     date_suppression DATETIME DEFAULT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Id_adresse_PK PRIMARY KEY (id_adresse)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Client
 #------------------------------------------------------------
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS Client(
     CONSTRAINT Client_PK PRIMARY KEY (id_client),
     CONSTRAINT id_mot_de_passe_client_fk FOREIGN KEY (id_mot_de_passe) REFERENCES Mot_de_passe(id_mot_de_passe),
     CONSTRAINT id_adresse_client_fk FOREIGN KEY (id_adresse) REFERENCES Adresse(id_adresse)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Commande
 #------------------------------------------------------------
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS Commande(
     CONSTRAINT Commande_PK PRIMARY KEY (id_commande),
     CONSTRAINT id_statut_commande_fk FOREIGN KEY (id_statut) REFERENCES Statut(id_statut),
     CONSTRAINT id_client_commande_fk FOREIGN KEY (id_client) REFERENCES Client(id_client)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Fournisseur
 #------------------------------------------------------------
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS Fournisseur(
     CONSTRAINT Fournisseur_PK PRIMARY KEY (id_fournisseur),
     CONSTRAINT id_adresse_fournisseur_fk FOREIGN KEY (id_adresse) REFERENCES Adresse(id_adresse),
     CONSTRAINT id_mot_de_passe_fournisseur_fk FOREIGN KEY (id_mot_de_passe) REFERENCES Mot_de_passe(id_mot_de_passe)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Produit
 #------------------------------------------------------------
@@ -142,7 +142,34 @@ CREATE TABLE IF NOT EXISTS Produit(
     CONSTRAINT Produit_PK PRIMARY KEY (id_produit),
     CONSTRAINT id_famille_produit_fk FOREIGN KEY (id_famille) REFERENCES Famille(id_famille),
     CONSTRAINT id_fournisseur_produit_fk FOREIGN KEY (id_fournisseur) REFERENCES Fournisseur(id_fournisseur)
-) ENGINE = InnoDB;
+);
+#------------------------------------------------------------
+# Table: Promotion
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Promotion(
+    id_promotion INT AUTO_INCREMENT NOT NULL,
+    nom VARCHAR(50) NOT NULL,
+    valeur INT NOT NULL,
+    date_debut DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_fin DATETIME NOT NULL,
+    creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id_produit INT NOT NULL,
+    CONSTRAINT id_promotion PRIMARY KEY (id_promotion),
+    CONSTRAINT id_produit_promotion_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
+);
+#------------------------------------------------------------
+# Table: Image
+#------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Image(
+    id_image INT AUTO_INCREMENT NOT NULL,
+    type_format VARCHAR(10) NOT NULL,
+    id_produit INT NOT NULL,
+    update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT id_image_pk PRIMARY KEY (id_image),
+    CONSTRAINT id_produit_image_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
+);
 #------------------------------------------------------------
 # Table: Evaluer
 #------------------------------------------------------------
@@ -175,6 +202,7 @@ CREATE TABLE IF NOT EXISTS Ligne_panier(
     id_produit INT NOT NULL,
     id_panier INT NOT NULL,
     quantite INT NOT NULL,
+    de_cote BOOL NOT NULL DEFAULT FALSE,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT id_produit_ligne_panier_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit),
@@ -199,7 +227,7 @@ CREATE TABLE IF NOT EXISTS Employe(
     CONSTRAINT id_fonction_employe_fk FOREIGN KEY (id_fonction) REFERENCES Fonction(id_fonction),
     CONSTRAINT id_mot_de_passe_employe_fk FOREIGN KEY (id_mot_de_passe) REFERENCES Mot_de_passe(id_mot_de_passe),
     CONSTRAINT id_adresse_employe_fk FOREIGN KEY (id_adresse) REFERENCES Adresse(id_adresse)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Commande_Fournisseur
 #------------------------------------------------------------
@@ -214,7 +242,7 @@ CREATE TABLE IF NOT EXISTS Commande_Fournisseur(
     CONSTRAINT Commande_Fournisseur_PK PRIMARY KEY (id_commande),
     CONSTRAINT id_employe_commande_fournisseur_fk FOREIGN KEY (id_employe) REFERENCES Employe(id_employe),
     CONSTRAINT id_statut_commande_fournisseur_fk FOREIGN KEY (id_statut) REFERENCES Statut(id_statut)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Ligne_commande
 #------------------------------------------------------------
@@ -227,7 +255,7 @@ CREATE TABLE IF NOT EXISTS Ligne_commande(
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT id_commande_ligne_commande_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
     CONSTRAINT id_produit_ligne_commande_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
-) ENGINE = InnoDB;
+);
 #------------------------------------------------------------
 # Table: Ligne_commande_fournisseur
 #------------------------------------------------------------
@@ -240,4 +268,4 @@ CREATE TABLE IF NOT EXISTS Ligne_commande_fournisseur(
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT id_commande_ligne_commande_fournisseur_fk FOREIGN KEY (id_commande) REFERENCES Commande(id_commande),
     CONSTRAINT id_produit_ligne_commande_fournisseur_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
-) ENGINE = InnoDB;
+);
