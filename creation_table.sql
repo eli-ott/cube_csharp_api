@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS Mot_de_passe(
 #------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Adresse(
     id_adresse INT AUTO_INCREMENT NOT NULL,
-    adresse VARCHAR(255) NOT NULL,
+    ligne_adresse VARCHAR(255) NOT NULL,
     ville VARCHAR (255) NOT NULL,
     code_postal INT NOT NULL,
     pays VARCHAR (255) NOT NULL,
