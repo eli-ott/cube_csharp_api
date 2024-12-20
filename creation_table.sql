@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS Client(
     nom VARCHAR (255) NOT NULL,
     prenom VARCHAR (255) NOT NULL,
     email VARCHAR (255) NOT NULL,
-    telephone INT NOT NULL,
+    telephone VARCHAR(15) NOT NULL,
     date_suppression DATETIME DEFAULT NULL,
     actif BOOLEAN NOT NULL DEFAULT 0,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS Fournisseur(
     prenom VARCHAR (255) NOT NULL,
     contact VARCHAR (255) NOT NULL,
     email VARCHAR (255) NOT NULL,
-    telephone INT NOT NULL,
+    telephone VARCHAR(15) NOT NULL,
     siret VARCHAR (255) NOT NULL,
     date_suppression DATETIME DEFAULT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -181,7 +181,6 @@ CREATE TABLE IF NOT EXISTS Evaluer(
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     CONSTRAINT id_utilisateur_client_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Client(id_client),
-    CONSTRAINT id_utilisateur_fournisseur_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Fournisseur(id_fournisseur),
     CONSTRAINT id_produit_evaluer_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 );
 #------------------------------------------------------------
@@ -216,7 +215,7 @@ CREATE TABLE IF NOT EXISTS Employe(
     nom VARCHAR (255) NOT NULL,
     prenom VARCHAR (255) NOT NULL,
     email VARCHAR (255) NOT NULL,
-    telephone INT NOT NULL,
+    telephone VARCHAR(15) NOT NULL,
     date_suppression DATETIME DEFAULT NULL,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
