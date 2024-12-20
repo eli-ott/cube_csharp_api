@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS Promotion(
 # Table: Image
 #------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS Image(
-    id_image INT AUTO_INCREMENT NOT NULL,
+    id_image TEXT AUTO_INCREMENT NOT NULL,
     type_format VARCHAR(10) NOT NULL,
     id_produit INT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
