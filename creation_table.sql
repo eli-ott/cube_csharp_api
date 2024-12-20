@@ -181,7 +181,6 @@ CREATE TABLE IF NOT EXISTS Evaluer(
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,    
     CONSTRAINT id_utilisateur_client_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Client(id_client),
-    CONSTRAINT id_utilisateur_fournisseur_evaluer_fk FOREIGN KEY (id_utilisateur) REFERENCES Fournisseur(id_fournisseur),
     CONSTRAINT id_produit_evaluer_fk FOREIGN KEY (id_produit) REFERENCES Produit(id_produit)
 );
 #------------------------------------------------------------
