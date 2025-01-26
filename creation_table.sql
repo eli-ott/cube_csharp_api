@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS `Role`(
 CREATE TABLE IF NOT EXISTS `Password`(
     password_id INT AUTO_INCREMENT NOT NULL,
     password_hash TEXT NOT NULL,
+    password_salt VARCHAR(255) NOT NULL,
     attempt_count INT NOT NULL DEFAULT 0,
     reset_date DATETIME DEFAULT NULL,
     deletion_time DATETIME DEFAULT NULL,
