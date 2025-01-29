@@ -33,7 +33,7 @@ public class AuthService(ICustomersRepository customersRepository, IPasswordRepo
     {
         var customer = await customersRepository.FindByEmailAsync(loginDTO.Email);
         if (customer == null)
-            return null;
+            throw new KeyNotFoundException("Customer not found");
 
         var isPasswordValid = PasswordUtils.VerifyPassword(
             loginDTO.Password,
