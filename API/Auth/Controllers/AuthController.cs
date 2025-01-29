@@ -11,7 +11,7 @@ namespace MonApi.API.Auth.Controllers;
 
 [ApiController]
 [AllowAnonymous]
-[Route("[controller]")]
+[Route("auth")]
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;

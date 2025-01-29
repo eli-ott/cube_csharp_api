@@ -10,6 +10,7 @@ using MonApi.API.Customers.Services;
 using MonApi.API.Auth.Services;
 using MonApi.API.Passwords.Repositories;
 using MonApi.API.Passwords.Services;
+using MonApi.API.Middleware;
 
 Env.Load();
 
@@ -88,6 +89,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseCustomExceptionHandler();
 
 // Configurer le pipeline HTTP.
 if (app.Environment.IsDevelopment())
