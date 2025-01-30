@@ -13,7 +13,7 @@ public class AuthService(ICustomersRepository customersRepository, IPasswordRepo
     public async Task<bool> RegisterCustomer(RegisterDTO registerDTO)
     {
         if (await customersRepository.AnyAsync(u => u.Email == registerDTO.Email))
-            return false;
+            throw new ArgumentException("Email already exists");
 
         var password = registerDTO.MapToPasswordModel();
 
@@ -42,7 +42,7 @@ public class AuthService(ICustomersRepository customersRepository, IPasswordRepo
         );
 
         if (!isPasswordValid)
-            return null;
+            throw new UnauthorizedAccessException("Invalid password");
 
         return customer;
     }
