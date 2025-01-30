@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
                 issuer: "Issuer",
                 audience: "Audience",
                 signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddHours(2));
+                expires: DateTime.UtcNow.AddHours(12));
 
         // Générer le JWT à partir de l'objet JWT 
         string token = new JwtSecurityTokenHandler().WriteToken(jwt);
