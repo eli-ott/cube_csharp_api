@@ -11,6 +11,7 @@ builder.InjectDependencies();
 var app = builder.Build();
 
 app.UseCustomExceptionHandler();
+app.UseApiKeyMiddleware();
 
 // Configurer le pipeline HTTP.
 if (app.Environment.IsDevelopment())
