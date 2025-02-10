@@ -11,6 +11,8 @@ using MonApi.Shared.Data;
 using System.Text;
 using MonApi.API.Addresses.Repositories;
 using MonApi.Models;
+using MonApi.API.Families.Repositories;
+using MonApi.API.Families.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -31,6 +33,7 @@ namespace MonApi.Shared.Extensions
         {
             builder.Services.AddScoped<ICustomersService, CustomersService>();
             builder.Services.AddScoped<IPasswordService, PasswordService>();
+            builder.Services.AddScoped<IFamiliesService, FamiliesService>();
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -38,6 +41,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ICustomersRepository, CustomersRepository>();
             builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
             builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+            builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)
