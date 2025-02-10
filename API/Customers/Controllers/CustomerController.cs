@@ -43,12 +43,4 @@ public class CustomerController : ControllerBase
         {
             token
         });
-    }
-
-    [AllowAnonymous]
-    [HttpDelete]
-    public async Task<ActionResult> Test(UpdatePasswordDto passwordDto)
-    {
-        return Ok(await _customersService.Delete(passwordDto));
-    }
-}
+    } }

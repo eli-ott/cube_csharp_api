@@ -13,20 +13,18 @@ using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
-using MonApi.Shared.Services;
 using MonApi.Shared.Utils;
 
 namespace MonApi.API.Customers.Services
 {
-    public class CustomersService : BaseService<Customer>, ICustomersService
+    public class CustomersService : ICustomersService
     {
         private readonly ICustomersRepository _customersRepository;
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository) :
-            base(customersRepository)
+            IAddressRepository addressRepository)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;

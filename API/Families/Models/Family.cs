@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MonApi.Models;
+using System;
 using System.Collections.Generic;
 
-namespace MonApi.Models;
+namespace MonApi.API.Families.Models;
 
-public partial class aFamily
+public partial class Family
 {
     public int FamilyId { get; set; }
 

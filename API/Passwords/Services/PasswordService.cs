@@ -1,17 +1,15 @@
+
 using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Extensions;
-using MonApi.API.Passwords.Models;
 using MonApi.API.Passwords.Repositories;
-using MonApi.Shared.Data;
-using MonApi.Shared.Services;
 
 namespace MonApi.API.Passwords.Services;
 
-public class PasswordService : BaseService<Password>, IPasswordService
+public class PasswordService : IPasswordService
 {
     private readonly IPasswordRepository _passwordRepository;
 
-    public PasswordService(IPasswordRepository passwordRepository) : base(passwordRepository)
+    public PasswordService(IPasswordRepository passwordRepository)
     {
         _passwordRepository = passwordRepository;
     }

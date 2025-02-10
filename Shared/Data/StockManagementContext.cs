@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Customers.Models;
+using MonApi.API.Families.Models;
 using MonApi.API.Passwords.Models;
 using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
