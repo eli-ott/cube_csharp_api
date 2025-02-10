@@ -6,10 +6,9 @@ using Microsoft.OpenApi.Models;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Customers.Services;
 using MonApi.API.Passwords.Repositories;
-using MonApi.API.Passwords.Services;
-using MonApi.Shared.Data;
 using System.Text;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.Passwords.Services;
 using MonApi.Models;
 
 namespace MonApi.Shared.Extensions

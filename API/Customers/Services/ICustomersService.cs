@@ -1,5 +1,6 @@
 ﻿using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Models;
+using MonApi.API.Passwords.DTOs;
 using MonApi.Shared.Services;
 
 namespace MonApi.API.Customers.Services
@@ -8,5 +9,6 @@ namespace MonApi.API.Customers.Services
     {
         Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto);
         Task<string> LogCustomer(LoginDTO loginDto);
+        Task<bool> Delete(UpdatePasswordDto passwordDto);
     }
 }

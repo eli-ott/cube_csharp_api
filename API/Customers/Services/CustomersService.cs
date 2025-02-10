@@ -10,6 +10,7 @@ using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Extensions;
 using MonApi.API.Customers.Models;
 using MonApi.API.Customers.Repositories;
+using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
 using MonApi.Shared.Services;
@@ -74,10 +75,10 @@ namespace MonApi.API.Customers.Services
             // Si le mot de passe est mauvais on incrémente le nombre d'essais
             if (!passwordValid)
             {
-                var password = foundCustomer.Password.MapReturnPasswordDtoToPasswordModel();
+                var password = await _passwordRepository.FindAsync(foundCustomer.Password.PasswordId);
 
                 // Si il y a trop d'essais on retourne une erreur
-                if (password.AttemptCount >= 3)
+                if (password!.AttemptCount >= 3)
                     throw new AuthenticationException(
                         "Nombre d'essais trop important, veuillez réinitialiser votre mot de passe");
 
@@ -116,6 +117,16 @@ namespace MonApi.API.Customers.Services
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
 
             return token;
+        }
+
+        public async Task<bool> Delete(UpdatePasswordDto passwordDto)
+        {
+            var address = await _addressRepository.FindAsync(passwordDto);
+            if (address == null) throw new KeyNotFoundException("Address doesn't exist");
+
+            await _addressRepository.DeleteAsync(address);
+            
+            return true;
         }
     }
 }

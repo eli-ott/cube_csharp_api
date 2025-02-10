@@ -16,18 +16,7 @@ public static class PasswordExtensions
         };
     }
 
-    public static UpdatePasswordDto MapToUpdatePasswordDto(this ReturnPasswordDto password)
-    {
-        return new UpdatePasswordDto
-        {
-            AttemptCount = password.AttemptCount,
-            PasswordHash = password.PasswordHash,
-            PasswordSalt = password.PasswordSalt,
-            ResetDate = password.ResetDate
-        };
-    }
-
-    public static Password MapReturnPasswordDtoToPasswordModel(this ReturnPasswordDto password)
+    public static Password MapToPasswordModel(this ReturnPasswordDto password)
     {
         return new Password
         {
@@ -36,6 +25,15 @@ public static class PasswordExtensions
             PasswordSalt = password.PasswordSalt,
             AttemptCount = password.AttemptCount,
             ResetDate = password.ResetDate
+        };
+    }
+    public static Password MapToPasswordModel(this UpdatePasswordDto password)
+    {
+        return new Password
+        {
+            PasswordId = password.PasswordId,
+            PasswordHash = password.PasswordHash,
+            PasswordSalt = password.PasswordSalt
         };
     }
 }
