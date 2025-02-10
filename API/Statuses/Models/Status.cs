@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonApi.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Statuses.Models;
 
 public partial class Status
 {

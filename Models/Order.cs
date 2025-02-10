@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Customers.Models;
+using MonApi.API.Statuses.Models;
 
 namespace MonApi.Models;
 
