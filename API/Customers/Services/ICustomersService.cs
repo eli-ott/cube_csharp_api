@@ -8,5 +8,6 @@ namespace MonApi.API.Customers.Services
     {
         Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto);
         Task<string> LogCustomer(LoginDTO loginDto);
+        Task ResetPassword(ResetPasswordDto resetPasswordDto);
     }
 }

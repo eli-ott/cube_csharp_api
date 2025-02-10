@@ -1,5 +1,5 @@
-﻿using MonApi.API.Passwords.DTOs;
-using MonApi.Shared.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using MonApi.API.Passwords.DTOs;
 using MonApi.Shared.Repositories;
 using MonApi.API.Passwords.Models;
 using MonApi.Models;

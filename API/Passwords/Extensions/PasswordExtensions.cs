@@ -27,13 +27,4 @@ public static class PasswordExtensions
             ResetDate = password.ResetDate
         };
     }
-    public static Password MapToPasswordModel(this UpdatePasswordDto password)
-    {
-        return new Password
-        {
-            PasswordId = password.PasswordId,
-            PasswordHash = password.PasswordHash,
-            PasswordSalt = password.PasswordSalt
-        };
-    }
 }

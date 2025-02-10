@@ -1,18 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using MonApi.API.Addresses.Extensions;
-using MonApi.API.Addresses.Repositories;
 using MonApi.API.Customers.DTOs;
-using MonApi.API.Customers.Extensions;
-using MonApi.API.Customers.Models;
-using MonApi.API.Customers.Repositories;
 using MonApi.API.Customers.Services;
-using MonApi.API.Passwords.DTOs;
-using MonApi.API.Passwords.Extensions;
-using MonApi.API.Passwords.Models;
-using MonApi.API.Passwords.Repositories;
-using MonApi.Shared.Utils;
 
 namespace MonApi.API.Customers.Controllers;
 
@@ -43,4 +32,13 @@ public class CustomerController : ControllerBase
         {
             token
         });
-    } }
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+    {
+        await _customersService.ResetPassword(resetPasswordDto);
+        return Ok();
+    }
+}

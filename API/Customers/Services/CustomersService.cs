@@ -2,15 +2,12 @@
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.IdentityModel.Tokens;
 using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Extensions;
-using MonApi.API.Customers.Models;
 using MonApi.API.Customers.Repositories;
-using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
 using MonApi.Shared.Utils;
@@ -63,18 +60,21 @@ namespace MonApi.API.Customers.Services
 
             if (foundCustomer == null)
                 throw new KeyNotFoundException("Utilisateur introuvable");
+            if (foundCustomer.DeletionTime != null)
+                throw new BadHttpRequestException("L'utilisateur est supprimé");
+
+            var password = await _passwordRepository.FindAsync(foundCustomer.Password!.PasswordId)
+                           ?? throw new NullReferenceException("Le mot de passe relié à l'utilisateur est introuvable");
 
             var passwordValid = PasswordUtils.VerifyPassword(
                 loginDto.Password,
-                foundCustomer.Password!.PasswordHash,
-                Convert.FromBase64String(foundCustomer.Password.PasswordSalt)
+                password.PasswordHash,
+                Convert.FromBase64String(password.PasswordSalt)
             );
-
+            
             // Si le mot de passe est mauvais on incrémente le nombre d'essais
             if (!passwordValid)
             {
-                var password = await _passwordRepository.FindAsync(foundCustomer.Password.PasswordId);
-
                 // Si il y a trop d'essais on retourne une erreur
                 if (password!.AttemptCount >= 3)
                     throw new AuthenticationException(
@@ -87,6 +87,10 @@ namespace MonApi.API.Customers.Services
 
                 throw new AuthenticationException("Mot de passe incorrect");
             }
+
+            // Mise à jour du nombre d'essais si l'utilisateur se connecte correctement
+            password.AttemptCount = 0;
+            await _passwordRepository.UpdateAsync(password);
 
             // Faire une liste de Claims 
             List<Claim> claims = new List<Claim>
@@ -117,14 +121,24 @@ namespace MonApi.API.Customers.Services
             return token;
         }
 
-        public async Task<bool> Delete(UpdatePasswordDto passwordDto)
+        public async Task ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            var address = await _addressRepository.FindAsync(passwordDto);
-            if (address == null) throw new KeyNotFoundException("Address doesn't exist");
+            var customer = await _customersRepository.FindByEmailAsync(resetPasswordDto.Email)
+                           ?? throw new NullReferenceException("L'utilisateur n'existe pas");
+            if (customer.DeletionTime != null) throw new BadHttpRequestException("L'utilisateur a été supprimé");
 
-            await _addressRepository.DeleteAsync(address);
-            
-            return true;
+            var password = await _passwordRepository.FindAsync(customer.Password!.PasswordId)
+                           ?? throw new NullReferenceException("Le mot de passe à réinitialiser est introuvable");
+            if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
+
+            var passwordHash = PasswordUtils.HashPassword(resetPasswordDto.Password, out var salt);
+
+            password.PasswordHash = passwordHash;
+            password.PasswordSalt = Convert.ToBase64String(salt);
+            password.AttemptCount = 0;
+            password.ResetDate = DateTime.UtcNow;
+
+            await _passwordRepository.UpdateAsync(password);
         }
     }
 }

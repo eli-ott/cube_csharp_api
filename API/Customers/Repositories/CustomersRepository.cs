@@ -1,11 +1,9 @@
 ﻿using MonApi.Shared.Repositories;
 using MonApi.API.Customers.Models;
-using MonApi.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Passwords.DTOs;
-using MonApi.API.Passwords.Models;
 using MonApi.Models;
 
 namespace MonApi.API.Customers.Repositories
