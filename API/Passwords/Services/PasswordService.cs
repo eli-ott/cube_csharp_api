@@ -16,9 +16,9 @@ public class PasswordService : IPasswordService
         _passwordRepository = passwordRepository;
     }
 
-    public async Task UpdateAsync(UpdatePasswordDto passwordDto)
+    public async Task UpdateAsync(UpdatePasswordDto passwordDto, int id)
     {
-        var password = await _passwordRepository.FindAsync(passwordDto.PasswordId);
+        var password = await _passwordRepository.FindAsync(id);
         if (password == null) throw new NullReferenceException("Le mot de passe est introuvable");
         if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
 

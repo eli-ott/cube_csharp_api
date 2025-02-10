@@ -17,10 +17,10 @@ public class PasswordController : ControllerBase
         _passwordService = passwordService;
     }
 
-    [HttpPut("update")]
-    public async Task<ActionResult> UpdatePassword(UpdatePasswordDto passwordDto)
+    [HttpPut("update/{id}")]
+    public async Task<ActionResult> UpdatePassword(UpdatePasswordDto passwordDto, int id)
     {
-        await _passwordService.UpdateAsync(passwordDto);
+        await _passwordService.UpdateAsync(passwordDto, id);
         return Ok();
     }
 }

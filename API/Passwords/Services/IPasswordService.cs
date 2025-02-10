@@ -4,5 +4,5 @@ namespace MonApi.API.Passwords.Services;
 
 public interface IPasswordService
 {
-    Task UpdateAsync(UpdatePasswordDto passwordDto);
+    Task UpdateAsync(UpdatePasswordDto passwordDto, int id);
 }
