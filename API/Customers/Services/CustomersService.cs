@@ -80,6 +80,8 @@ namespace MonApi.API.Customers.Services
                 throw new KeyNotFoundException("Utilisateur introuvable");
             if (foundCustomer.DeletionTime != null)
                 throw new BadHttpRequestException("L'utilisateur est supprimé");
+            if (!foundCustomer.Active)
+                throw new BadHttpRequestException("L'utilisateur n'est pas actif");
 
             var passwordValid = PasswordUtils.VerifyPassword(
                 loginDto.Password,
@@ -106,7 +108,7 @@ namespace MonApi.API.Customers.Services
 
             // Mise à jour du nombre d'essais si l'utilisateur se connecte correctement
             foundCustomer.Password.AttemptCount = 0;
-            
+
             var passwordModel = foundCustomer.Password.MapToPasswordModel();
             await _passwordRepository.UpdateAsync(passwordModel);
 
