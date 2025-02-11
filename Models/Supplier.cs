@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Addresses.Models;
-using MonApi.API.Passwords.Models;
 
 namespace MonApi.Models;
 
@@ -27,13 +26,9 @@ public partial class Supplier
 
     public DateTime CreationTime { get; set; }
 
-    public int PasswordId { get; set; }
-
     public int AddressId { get; set; }
 
     public virtual Address Address { get; set; } = null!;
-
-    public virtual Password Password { get; set; } = null!;
 
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

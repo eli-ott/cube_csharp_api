@@ -22,6 +22,8 @@ public partial class Customer
 
     public bool Active { get; set; }
 
+    public string ValidationId { get; set; } = null!;
+
     public DateTime CreationTime { get; set; }
 
     public DateTime UpdateTime { get; set; }
