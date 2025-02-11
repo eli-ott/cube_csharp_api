@@ -1,4 +1,7 @@
-﻿using MonApi.API.Addresses.Extensions;
+﻿using Microsoft.EntityFrameworkCore.Scaffolding;
+using MonApi.API.Addresses.DTOs;
+using MonApi.API.Addresses.Extensions;
+using MonApi.API.Addresses.Models;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Extensions;
@@ -18,7 +21,7 @@ namespace MonApi.API.Suppliers.Services
             _suppliersRepository = suppliersRepository;
         }
 
-        public async Task<Supplier> AddAsync(CreateSupplierDTO createSupplierDTO)
+        public async Task<ReturnSupplierDTO> AddAsync(CreateSupplierDTO createSupplierDTO)
         {
             if (await _suppliersRepository.AnyAsync(s => s.Siret == createSupplierDTO.Siret)) throw new ArgumentException("Supplier already exist");
 
@@ -28,25 +31,37 @@ namespace MonApi.API.Suppliers.Services
             var supplier = createSupplierDTO.MapToSupplierModel(addedAdress);
 
             var newSupplier = await _suppliersRepository.AddAsync(supplier);
+            var newSupplierDetails = await _suppliersRepository.FindAsync(newSupplier.SupplierId);
 
-            return newSupplier;
+
+            return newSupplierDetails;
         }
 
-        public async Task<Supplier> UpdateAsync(int id, Supplier modifiedSupplier)
+        public async Task<ReturnSupplierDTO> UpdateAsync(int id, UpdateSupplierDTO modifiedSupplier)
         {
-            modifiedSupplier.SupplierId = id;
-            Supplier model = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+            //Address address = await _addressesRepository.FindAsync(modifiedSupplier.Address.AddressId);
+            Address address = modifiedSupplier.Address.MapToAddressModel();
+
+
+            var model = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
             if (model.DeletionTime != null) throw new Exception("Supplier deleted");
+            
+            await _addressesRepository.UpdateAsync(address);
+            var supplier = modifiedSupplier.MapToSupplierModel(id, address);
+            
+            await _suppliersRepository.UpdateAsync(supplier);
+            ReturnSupplierDTO newModifiedSupplierDetails = await _suppliersRepository.FindAsync(id);
 
-            await _suppliersRepository.UpdateAsync(modifiedSupplier);
 
-            return modifiedSupplier;
+            return newModifiedSupplierDetails;
         }
 
-        public async Task<Supplier> FindById(int id)
+
+
+        public async Task<ReturnSupplierDTO> FindById(int id)
         {
-            Supplier supplier = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+            ReturnSupplierDTO supplier = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
             if (supplier.DeletionTime != null) throw new Exception("Supplier deleted");
 
@@ -60,15 +75,30 @@ namespace MonApi.API.Suppliers.Services
             return suppliers;
         }
 
-        public async Task<Supplier> SoftDeleteAsync(int id)
+        public async Task<ReturnSupplierDTO> SoftDeleteAsync(int id)
         {
-            Supplier model = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
-            if (model.DeletionTime != null) throw new Exception("Supplier already deleted");
+            ReturnSupplierDTO supplierDto = await _suppliersRepository.FindAsync(id)
+                ?? throw new KeyNotFoundException("Id not found");
 
-            model.DeletionTime = DateTime.UtcNow;
-            await _suppliersRepository.UpdateAsync(model);
-            return model;
+            if (supplierDto.DeletionTime != null)
+                throw new Exception("Supplier already deleted");
+
+            Address addressToMap = await _addressesRepository.FindAsync(supplierDto.Address.AddressId)
+                ?? throw new KeyNotFoundException("Address not found");
+
+            var supplierToDelete = supplierDto.MapToSupplierModel(addressToMap);
+
+            supplierToDelete.DeletionTime = DateTime.UtcNow;
+            supplierDto.DeletionTime = DateTime.UtcNow;
+            addressToMap.DeletionTime = DateTime.UtcNow;
+
+            await _suppliersRepository.UpdateAsync(supplierToDelete);
+            await _addressesRepository.UpdateAsync(addressToMap);
+
+            return supplierDto;
         }
+
+
 
 
 

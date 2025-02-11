@@ -34,8 +34,8 @@ public class SuppliersController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> FindSupplierById([FromRoute] int id)
     {
-        var family = await _suppliersService.FindById(id);
-        return Ok(family);
+        var supplier = await _suppliersService.FindById(id);
+        return Ok(supplier);
     }
 
 
@@ -46,19 +46,18 @@ public class SuppliersController : ControllerBase
         return Ok(isAdded);
     }
 
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> UpdateFamily([FromRoute] int id, [FromBody] UpdateSupplierDTO updateSupplierDTO)
-    //{
-    //    var familyToUpdate = updateSupplierDTO.MapToSupplierModel();
-    //    var isAdded = await _SuppliersService.UpdateAsync(id, familyToUpdate);
-    //    return Ok(isAdded);
-    //}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateSupplier([FromRoute] int id, [FromBody] UpdateSupplierDTO updateSupplierDTO)
+    {
+        var isAdded = await _suppliersService.UpdateAsync(id, updateSupplierDTO);
+        return Ok(isAdded);
+    }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteFamily([FromRoute] int id)
+    public async Task<IActionResult> DeleteSupplier([FromRoute] int id)
     {
-        var isDeleted = await _suppliersService.SoftDeleteAsync(id);
-        return Ok(isDeleted);
+        await _suppliersService.SoftDeleteAsync(id);
+        return Ok();
     }
 
 
