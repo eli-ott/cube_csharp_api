@@ -2,6 +2,8 @@
 using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Repositories;
@@ -16,16 +18,20 @@ namespace MonApi.API.Customers.Services
 {
     public class CustomersService : ICustomersService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICustomersRepository _customersRepository;
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
+        private readonly IEmailSender _emailSender;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository)
+            IAddressRepository addressRepository, IEmailSender emailSender, IHttpContextAccessor httpContextAccessor)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;
             _addressRepository = addressRepository;
+            _emailSender = emailSender;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto)
@@ -43,12 +49,24 @@ namespace MonApi.API.Customers.Services
             password.PasswordHash = hashedPassword;
             password.PasswordSalt = Convert.ToBase64String(salt);
 
+            var baseUrl = Environment.GetEnvironmentVariable("URL_FRONT")
+                          ?? throw new KeyNotFoundException("L'url du front n'est pas disponible");
+
+            var guid = Guid.NewGuid();
+            var completeUrl = $"{baseUrl}/confirm-registration/{registerDto.Email}/{guid}";
+
+            var emailContent =
+                $"Bienvenue sur NegoSud, pour confirmer votre compte veuillez utiliser sur le lien suivant : {completeUrl}";
+            var emailSubject = "Inscription a NegoSud";
+
+            await _emailSender.SendEmailAsync(registerDto.Email, emailSubject,
+                emailContent);
+
             var addedPassword = await _passwordRepository.AddAsync(password);
 
-            var customer = registerDto.MapToCustomerModel(addedPassword, addedAddress);
+            var customer = registerDto.MapToCustomerModel(addedPassword, addedAddress, guid);
 
             var newCustomer = await _customersRepository.AddAsync(customer);
-
             var newCustomerDetails = await _customersRepository.FindAsync(newCustomer.CustomerId);
 
             return newCustomerDetails!;
@@ -62,6 +80,8 @@ namespace MonApi.API.Customers.Services
                 throw new KeyNotFoundException("Utilisateur introuvable");
             if (foundCustomer.DeletionTime != null)
                 throw new BadHttpRequestException("L'utilisateur est supprimé");
+            if (!foundCustomer.Active)
+                throw new BadHttpRequestException("L'utilisateur n'est pas actif");
 
             var passwordValid = PasswordUtils.VerifyPassword(
                 loginDto.Password,
@@ -88,7 +108,7 @@ namespace MonApi.API.Customers.Services
 
             // Mise à jour du nombre d'essais si l'utilisateur se connecte correctement
             foundCustomer.Password.AttemptCount = 0;
-            
+
             var passwordModel = foundCustomer.Password.MapToPasswordModel();
             await _passwordRepository.UpdateAsync(passwordModel);
 
@@ -139,6 +159,21 @@ namespace MonApi.API.Customers.Services
             password.ResetDate = DateTime.UtcNow;
 
             await _passwordRepository.UpdateAsync(password);
+        }
+
+        public async Task ConfirmRegistration(string email, string guid)
+        {
+            var customer = await _customersRepository.FindByEmailAsync(email)
+                           ?? throw new NullReferenceException("Le clent n'éxiste pas");
+            if (customer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
+
+            if (customer.ValidationId != guid)
+                throw new BadHttpRequestException("Le guid n'est pas valide");
+
+            customer.Active = true;
+            var customerModel = customer.MapTocustomerMode();
+            Console.WriteLine(JsonSerializer.Serialize(customerModel));
+            await _customersRepository.UpdateAsync(customerModel);
         }
     }
 }

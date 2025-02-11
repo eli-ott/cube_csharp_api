@@ -17,6 +17,14 @@ public class CustomerController : ControllerBase
     }
 
     [AllowAnonymous]
+    [HttpGet("confirm-registration/{email}/{guid}")]
+    public async Task<ActionResult> ConfirmRegistration(string email, string guid)
+    {
+        await _customersService.ConfirmRegistration(email, guid);
+        return Ok();
+    }
+
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<ActionResult<ReturnCustomerDto>> RegisterCustomer(RegisterDTO registerDto)
     {
