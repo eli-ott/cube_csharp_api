@@ -12,6 +12,7 @@ namespace MonApi.API.Suppliers.Extensions
             {
                 LastName = createSupplierDTO.LastName,
                 FirstName = createSupplierDTO.FirstName,
+                Contact = createSupplierDTO.Contact,
                 Email = createSupplierDTO.Email,
                 Phone = createSupplierDTO.Phone,
                 Siret = createSupplierDTO.Siret,
