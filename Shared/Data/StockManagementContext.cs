@@ -4,6 +4,7 @@ using MonApi.API.Customers.Models;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Roles.Models;
 using MonApi.API.Statuses.Models;
+using MonApi.API.Suppliers.Models;
 using MonApi.Models;
 namespace MonApi.Shared.Data;
 
