@@ -19,5 +19,36 @@ namespace MonApi.API.Suppliers.Extensions
                 AddressId = address.AddressId
             };
         }
+
+        public static Supplier MapToSupplierModel(this ReturnSupplierDTO returnSupplierDTO, Address address)
+        {
+            return new Supplier()
+            {
+                SupplierId = returnSupplierDTO.SupplierId,
+                LastName = returnSupplierDTO.LastName,
+                FirstName = returnSupplierDTO.FirstName,
+                Contact = returnSupplierDTO.Contact,
+                Email = returnSupplierDTO.Email,
+                Phone = returnSupplierDTO.Phone,
+                Siret = returnSupplierDTO.Siret,
+                AddressId = address.AddressId
+            };
+        }
+
+        public static Supplier MapToSupplierModel(this UpdateSupplierDTO updateSupplierDTO, int id, Address address)
+        {
+            return new Supplier()
+            {
+                SupplierId = id,
+                LastName = updateSupplierDTO.LastName,
+                FirstName = updateSupplierDTO.FirstName,
+                Contact = updateSupplierDTO.Contact,
+                Email = updateSupplierDTO.Email,
+                Phone = updateSupplierDTO.Phone,
+                Siret = updateSupplierDTO.Siret,
+                AddressId = address.AddressId
+            };
+        }
+
     }
 }
