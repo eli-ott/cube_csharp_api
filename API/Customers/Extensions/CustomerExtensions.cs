@@ -17,11 +17,11 @@ namespace MonApi.API.Customers.Extensions
                 Phone = registerDTO.Phone,
                 Active = false,
                 PasswordId = password.PasswordId,
-                Address = address,
+                AddressId = address.AddressId,
                 ValidationId = guid.ToString()
             };
         }
-
+        
         public static Customer MapTocustomerMode(this ReturnCustomerDto customerDto)
         {
             return new Customer

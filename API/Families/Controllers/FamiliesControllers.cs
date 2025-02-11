@@ -6,11 +6,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using MonApi.API.Families.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MonApi.API.Families.Controllers;
 
 [ApiController]
 [Route("families")]
+[Authorize]
 
 public class FamiliesController : ControllerBase
 {
