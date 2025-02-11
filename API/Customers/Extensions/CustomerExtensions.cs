@@ -7,7 +7,7 @@ namespace MonApi.API.Customers.Extensions
 {
     public static class CustomerExtensions
     {
-        public static Customer MapToCustomerModel(this RegisterDTO registerDTO, Password password, Address address)
+        public static Customer MapToCustomerModel(this RegisterDTO registerDTO, Password password, Address address, Guid guid)
         {
             return new Customer
             {
@@ -17,7 +17,24 @@ namespace MonApi.API.Customers.Extensions
                 Phone = registerDTO.Phone,
                 Active = false,
                 PasswordId = password.PasswordId,
-                Address = address
+                Address = address,
+                ValidationId = guid.ToString()
+            };
+        }
+
+        public static Customer MapTocustomerMode(this ReturnCustomerDto customerDto)
+        {
+            return new Customer
+            {
+                CustomerId = customerDto.CustomerId,
+                FirstName = customerDto.FirstName,
+                LastName = customerDto.LastName,
+                Email = customerDto.Email,
+                Phone = customerDto.Phone,
+                Active = customerDto.Active,
+                ValidationId = customerDto.ValidationId!,
+                PasswordId = customerDto.Password!.PasswordId,
+                AddressId = customerDto.Address.AddressId
             };
         }
     }
