@@ -12,7 +12,7 @@ public partial class Review
 
     public float Rating { get; set; }
 
-    public string? Comment { get; set; }
+    public string? Comment{ get; set; }
 
     public DateTime? UpdateTime { get; set; }
 

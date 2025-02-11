@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Customers.Models;
-using MonApi.API.Families.Models;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Statuses.Models;
 using MonApi.Models;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
-
 namespace MonApi.Shared.Data;
 
 public partial class StockManagementContext : DbContext
@@ -63,9 +58,9 @@ public partial class StockManagementContext : DbContext
         string connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING")
                                   ?? throw new InvalidOperationException(
                                       "Connection string 'DATABASE_CONNECTION_STRING' not found.");
-
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
     }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -226,6 +221,9 @@ public partial class StockManagementContext : DbContext
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime")
                 .HasColumnName("update_time");
+            entity.Property(e => e.ValidationId)
+                .HasMaxLength(255)
+                .HasColumnName("validation_id");
 
             entity.HasOne(d => d.Address).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AddressId)
@@ -683,8 +681,6 @@ public partial class StockManagementContext : DbContext
 
             entity.HasIndex(e => e.AddressId, "Supplier_Address_FK");
 
-            entity.HasIndex(e => e.PasswordId, "Supplier_Password_FK");
-
             entity.Property(e => e.SupplierId)
                 .HasColumnType("int(11)")
                 .HasColumnName("supplier_id");
@@ -710,9 +706,6 @@ public partial class StockManagementContext : DbContext
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
-            entity.Property(e => e.PasswordId)
-                .HasColumnType("int(11)")
-                .HasColumnName("password_id");
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .HasColumnName("phone");
@@ -729,11 +722,6 @@ public partial class StockManagementContext : DbContext
                 .HasForeignKey(d => d.AddressId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Supplier_Address_FK");
-
-            entity.HasOne(d => d.Password).WithMany(p => p.Suppliers)
-                .HasForeignKey(d => d.PasswordId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("Supplier_Password_FK");
         });
 
         modelBuilder.Entity<SupplierOrder>(entity =>

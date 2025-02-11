@@ -63,6 +63,7 @@ namespace MonApi.API.Customers.Repositories
                             CreationTime = customer.CreationTime,
                             UpdateTime = customer.UpdateTime,
                             DeletionTime = customer.DeletionTime,
+                            ValidationId = customer.ValidationId,
                             Address = new ReturnAddressDto
                             {
                                 AddressId = address.AddressId,

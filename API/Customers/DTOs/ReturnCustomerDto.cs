@@ -19,5 +19,6 @@ public class ReturnCustomerDto
     [Required] public required DateTime? DeletionTime { get; set; }
     [Required] public required DateTime CreationTime { get; set; }
     [Required] public required DateTime UpdateTime { get; set; }
+    public string? ValidationId { get; set; }
     public ReturnPasswordDto? Password { get; set; }
 }
