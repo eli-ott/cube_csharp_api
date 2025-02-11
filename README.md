@@ -19,7 +19,9 @@ dotnet add package DotNetEnv
 
 ## Database
 
+Run the sql script in the database to create the tables then run the following command to scaffold the database.
+
 ```bash
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+dotnet ef dbcontext scaffold "DATABASE_URL" Pomelo.EntityFrameworkCore.MySql --output-dir Models
 ```
+
