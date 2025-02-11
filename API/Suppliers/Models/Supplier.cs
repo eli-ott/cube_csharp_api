@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Addresses.Models;
+using MonApi.API.Passwords.Models;
+using MonApi.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Suppliers.Models;
 
 public partial class Supplier
 {

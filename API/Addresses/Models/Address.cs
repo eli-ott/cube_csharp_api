@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Customers.Models;
-using MonApi.Models;
+using MonApi.API.Suppliers.Models;
 
 namespace MonApi.API.Addresses.Models;
 
