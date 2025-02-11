@@ -17,7 +17,7 @@ namespace MonApi.API.Customers.Extensions
                 Phone = registerDTO.Phone,
                 Active = false,
                 PasswordId = password.PasswordId,
-                Address = address
+                AddressId = address.AddressId
             };
         }
     }
