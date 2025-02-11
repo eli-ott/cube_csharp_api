@@ -3,6 +3,7 @@ using MonApi.API.Passwords.DTOs;
 using MonApi.Shared.Repositories;
 using MonApi.API.Passwords.Models;
 using MonApi.Models;
+using MonApi.Shared.Data;
 
 namespace MonApi.API.Passwords.Repositories
 {
