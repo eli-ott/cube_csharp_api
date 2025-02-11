@@ -63,34 +63,34 @@ namespace MonApi.API.Customers.Services
             if (foundCustomer.DeletionTime != null)
                 throw new BadHttpRequestException("L'utilisateur est supprimé");
 
-            var password = await _passwordRepository.FindAsync(foundCustomer.Password!.PasswordId)
-                           ?? throw new NullReferenceException("Le mot de passe relié à l'utilisateur est introuvable");
-
             var passwordValid = PasswordUtils.VerifyPassword(
                 loginDto.Password,
-                password.PasswordHash,
-                Convert.FromBase64String(password.PasswordSalt)
+                foundCustomer.Password!.PasswordHash,
+                Convert.FromBase64String(foundCustomer.Password.PasswordSalt)
             );
-            
+
             // Si le mot de passe est mauvais on incrémente le nombre d'essais
             if (!passwordValid)
             {
                 // Si il y a trop d'essais on retourne une erreur
-                if (password!.AttemptCount >= 3)
+                if (foundCustomer.Password!.AttemptCount >= 3)
                     throw new AuthenticationException(
                         "Nombre d'essais trop important, veuillez réinitialiser votre mot de passe");
 
                 // On incrémente le nombre d'essais
-                password.AttemptCount++;
+                foundCustomer.Password.AttemptCount++;
 
-                await _passwordRepository.UpdateAsync(password);
+                var passwordModelInvalid = foundCustomer.Password.MapToPasswordModel();
+                await _passwordRepository.UpdateAsync(passwordModelInvalid);
 
                 throw new AuthenticationException("Mot de passe incorrect");
             }
 
             // Mise à jour du nombre d'essais si l'utilisateur se connecte correctement
-            password.AttemptCount = 0;
-            await _passwordRepository.UpdateAsync(password);
+            foundCustomer.Password.AttemptCount = 0;
+            
+            var passwordModel = foundCustomer.Password.MapToPasswordModel();
+            await _passwordRepository.UpdateAsync(passwordModel);
 
             // Faire une liste de Claims 
             List<Claim> claims = new List<Claim>
