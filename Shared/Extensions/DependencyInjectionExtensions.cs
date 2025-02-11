@@ -42,6 +42,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IFamiliesService, FamiliesService>();
             builder.Services.AddScoped<IStatusService, StatusService>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
