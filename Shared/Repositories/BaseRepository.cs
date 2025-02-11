@@ -1,14 +1,15 @@
 ﻿using MonApi.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using MonApi.Models;
 
 namespace MonApi.Shared.Repositories;
 
 public class BaseRepository<TModel> : IBaseRepository<TModel> where TModel : class
 {
-    protected readonly ApplicationDbContext _context;
+    protected readonly StockManagementContext _context;
 
-    public BaseRepository(ApplicationDbContext context)
+    public BaseRepository(StockManagementContext context)
     {
         _context = context;
     }
@@ -31,6 +32,12 @@ public class BaseRepository<TModel> : IBaseRepository<TModel> where TModel : cla
     public virtual async Task DeleteAsync(TModel model, CancellationToken cancellationToken = default)
     {
         _context.Set<TModel>().Remove(model);
+        await SaveChangesAsync(cancellationToken);
+    }
+
+    public virtual async Task SoftDeleteAsync(TModel model, CancellationToken cancellationToken = default)
+    {
+        _context.Set<TModel>().Update(model);
         await SaveChangesAsync(cancellationToken);
     }
 

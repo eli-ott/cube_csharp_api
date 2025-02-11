@@ -1,2 +1,2 @@
 -- Active: 1732875427459@@127.0.0.1@3306@gestion_stock
-INSERT INTO Statut (nom) VALUES ('En cours de traitement'), ('En préparation'), ('Remise en stock'), ('Annulée'), ('Expédiée'), ('En cours de livraison'), ('Non livrée'), ('Livrée');
+INSERT INTO status (name) VALUES ('En cours de traitement'), ('En préparation'), ('Remise en stock'), ('Annulée'), ('Expédiée'), ('En cours de livraison'), ('Non livrée'), ('Livrée');
