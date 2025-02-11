@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MonApi.Models;
 
-public partial class Family
+public partial class aFamily
 {
     public int FamilyId { get; set; }
 

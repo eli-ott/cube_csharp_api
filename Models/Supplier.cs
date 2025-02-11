@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonApi.API.Addresses.Models;
+using MonApi.API.Passwords.Models;
 
 namespace MonApi.Models;
 

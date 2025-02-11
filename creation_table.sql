@@ -8,7 +8,7 @@ USE stock_management;
 #------------------------------------------------------------
 # Table: Status
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Status(
+CREATE TABLE IF NOT EXISTS status(
     status_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(50) NOT NULL,
     deletion_time DATETIME DEFAULT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Status(
 #------------------------------------------------------------
 # Table: Family
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Family(
+CREATE TABLE IF NOT EXISTS family(
     family_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(50) NOT NULL,
     deletion_time DATETIME DEFAULT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS Family(
 #------------------------------------------------------------
 # Table: Role
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Role`(
+CREATE TABLE IF NOT EXISTS `role`(
     role_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(50) NOT NULL,
     deletion_time DATETIME DEFAULT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `Role`(
 #------------------------------------------------------------
 # Table: Password
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Password`(
+CREATE TABLE IF NOT EXISTS `password`(
     password_id INT AUTO_INCREMENT NOT NULL,
     password_hash TEXT NOT NULL,
     password_salt VARCHAR(255) NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `Password`(
 #------------------------------------------------------------
 # Table: Address
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Address`(
+CREATE TABLE IF NOT EXISTS `address`(
     address_id INT AUTO_INCREMENT NOT NULL,
     address_line VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS `Address`(
 #------------------------------------------------------------
 # Table: Customer
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Customer(
+CREATE TABLE IF NOT EXISTS customer(
     customer_id INT AUTO_INCREMENT NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
@@ -83,13 +83,13 @@ CREATE TABLE IF NOT EXISTS Customer(
     password_id INT NOT NULL,
     address_id INT NOT NULL,
     CONSTRAINT Customer_PK PRIMARY KEY (customer_id),
-    CONSTRAINT Customer_Password_FK FOREIGN KEY (password_id) REFERENCES Password(password_id),
-    CONSTRAINT Customer_Address_FK FOREIGN KEY (address_id) REFERENCES Address(address_id)
+    CONSTRAINT Customer_Password_FK FOREIGN KEY (password_id) REFERENCES password(password_id),
+    CONSTRAINT Customer_Address_FK FOREIGN KEY (address_id) REFERENCES address(address_id)
 );
 #------------------------------------------------------------
 # Table: Order
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Order`(
+CREATE TABLE IF NOT EXISTS `order`(
     order_id INT AUTO_INCREMENT NOT NULL,
     delivery_date DATETIME DEFAULT NULL,
     status_id INT NOT NULL,
@@ -98,13 +98,13 @@ CREATE TABLE IF NOT EXISTS `Order`(
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Order_PK PRIMARY KEY (order_id),
-    CONSTRAINT Order_Status_FK FOREIGN KEY (status_id) REFERENCES Status(status_id),
-    CONSTRAINT Order_Customer_FK FOREIGN KEY (customer_id) REFERENCES Customer(customer_id)
+    CONSTRAINT Order_Status_FK FOREIGN KEY (status_id) REFERENCES status(status_id),
+    CONSTRAINT Order_Customer_FK FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
 );
 #------------------------------------------------------------
 # Table: Supplier
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Supplier(
+CREATE TABLE IF NOT EXISTS supplier(
     supplier_id INT AUTO_INCREMENT NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
@@ -115,16 +115,14 @@ CREATE TABLE IF NOT EXISTS Supplier(
     deletion_time DATETIME DEFAULT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    password_id INT NOT NULL,
     address_id INT NOT NULL,
     CONSTRAINT Supplier_PK PRIMARY KEY (supplier_id),
-    CONSTRAINT Supplier_Address_FK FOREIGN KEY (address_id) REFERENCES Address(address_id),
-    CONSTRAINT Supplier_Password_FK FOREIGN KEY (password_id) REFERENCES Password(password_id)
+    CONSTRAINT Supplier_Address_FK FOREIGN KEY (address_id) REFERENCES address(address_id)
 );
 #------------------------------------------------------------
 # Table: Product
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Product(
+CREATE TABLE IF NOT EXISTS product(
     product_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(255) NOT NULL,
     cuvee VARCHAR(255) NOT NULL,
@@ -142,13 +140,13 @@ CREATE TABLE IF NOT EXISTS Product(
     family_id INT NOT NULL,
     supplier_id INT NOT NULL,
     CONSTRAINT Product_PK PRIMARY KEY (product_id),
-    CONSTRAINT Product_Family_FK FOREIGN KEY (family_id) REFERENCES Family(family_id),
-    CONSTRAINT Product_Supplier_FK FOREIGN KEY (supplier_id) REFERENCES Supplier(supplier_id)
+    CONSTRAINT Product_Family_FK FOREIGN KEY (family_id) REFERENCES family(family_id),
+    CONSTRAINT Product_Supplier_FK FOREIGN KEY (supplier_id) REFERENCES supplier(supplier_id)
 );
 #------------------------------------------------------------
 # Table: Discount
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Discount(
+CREATE TABLE IF NOT EXISTS discount(
     discount_id INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(50) NOT NULL,
     value INT NOT NULL,
@@ -158,61 +156,61 @@ CREATE TABLE IF NOT EXISTS Discount(
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     product_id INT NOT NULL,
     CONSTRAINT Discount_PK PRIMARY KEY (discount_id),
-    CONSTRAINT Discount_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    CONSTRAINT Discount_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 #------------------------------------------------------------
 # Table: Image
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `Image`(
+CREATE TABLE IF NOT EXISTS `image`(
     image_id VARCHAR(150) NOT NULL,
     format_type VARCHAR(10) NOT NULL,
     product_id INT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Image_PK PRIMARY KEY (image_id),
-    CONSTRAINT Image_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    CONSTRAINT Image_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 #------------------------------------------------------------
 # Table: Review
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Review(
+CREATE TABLE IF NOT EXISTS review(
     user_id INT NOT NULL,
     product_id INT NOT NULL,
     rating FLOAT NOT NULL,
     comment TEXT DEFAULT NULL,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,    
-    CONSTRAINT Review_User_FK FOREIGN KEY (user_id) REFERENCES Customer(customer_id),
-    CONSTRAINT Review_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    CONSTRAINT Review_User_FK FOREIGN KEY (user_id) REFERENCES customer(customer_id),
+    CONSTRAINT Review_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 #------------------------------------------------------------
 # Table: Cart
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Cart(
+CREATE TABLE IF NOT EXISTS cart(
     cart_id INT AUTO_INCREMENT NOT NULL,
     customer_id INT NOT NULL,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT Cart_PK PRIMARY KEY (cart_id),
-    CONSTRAINT Cart_Customer_FK FOREIGN KEY (customer_id) REFERENCES Customer(customer_id)
+    CONSTRAINT Cart_Customer_FK FOREIGN KEY (customer_id) REFERENCES customer(customer_id)
 );
 #------------------------------------------------------------
 # Table: Cart_Line
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Cart_Line(
+CREATE TABLE IF NOT EXISTS cart_line(
     product_id INT NOT NULL,
     cart_id INT NOT NULL,
     quantity INT NOT NULL,
     is_set_aside BOOL NOT NULL DEFAULT FALSE,
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT CartLine_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id),
-    CONSTRAINT CartLine_Cart_FK FOREIGN KEY (cart_id) REFERENCES Cart(cart_id)
+    CONSTRAINT CartLine_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id),
+    CONSTRAINT CartLine_Cart_FK FOREIGN KEY (cart_id) REFERENCES cart(cart_id)
 );
 #------------------------------------------------------------
 # Table: Employee
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Employee(
+CREATE TABLE IF NOT EXISTS employee(
     employee_id INT AUTO_INCREMENT NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
@@ -224,13 +222,13 @@ CREATE TABLE IF NOT EXISTS Employee(
     role_id INT NOT NULL,
     password_id INT NOT NULL,
     CONSTRAINT Employee_PK PRIMARY KEY (employee_id),
-    CONSTRAINT Employee_Role_FK FOREIGN KEY (role_id) REFERENCES Role(role_id),
-    CONSTRAINT Employee_Password_FK FOREIGN KEY (password_id) REFERENCES Password(password_id)
+    CONSTRAINT Employee_Role_FK FOREIGN KEY (role_id) REFERENCES role(role_id),
+    CONSTRAINT Employee_Password_FK FOREIGN KEY (password_id) REFERENCES password(password_id)
 );
 #------------------------------------------------------------
 # Table: Supplier_Order
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Supplier_Order(
+CREATE TABLE IF NOT EXISTS supplier_order(
     order_id INT AUTO_INCREMENT NOT NULL,
     delivery_date DATETIME DEFAULT NULL,
     deletion_time DATETIME DEFAULT NULL,
@@ -239,32 +237,32 @@ CREATE TABLE IF NOT EXISTS Supplier_Order(
     employee_id INT NOT NULL,
     status_id INT NOT NULL,
     CONSTRAINT Supplier_Order_PK PRIMARY KEY (order_id),
-    CONSTRAINT SupplierOrder_Employee_FK FOREIGN KEY (employee_id) REFERENCES Employee(employee_id),
-    CONSTRAINT SupplierOrder_Status_FK FOREIGN KEY (status_id) REFERENCES Status(status_id)
+    CONSTRAINT SupplierOrder_Employee_FK FOREIGN KEY (employee_id) REFERENCES employee(employee_id),
+    CONSTRAINT SupplierOrder_Status_FK FOREIGN KEY (status_id) REFERENCES status(status_id)
 );
 #------------------------------------------------------------
 # Table: Order_Line
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Order_Line(
+CREATE TABLE IF NOT EXISTS order_line(
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price FLOAT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT OrderLine_Order_FK FOREIGN KEY (order_id) REFERENCES `Order`(order_id),
-    CONSTRAINT OrderLine_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    CONSTRAINT OrderLine_Order_FK FOREIGN KEY (order_id) REFERENCES `order`(order_id),
+    CONSTRAINT OrderLine_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
 #------------------------------------------------------------
 # Table: Supplier_Order_Line
 #------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS Supplier_Order_Line(
+CREATE TABLE IF NOT EXISTS supplier_order_line(
     order_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL,
     unit_price FLOAT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT SupplierOrderLine_Order_FK FOREIGN KEY (order_id) REFERENCES Supplier_Order(order_id),
-    CONSTRAINT SupplierOrderLine_Product_FK FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    CONSTRAINT SupplierOrderLine_Order_FK FOREIGN KEY (order_id) REFERENCES supplier_order(order_id),
+    CONSTRAINT SupplierOrderLine_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );

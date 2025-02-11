@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MonApi.API.Auth.Services;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Customers.Services;
 using MonApi.API.Passwords.Repositories;
-using MonApi.API.Passwords.Services;
-using MonApi.Shared.Data;
 using System.Text;
+using MonApi.API.Addresses.Repositories;
+using MonApi.API.Passwords.Services;
+using MonApi.Models;
+using MonApi.API.Families.Repositories;
+using MonApi.API.Families.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -28,15 +30,17 @@ namespace MonApi.Shared.Extensions
 
         public static void AddServices(this WebApplicationBuilder builder)
         {
-            builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<ICustomersService, CustomersService>();
             builder.Services.AddScoped<IPasswordService, PasswordService>();
+            builder.Services.AddScoped<IFamiliesService, FamiliesService>();
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<ICustomersRepository, CustomersRepository>();
             builder.Services.AddScoped<IPasswordRepository, PasswordRepository>();
+            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+            builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)
@@ -102,7 +106,7 @@ namespace MonApi.Shared.Extensions
             var connectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING")
                 ?? throw new InvalidOperationException("Connection string 'DATABASE_CONNECTION_STRING' not found.");
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            builder.Services.AddDbContext<StockManagementContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
         }
     }
