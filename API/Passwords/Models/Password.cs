@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using MonApi.API.Customers.Models;
-using MonApi.API.Suppliers.Models;
+﻿using MonApi.API.Customers.Models;
 using MonApi.Models;
+using System;
+using System.Collections.Generic;
 
 namespace MonApi.API.Passwords.Models;
 
@@ -27,6 +26,4 @@ public partial class Password
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
 
     public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
-
-    public virtual ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
 }

@@ -1,6 +1,6 @@
-﻿using System;
+﻿using MonApi.API.Customers.Models;
+using System;
 using System.Collections.Generic;
-using MonApi.API.Customers.Models;
 
 namespace MonApi.Models;
 
@@ -12,7 +12,7 @@ public partial class Review
 
     public float Rating { get; set; }
 
-    public string? Comment{ get; set; }
+    public string? Comment { get; set; }
 
     public DateTime? UpdateTime { get; set; }
 
