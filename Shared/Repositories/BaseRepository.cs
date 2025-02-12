@@ -52,12 +52,12 @@ public class BaseRepository<TModel> : IBaseRepository<TModel> where TModel : cla
 
     public virtual async Task<List<TModel>> ListAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.Set<TModel>().AsNoTracking().ToListAsync(cancellationToken);
+        return await _context.Set<TModel>().ToListAsync(cancellationToken);
     }
 
     public virtual async Task<List<TModel>> ListAsync(Expression<Func<TModel, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _context.Set<TModel>().Where(predicate).AsNoTracking().ToListAsync(cancellationToken);
+        return await _context.Set<TModel>().Where(predicate).ToListAsync(cancellationToken);
     }
 
     public virtual async Task<bool> AnyAsync(Expression<Func<TModel, bool>> predicate, CancellationToken cancellationToken = default)
@@ -77,6 +77,6 @@ public class BaseRepository<TModel> : IBaseRepository<TModel> where TModel : cla
 
     public virtual async Task<TModel?> FirstOrDefaultAsync(Expression<Func<TModel, bool>> predicate, CancellationToken cancellationToken = default)
     {
-        return await _context.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(predicate, cancellationToken);
+        return await _context.Set<TModel>().FirstOrDefaultAsync(predicate, cancellationToken);
     }
 }
