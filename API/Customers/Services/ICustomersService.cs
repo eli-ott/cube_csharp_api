@@ -10,5 +10,9 @@ namespace MonApi.API.Customers.Services
         Task<string> LogCustomer(LoginDTO loginDto);
         Task ResetPassword(ResetPasswordDto resetPasswordDto);
         Task ConfirmRegistration(string email, string guid);
+        Task<List<ReturnCustomerDto>> GetAllCustomers();
+        Task<ReturnCustomerDto> GetCustomerById(int customerId);
+        Task<ReturnCustomerDto> UpdateCustomer(int customerId, UpdateCustomerDto updateCustomerDto);
+        Task SoftDeleteCustomer(int customerId);
     }
 }
