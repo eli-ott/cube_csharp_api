@@ -1,4 +1,5 @@
-﻿using MonApi.API.Addresses.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+using MonApi.API.Addresses.DTOs;
 using MonApi.API.Addresses.Models;
 using MonApi.Models;
 
@@ -6,18 +7,34 @@ namespace MonApi.API.Suppliers.DTOs
 {
     public class UpdateSupplierDTO
     {
-        public string LastName { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string LastName { get; set; }
 
-        public string FirstName { get; set; } = null!;
-        public string Siret { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string FirstName { get; set; }
 
-        public string Contact { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string Contact { get; set; }
 
-        public string Email { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        [EmailAddress]
+        public string Email { get; set; }
 
-        public string Phone { get; set; } = null!;
+        [Required]
+        [StringLength(15)]
+        [Phone]
+        public string Phone { get; set; }
 
-        public virtual UpdateAddressDto Address { get; set; } = null!;
+        [Required]
+        [StringLength(255)]
+        public string Siret { get; set; }
+
+        [Required]
+        public UpdateAddressDto Address { get; set; }
 
     }
 }
