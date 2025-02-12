@@ -12,6 +12,8 @@ using MonApi.API.Addresses.Repositories;
 using MonApi.API.Passwords.Services;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
+using MonApi.API.Roles.Repositories;
+using MonApi.API.Roles.Services;
 using MonApi.API.Statuses.Repositories;
 using MonApi.API.Statuses.Services;
 using MonApi.Shared.Data;
@@ -41,6 +43,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IFamiliesService, FamiliesService>();
             builder.Services.AddScoped<IStatusService, StatusService>();
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             
         }
@@ -52,6 +55,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IAddressRepository, AddressRepository>();
             builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
 
         }
