@@ -12,6 +12,8 @@ using MonApi.API.Addresses.Repositories;
 using MonApi.API.Passwords.Services;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
+using MonApi.API.Images.Repositories;
+using MonApi.API.Images.Services;
 using MonApi.API.Roles.Repositories;
 using MonApi.API.Roles.Services;
 using MonApi.API.Statuses.Repositories;
@@ -44,6 +46,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IStatusService, StatusService>();
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IImagesService, ImagesService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             
         }
@@ -57,7 +60,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
-
+            builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

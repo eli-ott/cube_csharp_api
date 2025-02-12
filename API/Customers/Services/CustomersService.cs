@@ -172,7 +172,7 @@ namespace MonApi.API.Customers.Services
 
             customer.Active = true;
             var customerModel = customer.MapTocustomerMode();
-            Console.WriteLine(JsonSerializer.Serialize(customerModel));
+            
             await _customersRepository.UpdateAsync(customerModel);
         }
     }
