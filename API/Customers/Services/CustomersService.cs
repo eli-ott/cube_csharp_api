@@ -191,7 +191,7 @@ namespace MonApi.API.Customers.Services
 
         public async Task<ReturnCustomerDto> UpdateCustomer(int customerId, UpdateCustomerDto updateCustomerDto)
         {
-            var foundCustomer = await _customersRepository.FindAsync(customerId)
+            var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
                                 ?? throw new NullReferenceException("Le client n'éxiste pas");
             if (foundCustomer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
 
@@ -242,7 +242,7 @@ namespace MonApi.API.Customers.Services
 
             await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
 
-            // Removing useless properties for returrn
+            // Removing useless properties for return
             foundCustomer.Password = null;
             foundCustomer.ValidationId = null;
             return foundCustomer;
