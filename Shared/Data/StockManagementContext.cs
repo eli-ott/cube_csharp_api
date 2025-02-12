@@ -1,9 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Customers.Models;
+using MonApi.API.Families.Models;
 using MonApi.API.Passwords.Models;
+using MonApi.API.Roles.Models;
 using MonApi.API.Statuses.Models;
+using MonApi.API.Suppliers.Models;
 using MonApi.Models;
+using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
+
 namespace MonApi.Shared.Data;
 
 public partial class StockManagementContext : DbContext
@@ -60,7 +67,6 @@ public partial class StockManagementContext : DbContext
                                       "Connection string 'DATABASE_CONNECTION_STRING' not found.");
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
     }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

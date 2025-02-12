@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+using MonApi.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Roles.Models;
 
-public partial class Role
+public partial class Role 
 {
     public int RoleId { get; set; }
 

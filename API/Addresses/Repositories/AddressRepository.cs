@@ -1,5 +1,4 @@
 using MonApi.API.Addresses.Models;
-using MonApi.Models;
 using MonApi.Shared.Data;
 using MonApi.Shared.Repositories;
 
