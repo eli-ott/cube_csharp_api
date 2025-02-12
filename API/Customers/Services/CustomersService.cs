@@ -18,20 +18,18 @@ namespace MonApi.API.Customers.Services
 {
     public class CustomersService : ICustomersService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICustomersRepository _customersRepository;
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IEmailSender _emailSender;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository, IEmailSender emailSender, IHttpContextAccessor httpContextAccessor)
+            IAddressRepository addressRepository, IEmailSender emailSender)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;
             _addressRepository = addressRepository;
             _emailSender = emailSender;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto)
@@ -61,6 +59,8 @@ namespace MonApi.API.Customers.Services
 
             await _emailSender.SendEmailAsync(registerDto.Email, emailSubject,
                 emailContent);
+
+            //Penser à creer aussi son panier etc
 
             var addedPassword = await _passwordRepository.AddAsync(password);
 
@@ -171,9 +171,113 @@ namespace MonApi.API.Customers.Services
                 throw new BadHttpRequestException("Le guid n'est pas valide");
 
             customer.Active = true;
-            var customerModel = customer.MapTocustomerMode();
+            var customerModel = customer.MapToCustomerModel();
             Console.WriteLine(JsonSerializer.Serialize(customerModel));
             await _customersRepository.UpdateAsync(customerModel);
+        }
+
+        public async Task<List<ReturnCustomerDto>> GetAllCustomers()
+        {
+            return await _customersRepository.ListAsync();
+        }
+
+        public async Task<ReturnCustomerDto> GetCustomerById(int customerId)
+        {
+            var customer = await _customersRepository.FindAsync(customerId)
+                           ?? throw new NullReferenceException("Le client n'éxiste pas");
+
+            return customer;
+        }
+
+        public async Task<ReturnCustomerDto> UpdateCustomer(int customerId, UpdateCustomerDto updateCustomerDto)
+        {
+            var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
+                                ?? throw new NullReferenceException("Le client n'éxiste pas");
+            if (foundCustomer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
+
+            foundCustomer.LastName = updateCustomerDto.LastName;
+            foundCustomer.FirstName = updateCustomerDto.FirstName;
+            foundCustomer.Phone = updateCustomerDto.Phone;
+
+            var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
+                               ?? throw new NullReferenceException("L'adresse relié à l'utilisateur est introuvable");
+            if (foundAddress.DeletionTime != null)
+                throw new BadHttpRequestException("L'adresse relié à l'utilisateur a été supprimé");
+
+            if (foundAddress.AddressId != updateCustomerDto.Address.AddressId)
+                throw new BadHttpRequestException("L'adresse ne correspond pas au client");
+
+            // Updating the address values
+            foundAddress.Country = updateCustomerDto.Address.Country;
+            foundAddress.AddressLine = updateCustomerDto.Address.AddressLine;
+            foundAddress.City = updateCustomerDto.Address.City;
+            foundAddress.ZipCode = updateCustomerDto.Address.ZipCode;
+            foundCustomer.Address.Complement = updateCustomerDto.Address.Complement;
+
+            // Updating the address
+            await _addressRepository.UpdateAsync(foundAddress);
+
+            // Checking if the user email changed
+            // If it changed we set its active status to 0 and resend an email to confirm the new email it's his
+            if (foundCustomer.Email != updateCustomerDto.Email)
+            {
+                foundCustomer.Active = false;
+                foundCustomer.Email = updateCustomerDto.Email;
+
+                var baseUrl = Environment.GetEnvironmentVariable("URL_FRONT")
+                              ?? throw new KeyNotFoundException("L'url du front n'est pas disponible");
+
+                var guid = Guid.NewGuid();
+                var completeUrl = $"{baseUrl}/confirm-registration/{foundCustomer.Email}/{guid}";
+
+                var emailContent =
+                    $"Pour confirmer votre nouvelle adresse veuillez utiliser le lien suivant : {completeUrl}";
+                var emailSubject = "Changement d'email sur NegoSud";
+
+                await _emailSender.SendEmailAsync(foundCustomer.Email, emailSubject,
+                    emailContent);
+
+                foundCustomer.ValidationId = guid.ToString();
+            }
+
+            await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
+
+            // Removing useless properties for return
+            foundCustomer.Password = null;
+            foundCustomer.ValidationId = null;
+            return foundCustomer;
+        }
+
+        public async Task SoftDeleteCustomer(int customerId)
+        {
+            var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
+                                ?? throw new NullReferenceException("L'utilisateur est introuvable");
+            if (foundCustomer.DeletionTime != null)
+                throw new BadHttpRequestException("L'utilisateur est déjà supprimé");
+
+            var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
+                               ?? throw new NullReferenceException("L'adresse est introuvable");
+            if (foundAddress.DeletionTime != null)
+                throw new BadHttpRequestException("L'adresse est déjà supprimé");
+
+            var foundPassword = await _passwordRepository.FindAsync(foundCustomer.Password!.PasswordId)
+                                ?? throw new NullReferenceException(
+                                    "Le mot de passe associé à l'utilisateur est introuvable");
+            if (foundPassword.DeletionTime != null)
+                throw new BadHttpRequestException("Le mot de passe associé à l'utilisateur a été supprimé");
+
+            // Penser par la suite à mettre à jour ses reviews, commandes, panier etc...
+
+            // Update the password deletion time
+            foundPassword.DeletionTime = DateTime.UtcNow;
+            await _passwordRepository.UpdateAsync(foundPassword);
+
+            // Update the address deletion time
+            foundAddress.DeletionTime = DateTime.UtcNow;
+            await _addressRepository.UpdateAsync(foundAddress);
+
+            foundCustomer.DeletionTime = DateTime.UtcNow;
+            await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
         }
     }
 }
