@@ -1,7 +1,6 @@
 ﻿using MonApi.Shared.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using MonApi.Models;
 
 namespace MonApi.Shared.Repositories;
 

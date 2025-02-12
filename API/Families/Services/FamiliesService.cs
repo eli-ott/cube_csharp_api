@@ -16,16 +16,18 @@ namespace MonApi.API.Families.Services
             return await _familiesRepository.AddAsync(family);
         }
 
-        public async Task<Family> UpdateAsync(int id, Family renamedFamily)
+        public async Task<Family> UpdateAsync(int id, Family renamedfamily)
         {
-            renamedFamily.FamilyId = id;
-            Family model = await _familiesRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+            var family = await _familiesRepository.FindAsync(id);
+            if (family == null) throw new NullReferenceException("Family does not exist");
+            if (family.DeletionTime != null) throw new Exception("Family is deleted");
 
-            if (model.DeletionTime != null) throw new Exception("Family deleted");
+            family.Name = renamedfamily.Name;
 
-            await _familiesRepository.UpdateAsync(renamedFamily);
-            return renamedFamily;
+            await _familiesRepository.UpdateAsync(family);
+            return family;
         }
+
 
         public async Task<Family> FindById(int id)
         {
@@ -39,8 +41,6 @@ namespace MonApi.API.Families.Services
         public async Task<List<Family>> GetAll()
         {
             List<Family> families = await _familiesRepository.ListAsync();
-
-
             return families;
         }
 

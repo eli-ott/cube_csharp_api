@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MonApi.API.Families.Models;
+using MonApi.API.Suppliers.Models;
+using System;
 using System.Collections.Generic;
 
 namespace MonApi.Models;
