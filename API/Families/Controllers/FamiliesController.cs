@@ -51,8 +51,8 @@ public class FamiliesController : ControllerBase
     public async Task<IActionResult> UpdateFamily([FromRoute] int id, [FromBody] UpdateFamilyDTO updateFamilyDTO)
     {
         var familyToUpdate = updateFamilyDTO.MapToFamilyModel();
-        var isAdded = await _familiesService.UpdateAsync(id, familyToUpdate);
-        return Ok(isAdded);
+       
+        return Ok(await _familiesService.UpdateAsync(id, familyToUpdate));
     }
 
     [HttpDelete("{id}")]

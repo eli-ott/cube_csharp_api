@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Passwords.DTOs;
-using MonApi.Models;
 using MonApi.Shared.Data;
 
 namespace MonApi.API.Customers.Repositories
