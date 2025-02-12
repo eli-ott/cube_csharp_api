@@ -22,7 +22,7 @@ namespace MonApi.API.Customers.Extensions
             };
         }
         
-        public static Customer MapTocustomerMode(this ReturnCustomerDto customerDto)
+        public static Customer MapToCustomerModel(this ReturnCustomerDto customerDto)
         {
             return new Customer
             {
@@ -34,7 +34,8 @@ namespace MonApi.API.Customers.Extensions
                 Active = customerDto.Active,
                 ValidationId = customerDto.ValidationId!,
                 PasswordId = customerDto.Password!.PasswordId,
-                AddressId = customerDto.Address.AddressId
+                AddressId = customerDto.Address.AddressId,
+                DeletionTime = customerDto.DeletionTime
             };
         }
     }

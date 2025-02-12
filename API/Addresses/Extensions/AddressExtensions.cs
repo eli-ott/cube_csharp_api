@@ -13,7 +13,19 @@ public static class AddressExtensions
             City = addressDto.City,
             Country = addressDto.Country,
             ZipCode = addressDto.ZipCode,
-            Complement = addressDto.Complement,
+            Complement = addressDto.Complement
+        };
+    }
+
+    public static Address MapToAddressModel(this ReturnAddressDto addressDto)
+    {
+        return new Address
+        {
+            AddressLine = addressDto.AddressLine,
+            City = addressDto.City,
+            Country = addressDto.Country,
+            ZipCode = addressDto.ZipCode,
+            Complement = addressDto.Complement
         };
     }
 

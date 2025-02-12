@@ -16,6 +16,20 @@ public class CustomerController : ControllerBase
         _customersService = customersService;
     }
 
+    [Authorize]
+    [HttpGet]
+    public async Task<ActionResult<List<ReturnCustomerDto>>> GetCustomers()
+    {
+        return Ok(await _customersService.GetAllCustomers());
+    }
+
+    [Authorize]
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ReturnCustomerDto>> GetCustomer(int id)
+    {
+        return Ok(await _customersService.GetCustomerById(id));
+    }
+
     [AllowAnonymous]
     [HttpGet("confirm-registration/{email}/{guid}")]
     public async Task<ActionResult> ConfirmRegistration(string email, string guid)
@@ -47,6 +61,21 @@ public class CustomerController : ControllerBase
     public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
     {
         await _customersService.ResetPassword(resetPasswordDto);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ReturnCustomerDto>> UpdateCustomer(int id, UpdateCustomerDto updateCustomerDto)
+    {
+        return Ok(await _customersService.UpdateCustomer(id, updateCustomerDto));
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteCustomer(int id)
+    {
+        await _customersService.SoftDeleteCustomer(id);
         return Ok();
     }
 }
