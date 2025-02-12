@@ -49,6 +49,37 @@ namespace MonApi.API.Suppliers.Repositories
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
+        public async Task<List<ReturnSupplierDTO>> GetAll(CancellationToken cancellationToken = default)
+        {
+            return await _context.Suppliers
+                .Select(supplier => new ReturnSupplierDTO
+                {
+                    SupplierId = supplier.SupplierId,
+                    FirstName = supplier.FirstName,
+                    LastName = supplier.LastName,
+                    Email = supplier.Email,
+                    Contact = supplier.Contact,
+                    Phone = supplier.Phone,
+                    Siret = supplier.Siret,
+                    CreationTime = supplier.CreationTime,
+                    UpdateTime = supplier.UpdateTime,
+                    DeletionTime = supplier.DeletionTime,
+                    Address = new ReturnAddressDto
+                    {
+                        AddressId = supplier.Address.AddressId,
+                        AddressLine = supplier.Address.AddressLine,
+                        City = supplier.Address.City,
+                        Country = supplier.Address.Country,
+                        ZipCode = supplier.Address.ZipCode,
+                        Complement = supplier.Address.Complement,
+                        CreationTime = supplier.Address.CreationTime,
+                        UpdateTime = supplier.Address.UpdateTime,
+                        DeletionTime = supplier.Address.DeletionTime
+                    }
+                }).ToListAsync(cancellationToken);
+                
+        }
+
     }
 }
 

@@ -39,17 +39,19 @@ namespace MonApi.API.Suppliers.Services
 
         public async Task<ReturnSupplierDTO> UpdateAsync(int id, UpdateSupplierDTO modifiedSupplier)
         {
-            //Address address = await _addressesRepository.FindAsync(modifiedSupplier.Address.AddressId);
             Address address = modifiedSupplier.Address.MapToAddressModel();
+
 
 
             var model = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
             if (model.DeletionTime != null) throw new Exception("Supplier deleted");
-            
+
+            if (model.Address.AddressId != modifiedSupplier.Address.AddressId) throw new Exception("Address does not correspond to supplier address");
+
             await _addressesRepository.UpdateAsync(address);
             var supplier = modifiedSupplier.MapToSupplierModel(id, address);
-            
+
             await _suppliersRepository.UpdateAsync(supplier);
             ReturnSupplierDTO newModifiedSupplierDetails = await _suppliersRepository.FindAsync(id);
 
@@ -69,9 +71,9 @@ namespace MonApi.API.Suppliers.Services
         }
 
 
-        public async Task<List<Supplier>> GetAll()
+        public async Task<List<ReturnSupplierDTO>> GetAll()
         {
-            List<Supplier> suppliers = await _suppliersRepository.ListAsync();
+            List<ReturnSupplierDTO> suppliers = await _suppliersRepository.GetAll();
             return suppliers;
         }
 

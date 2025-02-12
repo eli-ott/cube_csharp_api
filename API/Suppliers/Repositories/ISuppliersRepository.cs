@@ -7,5 +7,6 @@ namespace MonApi.API.Suppliers.Repositories
     public interface ISuppliersRepository : IBaseRepository<Supplier>
     {
         Task<ReturnSupplierDTO?> FindAsync(int id, CancellationToken cancellationToken = default);
+        Task<List<ReturnSupplierDTO>> GetAll(CancellationToken cancellationToken = default);
     }
 }
