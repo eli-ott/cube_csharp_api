@@ -1,5 +1,6 @@
 ﻿using MonApi.API.Suppliers.DTOs;
-using MonApi.API.Suppliers.Models;
+using MonApi.API.Suppliers.Filters;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Suppliers.Services
 {
@@ -8,7 +9,7 @@ namespace MonApi.API.Suppliers.Services
         public Task<ReturnSupplierDTO> AddAsync(CreateSupplierDTO createSupplierDTO);
         public Task<ReturnSupplierDTO> UpdateAsync(int id, UpdateSupplierDTO modifiedSupplier);
         public Task<ReturnSupplierDTO> FindById(int id);
-        public Task<List<ReturnSupplierDTO>> GetAll();
+        public Task<PagedResult<ReturnSupplierDTO>> GetAll(SupplierQueryParameters queryParameters);
         public Task<ReturnSupplierDTO> SoftDeleteAsync(int id);
     }
 }
