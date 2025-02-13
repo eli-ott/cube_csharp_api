@@ -8,6 +8,7 @@ using MonApi.API.Suppliers.Extensions;
 using MonApi.API.Suppliers.Filters;
 using MonApi.API.Suppliers.Models;
 using MonApi.API.Suppliers.Repositories;
+using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Suppliers.Services
@@ -33,7 +34,7 @@ namespace MonApi.API.Suppliers.Services
             var supplier = createSupplierDTO.MapToSupplierModel(addedAdress);
 
             var newSupplier = await _suppliersRepository.AddAsync(supplier);
-            var newSupplierDetails = await _suppliersRepository.FindAsync(newSupplier.SupplierId);
+            var newSupplierDetails = await _suppliersRepository.FindAsync(newSupplier.SupplierId) ?? throw new KeyNotFoundException("Id not found");
 
 
             return newSupplierDetails;
@@ -47,7 +48,7 @@ namespace MonApi.API.Suppliers.Services
 
             var model = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
-            if (model.DeletionTime != null) throw new Exception("Supplier deleted");
+            if (model.DeletionTime != null) throw new SoftDeletedException("This supplier has been deleted.");
 
             if (model.Address.AddressId != modifiedSupplier.Address.AddressId) throw new Exception("Address does not correspond to supplier address");
 
@@ -55,7 +56,7 @@ namespace MonApi.API.Suppliers.Services
             var supplier = modifiedSupplier.MapToSupplierModel(id, address);
 
             await _suppliersRepository.UpdateAsync(supplier);
-            ReturnSupplierDTO newModifiedSupplierDetails = await _suppliersRepository.FindAsync(id);
+            ReturnSupplierDTO newModifiedSupplierDetails = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
 
             return newModifiedSupplierDetails;
@@ -67,7 +68,7 @@ namespace MonApi.API.Suppliers.Services
         {
             ReturnSupplierDTO supplier = await _suppliersRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
-            if (supplier.DeletionTime != null) throw new Exception("Supplier deleted");
+            if (supplier.DeletionTime != null) throw new SoftDeletedException("This supplier has been deleted.");
 
             return supplier;
         }
@@ -85,7 +86,7 @@ namespace MonApi.API.Suppliers.Services
                 ?? throw new KeyNotFoundException("Id not found");
 
             if (supplierDto.DeletionTime != null)
-                throw new Exception("Supplier already deleted");
+                throw new SoftDeletedException("This supplier has been deleted.");
 
             Address addressToMap = await _addressesRepository.FindAsync(supplierDto.Address.AddressId)
                 ?? throw new KeyNotFoundException("Address not found");

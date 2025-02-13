@@ -7,6 +7,7 @@ using MonApi.API.Products.Filters;
 using MonApi.API.Products.Models;
 using MonApi.API.Products.Repositories;
 using MonApi.API.Suppliers.Repositories;
+using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 using MonApi.API.Images.Repositories;
 using MonApi.Shared.Utils;
@@ -81,7 +82,7 @@ namespace MonApi.API.Products.Services
         public async Task<ReturnProductDTO> SoftDeleteAsync(int id)
         {
             Product product = await _productsRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
-            if (product.DeletionTime != null) throw new Exception("Product already deleted");
+            if (product.DeletionTime != null) throw new SoftDeletedException("This product has been deleted already.");
 
             var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
             var mappedImages = productImages.Select(x => new Image
