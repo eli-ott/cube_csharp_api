@@ -22,15 +22,15 @@ namespace MonApi.API.Products.Extensions
                 CartonPrice = product.CartonPrice,
                 Quantity = product.Quantity,
                 AutoRestock = product.AutoRestock,
-                AutoRestockTreshold = product.AutoRestockTreshold,
+                AutoRestockTreshold = product.AutoRestockTreshold ?? 0,
                 FamilyId = product.FamilyId,
                 SupplierId = product.SupplierId
             };
         }
 
-        public static ReturnProductDTO MapToProductReturnDTO(this Product product, Family family, ReturnSupplierDTO supplier)
+        public static Product MapToProductModel(this ReturnProductDTO product)
         {
-            return new ReturnProductDTO()
+            return new Product()
             {
                 Name = product.Name,
                 Cuvee = product.Cuvee,
@@ -42,6 +42,68 @@ namespace MonApi.API.Products.Extensions
                 Quantity = product.Quantity,
                 AutoRestock = product.AutoRestock,
                 AutoRestockTreshold = product.AutoRestockTreshold,
+                FamilyId = product.Family.FamilyId,
+                SupplierId = product.Supplier.SupplierId
+            };
+        }
+
+        public static Product MapToProductModel(this UpdateProductDTO product, int id)
+        {
+            return new Product()
+            {
+                ProductId = id,
+                Name = product.Name,
+                Cuvee = product.Cuvee,
+                Year = product.Year,
+                ProducerName = product.ProducerName,
+                IsBio = product.IsBio,
+                UnitPrice = product.UnitPrice,
+                CartonPrice = product.CartonPrice,
+                Quantity = product.Quantity,
+                AutoRestock = product.AutoRestock,
+                AutoRestockTreshold = product.AutoRestockTreshold,
+                FamilyId = product.FamilyId,
+                SupplierId = product.SupplierId
+
+            };
+        }
+
+        public static ReturnProductRestockDTO MapToRestockDTO(this Product product)
+        {
+            return new ReturnProductRestockDTO()
+            {
+                ProductId = product.ProductId,
+                AutoRestock = product.AutoRestock
+            };
+        }
+
+        public static ReturnProductBioDTO MapToBioDTO(this Product product)
+        {
+            return new ReturnProductBioDTO()
+            {
+                ProductId = product.ProductId,
+                IsBio = product.IsBio
+            };
+        }
+
+        public static ReturnProductDTO MapToProductReturnDTO(this Product product, Family family, ReturnSupplierDTO supplier)
+        {
+            return new ReturnProductDTO()
+            {
+                ProductId = product.ProductId,
+                Name = product.Name,
+                Cuvee = product.Cuvee,
+                Year = product.Year,
+                ProducerName = product.ProducerName,
+                IsBio = product.IsBio,
+                UnitPrice = product.UnitPrice,
+                CartonPrice = product.CartonPrice,
+                Quantity = product.Quantity,
+                AutoRestock = product.AutoRestock,
+                AutoRestockTreshold = product.AutoRestockTreshold,
+                DeletionTime = product.DeletionTime,
+                UpdateTime = product.UpdateTime,
+                CreationTime = product.CreationTime,
                 Family = family,
                 Supplier = supplier
             };

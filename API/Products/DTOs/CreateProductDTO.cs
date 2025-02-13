@@ -10,38 +10,38 @@ namespace MonApi.API.Products.DTOs
     {
         [Required]
         [StringLength(255)]
-        public string Name { get; set; } = null!;
+        public required string Name { get; set; } = null!;
 
         [Required]
         [StringLength(255)]
-        public string Cuvee { get; set; } = null!;
+        public required string Cuvee { get; set; } = null!;
 
         [Required]
-        public int Year { get; set; }
+        public required int Year { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string ProducerName { get; set; } = null!;
+        public required string ProducerName { get; set; } = null!;
 
         [Required]
-        public bool IsBio { get; set; }
+        public required bool IsBio { get; set; }
 
-        public float? UnitPrice { get; set; } //pas obligatoire mais doit avoir au moins un des deux type de prix
+        public float? UnitPrice { get; set; }
 
         public float? CartonPrice { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
 
         [Required]
-        public bool AutoRestock { get; set; }
+        public required bool AutoRestock { get; set; }
 
-        public int AutoRestockTreshold { get; set; } //optionnel seulement si l'auto restock est à false (quantité mini pour restock automatiquement)
-
-        [Required]
-        public int FamilyId { get; set; }
+        public int? AutoRestockTreshold { get; set; }
 
         [Required]
-        public int SupplierId { get; set; }
+        public required int FamilyId { get; set; }
+
+        [Required]
+        public required int SupplierId { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using MonApi.API.Addresses.Extensions;
+﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Families.Models;
@@ -32,6 +34,11 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
         {
+
+            if (productToCreate.UnitPrice == null && productToCreate.CartonPrice == null) throw new ArgumentException("At least one type of price is required");
+            if (productToCreate.AutoRestock && productToCreate.AutoRestockTreshold == null) throw new ArgumentException("Treshold is needed if the automatic restock is activated");
+            if (productToCreate.CartonPrice <= 0 || productToCreate.UnitPrice <= 0) throw new ArgumentException("The prices have to be superior to zero");
+            if (productToCreate.AutoRestockTreshold < 0) throw new ArgumentException("The restock treshold has to be superior to zero");
 
 
             Product product = productToCreate.MapToProductModel();
@@ -69,9 +76,34 @@ namespace MonApi.API.Products.Services
             return returnProductDTO;
         }
 
-        public async Task<Product> UpdateAsync(Product product)
+        public async Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO toUpdateProduct)
         {
-            return product;
+            Product productToModify = toUpdateProduct.MapToProductModel(id);
+            await _productsRepository.UpdateAsync(productToModify);
+            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId);
+            return modifiedProductDetails;
+        }
+
+        public async Task<ReturnProductRestockDTO> ToggleRestock(int id)
+        {
+            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
+            foundProduct.AutoRestock = !foundProduct.AutoRestock;
+
+            Product productToUpdate = foundProduct.MapToProductModel();
+            productToUpdate.ProductId = id;
+            await _productsRepository.UpdateAsync(productToUpdate);
+            return productToUpdate.MapToRestockDTO();
+        }
+
+        public async Task<ReturnProductBioDTO> ToggleIsBio(int id)
+        {
+            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
+            foundProduct.IsBio = !foundProduct.IsBio;
+
+            Product productToUpdate = foundProduct.MapToProductModel();
+            productToUpdate.ProductId = id;
+            await _productsRepository.UpdateAsync(productToUpdate);
+            return productToUpdate.MapToBioDTO();
         }
     }
 }
