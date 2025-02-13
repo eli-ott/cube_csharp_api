@@ -7,12 +7,14 @@ using MonApi.API.Families.Models;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Products.DTOs;
 using MonApi.API.Products.Extensions;
+using MonApi.API.Products.Filters;
 using MonApi.API.Products.Models;
 using MonApi.API.Products.Repositories;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Extensions;
 using MonApi.API.Suppliers.Models;
 using MonApi.API.Suppliers.Repositories;
+using MonApi.Shared.Pagination;
 using System.Diagnostics;
 
 namespace MonApi.API.Products.Services
@@ -53,9 +55,9 @@ namespace MonApi.API.Products.Services
             return addedProductDetails;
         }
 
-        public async Task<List<ReturnProductDTO>> GetAll()
+        public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters)
         {
-            var products = await _productsRepository.GetAll();
+            var products = await _productsRepository.GetAll(queryParameters);
             return products;
         }
 
