@@ -12,13 +12,13 @@ public class ImagesRepository : BaseRepository<Image>, IImagesRepository
     {
     }
 
-    public async Task AddRangeAsync(IEnumerable<Image> images, CancellationToken cancellationToken = default)
+    public async Task AddRangeAsync(List<Image> images, CancellationToken cancellationToken = default)
     {
         await _context.Set<Image>().AddRangeAsync(images, cancellationToken);
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task RemoveRangeAsync(IEnumerable<Image> images, CancellationToken cancellationToken = default)
+    public async Task RemoveRangeAsync(List<Image> images, CancellationToken cancellationToken = default)
     {
         _context.Set<Image>().RemoveRange(images);
         await _context.SaveChangesAsync(cancellationToken);

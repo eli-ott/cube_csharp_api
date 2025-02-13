@@ -20,7 +20,8 @@ namespace MonApi.API.Products.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync([FromBody] CreateProductDTO product)
+        [RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, MultipartBoundaryLengthLimit = int.MaxValue)]
+        public async Task<IActionResult> AddAsync([FromForm] CreateProductDTO product)
         {
             var returnedProduct = await _productService.AddAsync(product);
             return Ok(returnedProduct);
