@@ -1,5 +1,6 @@
 ﻿using MonApi.API.Addresses.Repositories;
 using MonApi.API.Families.Repositories;
+using MonApi.API.Images.Models;
 using MonApi.API.Products.DTOs;
 using MonApi.API.Products.Extensions;
 using MonApi.API.Products.Filters;
@@ -81,6 +82,19 @@ namespace MonApi.API.Products.Services
         {
             Product product = await _productsRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
             if (product.DeletionTime != null) throw new Exception("Product already deleted");
+
+            var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
+            var mappedImages = productImages.Select(x => new Image
+            {
+                ImageId = x.ImageId,
+                FormatType = x.FormatType
+            }).ToList();
+            
+            if (productImages.Count > 0)
+            {
+                ImageUtils.DeleteImageList(mappedImages);
+                await _imagesRepository.RemoveRangeAsync(mappedImages);
+            }
 
             product.DeletionTime = DateTime.UtcNow;
             await _productsRepository.UpdateAsync(product);
