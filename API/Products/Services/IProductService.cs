@@ -1,12 +1,14 @@
 ﻿using MonApi.API.Products.DTOs;
+using MonApi.API.Products.Filters;
 using MonApi.API.Products.Models;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Products.Services
 {
     public interface IProductService
     {
         Task<ReturnProductDTO> AddAsync(CreateProductDTO product);
-        Task<List<ReturnProductDTO>> GetAll();
+        Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters);
         Task<ReturnProductDTO> GetById(int id);
         Task<ReturnProductDTO> SoftDeleteAsync(int id);
         Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO updatedProduct);

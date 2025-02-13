@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Products.DTOs;
+using MonApi.API.Products.Filters;
 using MonApi.API.Products.Services;
 using MonApi.API.Suppliers.Services;
 using System.Diagnostics.CodeAnalysis;
@@ -20,17 +21,16 @@ namespace MonApi.API.Products.Controllers
         }
 
         [HttpPost]
-        [RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, MultipartBoundaryLengthLimit = int.MaxValue)]
-        public async Task<IActionResult> AddAsync([FromForm] CreateProductDTO product)
+        public async Task<ActionResult<ReturnProductDTO>> AddAsync([FromForm] CreateProductDTO product)
         {
             var returnedProduct = await _productService.AddAsync(product);
             return Ok(returnedProduct);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductQueryParameters queryParameters)
         {
-            var returnedProducts = await _productService.GetAll();
+            var returnedProducts = await _productService.GetAll(queryParameters);
             return Ok(returnedProducts);
         }
 

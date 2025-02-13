@@ -53,7 +53,5 @@ namespace MonApi.API.Products.DTOs
         public required ReturnSupplierDTO Supplier { get; set; }
         [Required]
         public required List<ReturnImageDto> Images { get; set; }
-
-
     }
 }
