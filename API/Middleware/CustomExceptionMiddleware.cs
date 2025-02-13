@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MonApi.Shared.Exceptions;
 
 
 namespace MonApi.API.Middleware
@@ -43,6 +44,8 @@ namespace MonApi.API.Middleware
                 KeyNotFoundException => (StatusCodes.Status404NotFound, "The requested resource was not found."),
 
                 UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized access."),
+
+                SoftDeletedException => (StatusCodes.Status410Gone, "The requested resource has been deleted."),
 
                 _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred.")
             };

@@ -2,6 +2,7 @@ using MonApi.API.Families.DTOs;
 using MonApi.API.Families.Filters;
 using MonApi.API.Families.Models;
 using MonApi.API.Families.Repositories;
+using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Families.Services
@@ -23,7 +24,7 @@ namespace MonApi.API.Families.Services
         {
             var family = await _familiesRepository.FindAsync(id);
             if (family == null) throw new NullReferenceException("Family does not exist");
-            if (family.DeletionTime != null) throw new Exception("Family is deleted");
+            if (family.DeletionTime != null) throw new SoftDeletedException("This family has been deleted.");
 
             family.Name = renamedfamily.Name;
 
@@ -36,7 +37,7 @@ namespace MonApi.API.Families.Services
         {
             Family family = await _familiesRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
-            if (family.DeletionTime != null) throw new Exception("Family deleted");
+            if (family.DeletionTime != null) throw new SoftDeletedException("This family has been deleted.");
 
             return family;
         }
@@ -52,7 +53,7 @@ namespace MonApi.API.Families.Services
         {
             Family model = await _familiesRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
 
-            if (model.DeletionTime != null) throw new Exception("Family already deleted");
+            if (model.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted already.");
 
             model.DeletionTime = DateTime.UtcNow;
             await _familiesRepository.UpdateAsync(model);
