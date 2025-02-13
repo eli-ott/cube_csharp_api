@@ -94,9 +94,27 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO toUpdateProduct)
         {
+            var imagesToUpload = toUpdateProduct.Images ?? new List<IFormFile>();
+
             Product productToModify = toUpdateProduct.MapToProductModel(id);
+
+            var currentImagesCount = await _imagesRepository.CountAsync(x => x.ProductId == productToModify.ProductId);
+
+            // If the total of the old and new images are bigger than 5
+            if (imagesToUpload.Count + currentImagesCount > 5)
+                throw new BadHttpRequestException("Vous pouvez ajouter 5 images au maximum");
+            
+            if (imagesToUpload.Count > 0)
+            {
+                var uploadedImages = await ImageUtils.AddImagesList(imagesToUpload, productToModify.ProductId);
+                await _imagesRepository.AddRangeAsync(uploadedImages);
+            }
+
             await _productsRepository.UpdateAsync(productToModify);
-            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId);
+            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId)
+                                                      ?? throw new NullReferenceException("Product not found");
+
+
             return modifiedProductDetails;
         }
 

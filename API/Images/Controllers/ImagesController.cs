@@ -18,14 +18,7 @@ public class ImagesController : ControllerBase
         _imagesService = imagesService;
     }
 
-    [HttpPost("upload")]
-    public async Task<ActionResult> UploadImages([FromForm] List<IFormFile> files, [FromForm] int productId)
-    {
-        await _imagesService.UploadImages(files, productId);
-        return Ok();
-    }
-
-    [HttpDelete("{id}")]
+    [HttpDelete("{imageId}")]
     public async Task<ActionResult> DeleteImage(string imageId)
     {
         await _imagesService.DeleteImage(imageId);

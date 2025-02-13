@@ -23,6 +23,10 @@ public static class ImageUtils
 
     public static async Task<List<Image>> AddImagesList(List<IFormFile> images, int productId)
     {
+        // We limit the upload to 5 images
+        if (images.Count > 5)
+            throw new BadHttpRequestException("Vous pouvez seulement ajouter 5 images");
+
         var uploadedImages = new List<Image>();
 
         var uploadDir = Environment.GetEnvironmentVariable("UPLOAD_DIR")

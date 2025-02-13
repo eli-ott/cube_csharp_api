@@ -15,17 +15,6 @@ public class ImagesService : IImagesService
         _imagesRepository = imagesRepository;
     }
 
-    public async Task UploadImages(List<IFormFile> images, int productId)
-    {
-        if (images == null || images.Count == 0) throw new BadHttpRequestException("Aucun fichier envoyé");
-
-        //TODO Check if the product exists
-
-        var uploadedImages = await ImageUtils.AddImagesList(images, productId);
-
-        await _imagesRepository.AddRangeAsync(uploadedImages);
-    }
-
     public async Task DeleteImage(string imageId)
     {
         var foundImage = await _imagesRepository.GetImageByIdAsync(imageId);

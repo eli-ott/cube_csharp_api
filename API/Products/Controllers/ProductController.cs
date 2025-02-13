@@ -14,9 +14,9 @@ namespace MonApi.API.Products.Controllers
     {
         private readonly IProductService _productService;
 
-        public ProductController(IProductService ProductService)
+        public ProductController(IProductService productService)
         {
-            _productService = ProductService;
+            _productService = productService;
         }
 
         [HttpPost]
@@ -49,7 +49,7 @@ namespace MonApi.API.Products.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] UpdateProductDTO toUpdateProduct)
+        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromForm] UpdateProductDTO toUpdateProduct)
         {
             ReturnProductDTO modifiedProduct = await _productService.UpdateAsync(id, toUpdateProduct);
             return Ok(modifiedProduct);
