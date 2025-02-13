@@ -13,6 +13,7 @@ using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
+using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 using MonApi.Shared.Utils;
 
@@ -147,11 +148,11 @@ namespace MonApi.API.Customers.Services
         {
             var customer = await _customersRepository.FindByEmailAsync(resetPasswordDto.Email)
                            ?? throw new NullReferenceException("L'utilisateur n'existe pas");
-            if (customer.DeletionTime != null) throw new BadHttpRequestException("L'utilisateur a été supprimé");
+            if (customer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             var password = await _passwordRepository.FindAsync(customer.Password!.PasswordId)
                            ?? throw new NullReferenceException("Le mot de passe à réinitialiser est introuvable");
-            if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
+            if (password.DeletionTime != null) throw new SoftDeletedException("This password has been deleted.");
 
             var passwordHash = PasswordUtils.HashPassword(resetPasswordDto.Password, out var salt);
 
@@ -167,7 +168,7 @@ namespace MonApi.API.Customers.Services
         {
             var customer = await _customersRepository.FindByEmailAsync(email)
                            ?? throw new NullReferenceException("Le clent n'éxiste pas");
-            if (customer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
+            if (customer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             if (customer.ValidationId != guid)
                 throw new BadHttpRequestException("Le guid n'est pas valide");
@@ -195,7 +196,7 @@ namespace MonApi.API.Customers.Services
         {
             var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
                                 ?? throw new NullReferenceException("Le client n'éxiste pas");
-            if (foundCustomer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
+            if (foundCustomer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             foundCustomer.LastName = updateCustomerDto.LastName;
             foundCustomer.FirstName = updateCustomerDto.FirstName;
@@ -204,7 +205,7 @@ namespace MonApi.API.Customers.Services
             var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
                                ?? throw new NullReferenceException("L'adresse relié à l'utilisateur est introuvable");
             if (foundAddress.DeletionTime != null)
-                throw new BadHttpRequestException("L'adresse relié à l'utilisateur a été supprimé");
+                throw new SoftDeletedException("This address has been deleted.");
 
             if (foundAddress.AddressId != updateCustomerDto.Address.AddressId)
                 throw new BadHttpRequestException("L'adresse ne correspond pas au client");
@@ -255,18 +256,18 @@ namespace MonApi.API.Customers.Services
             var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
                                 ?? throw new NullReferenceException("L'utilisateur est introuvable");
             if (foundCustomer.DeletionTime != null)
-                throw new BadHttpRequestException("L'utilisateur est déjà supprimé");
+                throw new SoftDeletedException("This customer has been deleted already.");
 
             var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
                                ?? throw new NullReferenceException("L'adresse est introuvable");
             if (foundAddress.DeletionTime != null)
-                throw new BadHttpRequestException("L'adresse est déjà supprimé");
+                throw new SoftDeletedException("This address has been deleted already.");
 
             var foundPassword = await _passwordRepository.FindAsync(foundCustomer.Password!.PasswordId)
                                 ?? throw new NullReferenceException(
                                     "Le mot de passe associé à l'utilisateur est introuvable");
             if (foundPassword.DeletionTime != null)
-                throw new BadHttpRequestException("Le mot de passe associé à l'utilisateur a été supprimé");
+                throw new SoftDeletedException("This password has been deleted already.");
 
             // Penser par la suite à mettre à jour ses reviews, commandes, panier etc...
 
