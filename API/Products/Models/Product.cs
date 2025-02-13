@@ -3,6 +3,7 @@ using MonApi.API.Suppliers.Models;
 using MonApi.Models;
 using System;
 using System.Collections.Generic;
+using MonApi.API.Images.Models;
 
 namespace MonApi.API.Products.Models;
 

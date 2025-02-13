@@ -64,7 +64,6 @@ namespace MonApi.API.Products.Extensions
                 AutoRestockTreshold = product.AutoRestockTreshold,
                 FamilyId = product.FamilyId,
                 SupplierId = product.SupplierId
-
             };
         }
 
@@ -83,29 +82,6 @@ namespace MonApi.API.Products.Extensions
             {
                 ProductId = product.ProductId,
                 IsBio = product.IsBio
-            };
-        }
-
-        public static ReturnProductDTO MapToProductReturnDTO(this Product product, Family family, ReturnSupplierDTO supplier)
-        {
-            return new ReturnProductDTO()
-            {
-                ProductId = product.ProductId,
-                Name = product.Name,
-                Cuvee = product.Cuvee,
-                Year = product.Year,
-                ProducerName = product.ProducerName,
-                IsBio = product.IsBio,
-                UnitPrice = product.UnitPrice,
-                CartonPrice = product.CartonPrice,
-                Quantity = product.Quantity,
-                AutoRestock = product.AutoRestock,
-                AutoRestockTreshold = product.AutoRestockTreshold,
-                DeletionTime = product.DeletionTime,
-                UpdateTime = product.UpdateTime,
-                CreationTime = product.CreationTime,
-                Family = family,
-                Supplier = supplier
             };
         }
     }

@@ -43,5 +43,6 @@ namespace MonApi.API.Products.DTOs
 
         [Required]
         public required int SupplierId { get; set; }
+        public List<IFormFile>? Images { get; set; }
     }
 }

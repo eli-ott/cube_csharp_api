@@ -2,6 +2,7 @@
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Models;
 using System.ComponentModel.DataAnnotations;
+using MonApi.API.Images.DTOs;
 
 namespace MonApi.API.Products.DTOs
 {
@@ -50,7 +51,7 @@ namespace MonApi.API.Products.DTOs
 
         [Required]
         public required ReturnSupplierDTO Supplier { get; set; }
-
-
+        [Required]
+        public required List<ReturnImageDto> Images { get; set; }
     }
 }

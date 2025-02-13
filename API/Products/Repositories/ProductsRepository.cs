@@ -6,6 +6,7 @@ using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.DTOs;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
+using MonApi.API.Images.DTOs;
 using MonApi.API.Products.Filters;
 using MonApi.Shared.Pagination;
 
@@ -13,13 +14,20 @@ namespace MonApi.API.Products.Repositories
 {
     public class ProductsRepository : BaseRepository<Product>, IProductsRepository
     {
+        private readonly string _apiPath;
+
         public ProductsRepository(StockManagementContext context) : base(context)
         {
+            var apiUrl = Environment.GetEnvironmentVariable("URL_API")
+                         ?? throw new NullReferenceException("URL_API is null");
+            var uploadDir = Environment.GetEnvironmentVariable("UPLOAD_DIR")
+                ?? throw new NullReferenceException("UPLOAD_DIR is null");
+            
+            _apiPath = apiUrl + uploadDir;
         }
 
         public async Task<ReturnProductDTO?> FindProduct(int id, CancellationToken cancellationToken = default)
         {
-
             return await _context.Products
                 .Where(p => p.ProductId == id)
                 .Select(product => new ReturnProductDTO
@@ -61,9 +69,17 @@ namespace MonApi.API.Products.Repositories
                             Country = product.Supplier.Address.Country,
                             Complement = product.Supplier.Address.Complement,
                         }
-                    }
+                    },
+                    Images = product.Images.Select(image => new ReturnImageDto
+                    {
+                        ImageId = image.ImageId,
+                        FormatType = image.FormatType,
+                        ImageUrl = _apiPath + image.ImageId + image.FormatType,
+                        CreationTime = image.CreationTime,
+                        UpdateTime = image.UpdateTime
+                    }).ToList()
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters, CancellationToken cancellationToken = default)
@@ -108,8 +124,15 @@ namespace MonApi.API.Products.Repositories
                             Country = product.Supplier.Address.Country,
                             Complement = product.Supplier.Address.Complement,
                         }
-
-                    }
+                    },
+                    Images = product.Images.Select(image => new ReturnImageDto
+                    {
+                        ImageId = image.ImageId,
+                        FormatType = image.FormatType,
+                        ImageUrl = _apiPath + image.ImageId + image.FormatType,
+                        CreationTime = image.CreationTime,
+                        UpdateTime = image.UpdateTime,
+                    }).ToList()
                 });
 
             // Apply filters

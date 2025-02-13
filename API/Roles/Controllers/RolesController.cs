@@ -3,6 +3,7 @@ using MonApi.API.Roles.Services;
 using MonApi.API.Roles.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using MonApi.API.Roles.Extensions;
+using MonApi.API.Roles.Filters;
 
 namespace MonApi.API.Roles.Controllers;
 
@@ -20,9 +21,9 @@ public class RolesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllRoles()
+    public async Task<IActionResult> GetAllRoles([FromQuery] RoleQueryParameters queryParameters)
     {
-        var roles = await _roleService.GetAllRolesAsync();
+        var roles = await _roleService.GetAllRolesAsync(queryParameters);
         return Ok(roles);
     }
     
