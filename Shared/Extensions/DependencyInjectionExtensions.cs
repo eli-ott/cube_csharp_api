@@ -61,10 +61,10 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IAddressRepository, AddressRepository>();
             builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
-            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
             builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
             builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

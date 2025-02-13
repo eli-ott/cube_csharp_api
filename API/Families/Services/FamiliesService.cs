@@ -1,5 +1,7 @@
+using MonApi.API.Families.Filters;
 using MonApi.API.Families.Models;
 using MonApi.API.Families.Repositories;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Families.Services
 {
@@ -38,9 +40,9 @@ namespace MonApi.API.Families.Services
             return family;
         }
 
-        public async Task<List<Family>> GetAll()
+        public async Task<PagedResult<Family>> GetAll(FamilyQueryParameters familyQueryParameters)
         {
-            List<Family> families = await _familiesRepository.ListAsync();
+            PagedResult<Family> families = await _familiesRepository.GetPagedFamiliesAsync(familyQueryParameters);
             return families;
         }
 

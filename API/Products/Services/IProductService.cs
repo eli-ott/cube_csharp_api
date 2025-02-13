@@ -9,6 +9,8 @@ namespace MonApi.API.Products.Services
         Task<List<ReturnProductDTO>> GetAll();
         Task<ReturnProductDTO> GetById(int id);
         Task<ReturnProductDTO> SoftDeleteAsync(int id);
-        Task<Product> UpdateAsync(Product product);
+        Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO updatedProduct);
+        Task<ReturnProductRestockDTO> ToggleRestock(int id);
+        Task<ReturnProductBioDTO> ToggleIsBio(int id);
     }
 }

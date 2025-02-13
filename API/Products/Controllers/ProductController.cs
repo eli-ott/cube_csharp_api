@@ -46,5 +46,26 @@ namespace MonApi.API.Products.Controllers
             var test = await _productService.SoftDeleteAsync(id);
             return Ok(test);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] UpdateProductDTO toUpdateProduct)
+        {
+            ReturnProductDTO modifiedProduct = await _productService.UpdateAsync(id, toUpdateProduct);
+            return Ok(modifiedProduct);
+        }
+
+        [HttpPut("{id}/toggle-restock")]
+        public async Task<IActionResult> ToggleAutoRestock([FromRoute] int id)
+        {
+            ReturnProductRestockDTO toggleProduct = await _productService.ToggleRestock(id);
+            return Ok(toggleProduct);
+        }
+
+        [HttpPut("{id}/toggle-bio")]
+        public async Task<IActionResult> ToggleBio([FromRoute] int id)
+        {
+            ReturnProductBioDTO toggleProduct = await _productService.ToggleIsBio(id);
+            return Ok(toggleProduct);
+        }
     }
 }

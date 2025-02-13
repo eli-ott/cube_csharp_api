@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using MonApi.API.Families.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using MonApi.API.Families.Filters;
 
 namespace MonApi.API.Families.Controllers;
 
@@ -24,9 +25,9 @@ public class FamiliesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllFamilies()
+    public async Task<IActionResult> GetAllFamilies([FromQuery] FamilyQueryParameters queryParameters)
     {
-        var families = await _familiesService.GetAll();
+        var families = await _familiesService.GetAll(queryParameters);
         return Ok(families);
     }
 

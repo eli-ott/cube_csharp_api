@@ -13,7 +13,7 @@ public static class AddressExtensions
             City = addressDto.City,
             Country = addressDto.Country,
             ZipCode = addressDto.ZipCode,
-            Complement = addressDto.Complement,
+            Complement = addressDto.Complement
         };
     }
 
