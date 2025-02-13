@@ -1,5 +1,8 @@
+using MonApi.API.Roles.DTOs;
+using MonApi.API.Roles.Filters;
 using MonApi.API.Roles.Models;
 using MonApi.API.Roles.Repositories;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Roles.Services;
 
@@ -17,15 +20,15 @@ public class RoleService : IRoleService
         return await _roleRepository.AddAsync(role);
     }
 
-    public async Task<List<Role>> GetAllRolesAsync()
+    public async Task<PagedResult<ReturnRoleDTO>> GetAllRolesAsync(RoleQueryParameters queryParameters)
     {
-        List<Role> roles = await _roleRepository.ListAsync();
+        PagedResult<ReturnRoleDTO> roles = await _roleRepository.GetAll(queryParameters);
         return roles;
     }
 
     public async Task<Role> GetRoleByIdAsync(int roleId)
     {
-        Role role = await _roleRepository.FindAsync(roleId) ?? throw new Exception("Role not found");
+        Role role = await _roleRepository.FindAsync(roleId) ?? throw new KeyNotFoundException("Role not found");
         
         if (role.DeletionTime != null) throw new Exception("Role deleted");
 

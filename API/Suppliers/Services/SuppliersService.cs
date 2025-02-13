@@ -5,8 +5,10 @@ using MonApi.API.Addresses.Models;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Extensions;
+using MonApi.API.Suppliers.Filters;
 using MonApi.API.Suppliers.Models;
 using MonApi.API.Suppliers.Repositories;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Suppliers.Services
 {
@@ -71,9 +73,9 @@ namespace MonApi.API.Suppliers.Services
         }
 
 
-        public async Task<List<ReturnSupplierDTO>> GetAll()
+        public async Task<PagedResult<ReturnSupplierDTO>> GetAll(SupplierQueryParameters queryParameters)
         {
-            List<ReturnSupplierDTO> suppliers = await _suppliersRepository.GetAll();
+            PagedResult<ReturnSupplierDTO> suppliers = await _suppliersRepository.GetAll(queryParameters);
             return suppliers;
         }
 

@@ -9,9 +9,11 @@ using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Extensions;
+using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
+using MonApi.Shared.Pagination;
 using MonApi.Shared.Utils;
 
 namespace MonApi.API.Customers.Services
@@ -172,13 +174,13 @@ namespace MonApi.API.Customers.Services
 
             customer.Active = true;
             var customerModel = customer.MapToCustomerModel();
-            Console.WriteLine(JsonSerializer.Serialize(customerModel));
+            
             await _customersRepository.UpdateAsync(customerModel);
         }
 
-        public async Task<List<ReturnCustomerDto>> GetAllCustomers()
+        public async Task<PagedResult<ReturnCustomerDto>> GetAllCustomers(CustomerQueryParameters queryParameters)
         {
-            return await _customersRepository.ListAsync();
+            return await _customersRepository.ListAsync(queryParameters);
         }
 
         public async Task<ReturnCustomerDto> GetCustomerById(int customerId)

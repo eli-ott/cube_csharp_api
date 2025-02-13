@@ -22,8 +22,6 @@ public class PasswordService : IPasswordService
         if (password == null) throw new NullReferenceException("Le mot de passe est introuvable");
         if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
 
-        Console.WriteLine(JsonSerializer.Serialize(password));
-
         var previousPasswordValid = PasswordUtils.VerifyPassword(
             passwordDto.PreviousPassword,
             password.PasswordHash,

@@ -1,7 +1,9 @@
 using MonApi.API.Statuses.DTOs;
 using MonApi.API.Statuses.Extensions;
+using MonApi.API.Statuses.Filters;
 using MonApi.API.Statuses.Models;
 using MonApi.API.Statuses.Repositories;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Statuses.Services;
 
@@ -14,9 +16,9 @@ public class StatusService : IStatusService
         _statusRepository = statusRepository;
     }
 
-    public async Task<List<ReturnStatusDto>> GetStatusesAsync()
+    public async Task<PagedResult<ReturnStatusDto>> GetStatusesAsync(StatusQueryParameters queryParameters)
     {
-        return await _statusRepository.GetAllStatusesAsync();
+        return await _statusRepository.GetAllStatusesAsync(queryParameters);
     }
 
     public async Task<ReturnStatusDto> GetStatusByIdAsync(int statusId)
