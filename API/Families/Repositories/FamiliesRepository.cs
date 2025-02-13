@@ -4,6 +4,7 @@ using MonApi.Shared.Data;
 using MonApi.Shared.Pagination;
 using MonApi.API.Families.Filters;
 using Microsoft.EntityFrameworkCore;
+using MonApi.API.Families.DTOs;
 
 namespace MonApi.API.Families.Repositories
 {
@@ -13,9 +14,9 @@ namespace MonApi.API.Families.Repositories
         {
         }
 
-        public async Task<PagedResult<Family>> GetPagedFamiliesAsync(FamilyQueryParameters queryParameters)
+        public async Task<PagedResult<ReturnFamilyDTO>> GetPagedFamiliesAsync(FamilyQueryParameters queryParameters)
         {
-            IQueryable<Family> query = _context.Families;
+            IQueryable<ReturnFamilyDTO> query = from family in _context.Families select new ReturnFamilyDTO { FamilyId = family.FamilyId, Name = family.Name, DeletionTime = family.DeletionTime }; ;
 
             if(queryParameters.deleted == "only")
             {
@@ -40,7 +41,7 @@ namespace MonApi.API.Families.Repositories
                 .ToListAsync();
 
             // Return the paginated result
-            return new PagedResult<Family>
+            return new PagedResult<ReturnFamilyDTO>
             {
                 Items = families,
                 CurrentPage = queryParameters.page,

@@ -1,3 +1,4 @@
+using MonApi.API.Families.DTOs;
 using MonApi.API.Families.Filters;
 using MonApi.API.Families.Models;
 using MonApi.API.Families.Repositories;
@@ -40,9 +41,9 @@ namespace MonApi.API.Families.Services
             return family;
         }
 
-        public async Task<PagedResult<Family>> GetAll(FamilyQueryParameters familyQueryParameters)
+        public async Task<PagedResult<ReturnFamilyDTO>> GetAll(FamilyQueryParameters familyQueryParameters)
         {
-            PagedResult<Family> families = await _familiesRepository.GetPagedFamiliesAsync(familyQueryParameters);
+            PagedResult<ReturnFamilyDTO> families = await _familiesRepository.GetPagedFamiliesAsync(familyQueryParameters);
             return families;
         }
 
