@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Customers.DTOs;
+using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Services;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Customers.Controllers;
 
@@ -18,9 +20,9 @@ public class CustomerController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<ReturnCustomerDto>>> GetCustomers()
+    public async Task<ActionResult<PagedResult<ReturnCustomerDto>>> GetCustomers([FromQuery] CustomerQueryParameters queryParameters)
     {
-        return Ok(await _customersService.GetAllCustomers());
+        return Ok(await _customersService.GetAllCustomers(queryParameters));
     }
 
     [Authorize]
