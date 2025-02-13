@@ -1,10 +1,11 @@
 ﻿using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.Models;
+using MonApi.Models;
 using System;
 using System.Collections.Generic;
 using MonApi.API.Images.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Products.Models;
 
 public partial class Product
 {

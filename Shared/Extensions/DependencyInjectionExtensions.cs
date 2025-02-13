@@ -22,6 +22,8 @@ using MonApi.Shared.Data;
 using MonApi.Shared.Utils;
 using MonApi.API.Suppliers.Repositories;
 using MonApi.API.Suppliers.Services;
+using MonApi.API.Products.Repositories;
+using MonApi.API.Products.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -47,6 +49,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IImagesService, ImagesService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             
         }
@@ -61,6 +64,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
             builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
+            builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

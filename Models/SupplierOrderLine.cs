@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonApi.API.Products.Models;
 
 namespace MonApi.Models;
 
