@@ -47,7 +47,8 @@ namespace MonApi.API.Products.Services
             var family = await _familiesRepository.FindAsync(product.FamilyId) ?? throw new KeyNotFoundException("Family Id not found");
             var returnedSupplier = await _suppliersRepository.FindAsync(product.SupplierId) ?? throw new KeyNotFoundException("Supplier Id not found");
 
-            var addedProductDetails = await _productsRepository.FindProduct(newProductDetails.ProductId);
+            var addedProductDetails = await _productsRepository.FindProduct(newProductDetails.ProductId) 
+                ?? throw new KeyNotFoundException("Product not found");
 
             return addedProductDetails;
         }
@@ -60,7 +61,9 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> GetById(int id)
         {
-            ReturnProductDTO returnedProduct = await _productsRepository.FindProduct(id);
+            ReturnProductDTO returnedProduct = await _productsRepository.FindProduct(id) 
+                ?? throw new KeyNotFoundException("Product not found");
+
             return returnedProduct;
         }
 
@@ -70,8 +73,9 @@ namespace MonApi.API.Products.Services
             if (product.DeletionTime != null) throw new Exception("Product already deleted");
 
             product.DeletionTime = DateTime.UtcNow;
-            _productsRepository.UpdateAsync(product);
-            ReturnProductDTO returnProductDTO = await _productsRepository.FindProduct(product.ProductId);
+            await _productsRepository.UpdateAsync(product);
+            ReturnProductDTO returnProductDTO = await _productsRepository.FindProduct(product.ProductId)
+                ?? throw new KeyNotFoundException("Product not found");
 
             return returnProductDTO;
         }
@@ -80,7 +84,10 @@ namespace MonApi.API.Products.Services
         {
             Product productToModify = toUpdateProduct.MapToProductModel(id);
             await _productsRepository.UpdateAsync(productToModify);
-            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId);
+
+            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId) 
+                ?? throw new KeyNotFoundException("Product not found");
+
             return modifiedProductDetails;
         }
 
