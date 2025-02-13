@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonApi.API.Products.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Images.Models;
 
 public partial class Image
 {

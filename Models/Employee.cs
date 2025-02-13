@@ -1,6 +1,8 @@
 ﻿using MonApi.API.Passwords.Models;
 using System;
 using System.Collections.Generic;
+using MonApi.API.Passwords.Models;
+using MonApi.API.Roles.Models;
 
 namespace MonApi.Models;
 

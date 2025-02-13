@@ -1,4 +1,4 @@
-﻿using MonApi.Models;
+﻿using MonApi.API.Products.Models;
 using System;
 using System.Collections.Generic;
 

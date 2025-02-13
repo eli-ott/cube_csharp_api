@@ -3,6 +3,7 @@ using System.Text.Json;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Repositories;
+using MonApi.Shared.Exceptions;
 using MonApi.Shared.Utils;
 
 namespace MonApi.API.Passwords.Services;
@@ -20,9 +21,7 @@ public class PasswordService : IPasswordService
     {
         var password = await _passwordRepository.FindAsync(id);
         if (password == null) throw new NullReferenceException("Le mot de passe est introuvable");
-        if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
-
-        Console.WriteLine(JsonSerializer.Serialize(password));
+        if (password.DeletionTime != null) throw new SoftDeletedException("This password has been deleted.");
 
         var previousPasswordValid = PasswordUtils.VerifyPassword(
             passwordDto.PreviousPassword,

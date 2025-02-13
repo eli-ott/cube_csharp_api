@@ -131,7 +131,7 @@ CREATE TABLE IF NOT EXISTS product(
     producer_name VARCHAR(255) NOT NULL,
     is_bio BOOLEAN NOT NULL DEFAULT 0,
     unit_price FLOAT,
-    carton_price FLOAT,
+    box_price FLOAT,
     quantity INT NOT NULL,
     auto_restock BOOLEAN NOT NULL DEFAULT 0,
     auto_restock_treshold INT NOT NULL DEFAULT 0,
