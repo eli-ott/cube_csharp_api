@@ -18,6 +18,8 @@ using MonApi.Shared.Data;
 using MonApi.Shared.Utils;
 using MonApi.API.Suppliers.Repositories;
 using MonApi.API.Suppliers.Services;
+using MonApi.API.Products.Repositories;
+using MonApi.API.Products.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -41,6 +43,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IFamiliesService, FamiliesService>();
             builder.Services.AddScoped<IStatusService, StatusService>();
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             
         }
@@ -53,6 +56,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
+            builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
 
         }
 

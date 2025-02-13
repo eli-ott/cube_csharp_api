@@ -1,4 +1,5 @@
-﻿using MonApi.API.Addresses.Models;
+﻿using MonApi.API.Addresses.DTOs;
+using MonApi.API.Addresses.Models;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Models;
 
@@ -49,6 +50,7 @@ namespace MonApi.API.Suppliers.Extensions
                 AddressId = address.AddressId
             };
         }
+
 
     }
 }

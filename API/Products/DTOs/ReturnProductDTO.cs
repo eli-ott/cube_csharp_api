@@ -8,32 +8,32 @@ namespace MonApi.API.Products.DTOs
     public class ReturnProductDTO
     {
         [Required]
-        public int ProductId { get; set; }
+        public required int ProductId { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Name { get; set; } = null!;
+        public required string Name { get; set; } = null!;
 
         [Required]
         [StringLength(255)]
-        public string Cuvee { get; set; } = null!;
+        public required string Cuvee { get; set; } = null!;
 
         [Required]
-        public int Year { get; set; }
+        public required int Year { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string ProducerName { get; set; } = null!;
+        public required string ProducerName { get; set; } = null!;
 
         [Required]
-        public bool IsBio { get; set; }
+        public required bool IsBio { get; set; }
 
         public float? UnitPrice { get; set; } //pas obligatoire mais doit avoir au moins un des deux type de prix
 
         public float? CartonPrice { get; set; }
 
         [Required]
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
 
         public bool AutoRestock { get; set; }
 
@@ -46,10 +46,10 @@ namespace MonApi.API.Products.DTOs
         public DateTime CreationTime { get; set; }
 
         [Required]
-        public Family Family { get; set; } = null!;
+        public required Family Family { get; set; } = null!;
 
         [Required]
-        public ReturnSupplierDTO Supplier { get; set; }
+        public required ReturnSupplierDTO Supplier { get; set; }
 
 
     }
