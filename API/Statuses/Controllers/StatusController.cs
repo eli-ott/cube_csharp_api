@@ -1,13 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Statuses.DTOs;
+using MonApi.API.Statuses.Filters;
 using MonApi.API.Statuses.Services;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Statuses.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("status")]
+[Route("statuses")]
 public class StatusController : ControllerBase
 {
     private readonly IStatusService _statusService;
@@ -18,9 +20,9 @@ public class StatusController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ReturnStatusDto>>> GetAll()
+    public async Task<ActionResult<PagedResult<ReturnStatusDto>>> GetAll([FromQuery] StatusQueryParameters queryParameters)
     {
-        return Ok(await _statusService.GetStatusesAsync());
+        return Ok(await _statusService.GetStatusesAsync(queryParameters));
     }
 
     [HttpGet("{id}")]

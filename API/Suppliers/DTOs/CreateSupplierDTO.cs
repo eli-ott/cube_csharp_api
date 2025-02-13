@@ -8,31 +8,31 @@ namespace MonApi.API.Suppliers.DTOs
     {
         [Required]
         [StringLength(255)]
-        public string LastName { get; set; }
+        public required string LastName { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string FirstName { get; set; }
+        public required string FirstName { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Contact { get; set; }
+        public required string Contact { get; set; }
 
         [Required]
         [StringLength(255)]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [StringLength(15)]
         [Phone]
-        public string Phone { get; set; }
+        public required string Phone { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Siret { get; set; }
+        public required string Siret { get; set; }
 
         [Required]
-        public CreateAddressDto Address { get; set; }
+        public required CreateAddressDto Address { get; set; }
     }
 }
