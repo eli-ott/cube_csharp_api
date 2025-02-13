@@ -1,34 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using MonApi.API.Addresses.Extensions;
-using MonApi.API.Addresses.Models;
-using MonApi.API.Addresses.Repositories;
-using MonApi.API.Families.Models;
+﻿using MonApi.API.Addresses.Repositories;
 using MonApi.API.Families.Repositories;
+using MonApi.API.Images.Models;
 using MonApi.API.Products.DTOs;
 using MonApi.API.Products.Extensions;
 using MonApi.API.Products.Filters;
 using MonApi.API.Products.Models;
 using MonApi.API.Products.Repositories;
-using MonApi.API.Suppliers.DTOs;
-using MonApi.API.Suppliers.Extensions;
-using MonApi.API.Suppliers.Models;
 using MonApi.API.Suppliers.Repositories;
 using MonApi.Shared.Pagination;
-using System.Diagnostics;
+using MonApi.API.Images.Repositories;
+using MonApi.Shared.Utils;
 
 namespace MonApi.API.Products.Services
 {
     public class ProductService : IProductService
     {
         private readonly IProductsRepository _productsRepository;
-        private readonly IAddressRepository _addressesRepository;
+        private readonly IImagesRepository _imagesRepository;
         private readonly IFamiliesRepository _familiesRepository;
         private readonly ISuppliersRepository _suppliersRepository;
 
-        public ProductService(ISuppliersRepository suppliersRepository, IAddressRepository addressesRepository, IFamiliesRepository familiesRepository, IProductsRepository productsRepository)
+        public ProductService(ISuppliersRepository suppliersRepository, IAddressRepository addressesRepository,
+            IFamiliesRepository familiesRepository, IProductsRepository productsRepository,
+            IImagesRepository imagesRepository)
         {
-            _addressesRepository = addressesRepository;
+            _imagesRepository = imagesRepository;
             _suppliersRepository = suppliersRepository;
             _productsRepository = productsRepository;
             _familiesRepository = familiesRepository;
@@ -36,23 +32,36 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
         {
+            if (productToCreate.UnitPrice == null && productToCreate.CartonPrice == null)
+                throw new ArgumentException("At least one type of price is required");
+            if (productToCreate.AutoRestock && productToCreate.AutoRestockTreshold == null)
+                throw new ArgumentException("Treshold is needed if the automatic restock is activated");
+            if (productToCreate.CartonPrice <= 0 || productToCreate.UnitPrice <= 0)
+                throw new ArgumentException("The prices have to be superior to zero");
+            if (productToCreate.AutoRestockTreshold < 0)
+                throw new ArgumentException("The restock treshold has to be superior to zero");
 
-            if (productToCreate.UnitPrice == null && productToCreate.CartonPrice == null) throw new ArgumentException("At least one type of price is required");
-            if (productToCreate.AutoRestock && productToCreate.AutoRestockTreshold == null) throw new ArgumentException("Treshold is needed if the automatic restock is activated");
-            if (productToCreate.CartonPrice <= 0 || productToCreate.UnitPrice <= 0) throw new ArgumentException("The prices have to be superior to zero");
-            if (productToCreate.AutoRestockTreshold < 0) throw new ArgumentException("The restock treshold has to be superior to zero");
-
+            var imagesToUpload = productToCreate.Images ?? new List<IFormFile>();
 
             Product product = productToCreate.MapToProductModel();
 
             var newProductDetails = await _productsRepository.AddAsync(product);
-            var family = await _familiesRepository.FindAsync(product.FamilyId) ?? throw new KeyNotFoundException("Family Id not found");
-            var returnedSupplier = await _suppliersRepository.FindAsync(product.SupplierId) ?? throw new KeyNotFoundException("Supplier Id not found");
+            var family = await _familiesRepository.FindAsync(product.FamilyId) ??
+                         throw new KeyNotFoundException("Family Id not found");
+            var returnedSupplier = await _suppliersRepository.FindAsync(product.SupplierId) ??
+                                   throw new KeyNotFoundException("Supplier Id not found");
 
-            var addedProductDetails = await _productsRepository.FindProduct(newProductDetails.ProductId) 
-                ?? throw new KeyNotFoundException("Product not found");
+            if (imagesToUpload.Count > 0)
+            {
+                var uploadedImages = await ImageUtils.AddImagesList(imagesToUpload, newProductDetails.ProductId);
+                await _imagesRepository.AddRangeAsync(uploadedImages);
+            }
 
-            return addedProductDetails;
+            var addedProductDetails = await _productsRepository.FindProduct(newProductDetails.ProductId)
+                                      ?? throw new KeyNotFoundException("Product not found");
+
+
+            return addedProductDetails!;
         }
 
         public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters)
@@ -63,8 +72,8 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> GetById(int id)
         {
-            ReturnProductDTO returnedProduct = await _productsRepository.FindProduct(id) 
-                ?? throw new KeyNotFoundException("Product not found");
+            ReturnProductDTO returnedProduct = await _productsRepository.FindProduct(id)
+                                               ?? throw new KeyNotFoundException("Product not found");
 
             return returnedProduct;
         }
@@ -74,28 +83,57 @@ namespace MonApi.API.Products.Services
             Product product = await _productsRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
             if (product.DeletionTime != null) throw new Exception("Product already deleted");
 
+            var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
+            var mappedImages = productImages.Select(x => new Image
+            {
+                ImageId = x.ImageId,
+                FormatType = x.FormatType
+            }).ToList();
+            
+            if (productImages.Count > 0)
+            {
+                ImageUtils.DeleteImageList(mappedImages);
+                await _imagesRepository.RemoveRangeAsync(mappedImages);
+            }
+
             product.DeletionTime = DateTime.UtcNow;
             await _productsRepository.UpdateAsync(product);
             ReturnProductDTO returnProductDTO = await _productsRepository.FindProduct(product.ProductId)
-                ?? throw new KeyNotFoundException("Product not found");
+                                                ?? throw new KeyNotFoundException("Product not found");
 
             return returnProductDTO;
         }
 
         public async Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO toUpdateProduct)
         {
+            var imagesToUpload = toUpdateProduct.Images ?? new List<IFormFile>();
+
             Product productToModify = toUpdateProduct.MapToProductModel(id);
+
+            var currentImagesCount = await _imagesRepository.CountAsync(x => x.ProductId == productToModify.ProductId);
+
+            // If the total of the old and new images are bigger than 5
+            if (imagesToUpload.Count + currentImagesCount > 5)
+                throw new BadHttpRequestException("Vous pouvez ajouter 5 images au maximum");
+
+            if (imagesToUpload.Count > 0)
+            {
+                var uploadedImages = await ImageUtils.AddImagesList(imagesToUpload, productToModify.ProductId);
+                await _imagesRepository.AddRangeAsync(uploadedImages);
+            }
+
             await _productsRepository.UpdateAsync(productToModify);
 
-            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId) 
-                ?? throw new KeyNotFoundException("Product not found");
+            ReturnProductDTO modifiedProductDetails = await _productsRepository.FindProduct(productToModify.ProductId)
+                                                      ?? throw new KeyNotFoundException("Product not found");
 
             return modifiedProductDetails;
         }
 
         public async Task<ReturnProductRestockDTO> ToggleRestock(int id)
         {
-            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
+            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ??
+                                            throw new KeyNotFoundException("Id not found");
             foundProduct.AutoRestock = !foundProduct.AutoRestock;
 
             Product productToUpdate = foundProduct.MapToProductModel();
@@ -106,7 +144,8 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductBioDTO> ToggleIsBio(int id)
         {
-            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
+            ReturnProductDTO foundProduct = await _productsRepository.FindProduct(id) ??
+                                            throw new KeyNotFoundException("Id not found");
             foundProduct.IsBio = !foundProduct.IsBio;
 
             Product productToUpdate = foundProduct.MapToProductModel();
