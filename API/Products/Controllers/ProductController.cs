@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Products.DTOs;
+using MonApi.API.Products.Filters;
 using MonApi.API.Products.Services;
 using MonApi.API.Suppliers.Services;
 using System.Diagnostics.CodeAnalysis;
@@ -27,9 +28,9 @@ namespace MonApi.API.Products.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] ProductQueryParameters queryParameters)
         {
-            var returnedProducts = await _productService.GetAll();
+            var returnedProducts = await _productService.GetAll(queryParameters);
             return Ok(returnedProducts);
         }
 

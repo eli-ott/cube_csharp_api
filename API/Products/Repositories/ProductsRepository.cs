@@ -6,6 +6,8 @@ using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.DTOs;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
+using MonApi.API.Products.Filters;
+using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Products.Repositories
 {
@@ -64,9 +66,9 @@ namespace MonApi.API.Products.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<ReturnProductDTO>> GetAll(CancellationToken cancellationToken = default)
+        public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters, CancellationToken cancellationToken = default)
         {
-            return await _context.Products
+            IQueryable<ReturnProductDTO> query = _context.Products
                 .Select(product => new ReturnProductDTO
                 {
                     ProductId = product.ProductId,
@@ -108,7 +110,63 @@ namespace MonApi.API.Products.Repositories
                         }
 
                     }
-                }).ToListAsync();
+                });
+
+            // Apply filters
+            if (queryParameters.year != null)
+            {
+                query = query.Where(p => p.Year == queryParameters.year);
+            }
+            if (queryParameters.is_bio != null)
+            {
+                query = query.Where(p => p.IsBio == queryParameters.is_bio);
+            }
+            if (queryParameters.price_min != null)
+            {
+                query = query.Where(p => p.UnitPrice >= queryParameters.price_min);
+            }
+            if (queryParameters.price_max != null)
+            {
+                query = query.Where(p => p.UnitPrice <= queryParameters.price_max);
+            }
+            if (queryParameters.family_id != null)
+            {
+                query = query.Where(p => p.Family.FamilyId == queryParameters.family_id);
+            }
+            if (queryParameters.supplier_id != null)
+            {
+                query = query.Where(p => p.Supplier.SupplierId == queryParameters.supplier_id);
+            }
+
+            // deleted=all, deleted=only, deleted=none
+            if (queryParameters.deleted == "only")
+            {
+                query = query.Where(f => f.DeletionTime != null);
+            }
+            else if (queryParameters.deleted == "all")
+            {
+            }
+            else
+            // Default to only returning undeleted items
+            {
+                query = query.Where(f => f.DeletionTime == null);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var products = await query
+                .Skip(queryParameters.size * (queryParameters.page - 1))
+                .Take(queryParameters.size)
+                .ToListAsync(cancellationToken);
+
+            return new PagedResult<ReturnProductDTO>
+            {
+                Items = products,
+                CurrentPage = queryParameters.page,
+                PageSize = queryParameters.size,
+                TotalCount = totalCount
+            };
+
         }
     }
 }
