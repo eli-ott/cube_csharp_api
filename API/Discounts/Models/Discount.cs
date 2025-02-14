@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MonApi.API.Products.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Discounts.Models;
 
 public partial class Discount
 {
