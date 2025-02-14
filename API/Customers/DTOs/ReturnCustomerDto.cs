@@ -3,6 +3,7 @@ using MonApi.API.Addresses.DTOs;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Models;
+using MonApi.API.Reviews.DTOs;
 using MonApi.Shared.Validators;
 
 namespace MonApi.API.Customers.DTOs;
@@ -21,4 +22,5 @@ public class ReturnCustomerDto
     [Required] public required DateTime UpdateTime { get; set; }
     public string? ValidationId { get; set; }
     public ReturnPasswordDto? Password { get; set; }
+    public List<ReturnReviewDto>? Reviews { get; set; }
 }
