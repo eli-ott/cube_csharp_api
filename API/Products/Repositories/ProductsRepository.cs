@@ -6,6 +6,7 @@ using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.DTOs;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
+using MonApi.API.Discounts.DTOs;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Products.Filters;
 using MonApi.Shared.Pagination;
@@ -21,8 +22,8 @@ namespace MonApi.API.Products.Repositories
             var apiUrl = Environment.GetEnvironmentVariable("URL_API")
                          ?? throw new NullReferenceException("URL_API is null");
             var uploadDir = Environment.GetEnvironmentVariable("UPLOAD_DIR")
-                ?? throw new NullReferenceException("UPLOAD_DIR is null");
-            
+                            ?? throw new NullReferenceException("UPLOAD_DIR is null");
+
             _apiPath = apiUrl + uploadDir;
         }
 
@@ -77,12 +78,25 @@ namespace MonApi.API.Products.Repositories
                         ImageUrl = _apiPath + image.ImageId + image.FormatType,
                         CreationTime = image.CreationTime,
                         UpdateTime = image.UpdateTime
-                    }).ToList()
+                    }).ToList(),
+                    Discount = product.Discounts.Where(discount => discount.ProductId == product.ProductId)
+                        .Select(discount => new ReturnDiscountDto
+                        {
+                            DiscountId = discount.DiscountId,
+                            Value = discount.Value,
+                            Name = discount.Name,
+                            StartDate = discount.StartDate,
+                            EndDate = discount.EndDate,
+                            CreationTime = discount.CreationTime,
+                            UpdateTime = discount.UpdateTime,
+                            ProductId = discount.ProductId
+                        }).FirstOrDefault()
                 })
                 .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<ReturnProductDTO> query = _context.Products
                 .Select(product => new ReturnProductDTO
@@ -132,7 +146,19 @@ namespace MonApi.API.Products.Repositories
                         ImageUrl = _apiPath + image.ImageId + image.FormatType,
                         CreationTime = image.CreationTime,
                         UpdateTime = image.UpdateTime,
-                    }).ToList()
+                    }).ToList(),
+                    Discount = product.Discounts.Where(discount => discount.ProductId == product.ProductId)
+                        .Select(discount => new ReturnDiscountDto
+                        {
+                            DiscountId = discount.DiscountId,
+                            Value = discount.Value,
+                            Name = discount.Name,
+                            StartDate = discount.StartDate,
+                            EndDate = discount.EndDate,
+                            CreationTime = discount.CreationTime,
+                            UpdateTime = discount.UpdateTime,
+                            ProductId = product.ProductId
+                        }).FirstOrDefault()
                 });
 
             // Apply filters
@@ -140,22 +166,27 @@ namespace MonApi.API.Products.Repositories
             {
                 query = query.Where(p => p.Year == queryParameters.year);
             }
+
             if (queryParameters.is_bio != null)
             {
                 query = query.Where(p => p.IsBio == queryParameters.is_bio);
             }
+
             if (queryParameters.price_min != null)
             {
                 query = query.Where(p => p.UnitPrice >= queryParameters.price_min);
             }
+
             if (queryParameters.price_max != null)
             {
                 query = query.Where(p => p.UnitPrice <= queryParameters.price_max);
             }
+
             if (queryParameters.family_id != null)
             {
                 query = query.Where(p => p.Family.FamilyId == queryParameters.family_id);
             }
+
             if (queryParameters.supplier_id != null)
             {
                 query = query.Where(p => p.Supplier.SupplierId == queryParameters.supplier_id);
@@ -170,7 +201,7 @@ namespace MonApi.API.Products.Repositories
             {
             }
             else
-            // Default to only returning undeleted items
+                // Default to only returning undeleted items
             {
                 query = query.Where(f => f.DeletionTime == null);
             }
@@ -189,7 +220,6 @@ namespace MonApi.API.Products.Repositories
                 PageSize = queryParameters.size,
                 TotalCount = totalCount
             };
-
         }
     }
 }

@@ -9,6 +9,8 @@ using MonApi.API.Passwords.Repositories;
 using System.Text;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.Discounts.Repositories;
+using MonApi.API.Discounts.Services;
 using MonApi.API.Passwords.Services;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
@@ -50,6 +52,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IImagesService, ImagesService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IDiscountService, DiscountService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             
         }
@@ -65,6 +68,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
             builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)
