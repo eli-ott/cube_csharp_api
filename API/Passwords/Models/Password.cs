@@ -1,10 +1,29 @@
-﻿namespace MonApi.API.Passwords.Models
+﻿using MonApi.API.Customers.Models;
+using MonApi.Models;
+using System;
+using System.Collections.Generic;
+
+namespace MonApi.API.Passwords.Models;
+
+public partial class Password
 {
-    public class Password
-    {
-        public string PasswordId { get; set; }
-        public string Hash { get; set; }
-        public string Salt { get; set; }
-        public int NumberTries { get; set; }
-    }
+    public int PasswordId { get; set; }
+
+    public string PasswordHash { get; set; } = null!;
+
+    public string PasswordSalt { get; set; } = null!;
+
+    public int AttemptCount { get; set; }
+
+    public DateTime? ResetDate { get; set; }
+
+    public DateTime? DeletionTime { get; set; }
+
+    public DateTime CreationTime { get; set; }
+
+    public DateTime UpdateTime { get; set; }
+
+    public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+
+    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

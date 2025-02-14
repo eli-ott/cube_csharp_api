@@ -7,7 +7,7 @@ namespace MonApi.API.Middleware;
 public class ApiKeyMiddleware
 {
     private readonly RequestDelegate _next;
-    private const string ApiKeyName = "ApiKey";
+    private const string ApiKeyName = "x-api-key";
 
     public ApiKeyMiddleware(RequestDelegate next)
     {
@@ -18,8 +18,9 @@ public class ApiKeyMiddleware
     {
         // Check if the current route is the Swagger documentation to bypass the api key verification
         var isSwagger = context.Request.Path.ToString().ToLower().Contains("swagger");
+        var isUploads = context.Request.Path.ToString().ToLower().Contains("uploads");
 
-        if (!isSwagger)
+        if (!isSwagger && !isUploads)
         {
             // Check if the api key was provided in the headers
             if (!context.Request.Headers.TryGetValue(ApiKeyName, out var extractedApiKey))
