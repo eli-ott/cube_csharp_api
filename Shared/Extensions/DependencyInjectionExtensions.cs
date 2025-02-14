@@ -26,6 +26,8 @@ using MonApi.API.Suppliers.Repositories;
 using MonApi.API.Suppliers.Services;
 using MonApi.API.Products.Repositories;
 using MonApi.API.Products.Services;
+using MonApi.API.Reviews.Repositories;
+using MonApi.API.Reviews.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -53,8 +55,8 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IImagesService, ImagesService>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<IDiscountService, DiscountService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
-            
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -68,6 +70,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
             builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
             builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
         }
 

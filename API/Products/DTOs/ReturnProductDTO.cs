@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using MonApi.API.Discounts.DTOs;
 using MonApi.API.Discounts.Models;
 using MonApi.API.Images.DTOs;
+using MonApi.API.Reviews.DTOs;
 
 namespace MonApi.API.Products.DTOs
 {
@@ -50,11 +51,10 @@ namespace MonApi.API.Products.DTOs
 
         [Required]
         public required Family Family { get; set; } = null!;
-
-        [Required]
-        public required ReturnSupplierDTO Supplier { get; set; }
+        public ReturnSupplierDTO? Supplier { get; set; }
         [Required]
         public required List<ReturnImageDto> Images { get; set; }
+        public List<ReturnReviewDto>? Reviews { get; set; }
         public ReturnDiscountDto? Discount { get; set; }
     }
 }

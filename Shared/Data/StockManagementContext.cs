@@ -8,6 +8,7 @@ using MonApi.API.Families.Models;
 using MonApi.API.Images.Models;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Products.Models;
+using MonApi.API.Reviews.Models;
 using MonApi.API.Roles.Models;
 using MonApi.API.Statuses.Models;
 using MonApi.API.Suppliers.Models;
@@ -629,6 +630,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Review_User_FK");
         });
+        modelBuilder.Entity<Review>().HasKey(r => new { r.ProductId, r.UserId });
 
         modelBuilder.Entity<Role>(entity =>
         {

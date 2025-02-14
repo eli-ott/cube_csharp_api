@@ -9,6 +9,7 @@ using MonApi.API.Addresses.DTOs;
 using MonApi.API.Discounts.DTOs;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Products.Filters;
+using MonApi.API.Reviews.DTOs;
 using MonApi.Shared.Pagination;
 
 namespace MonApi.API.Products.Repositories
@@ -90,9 +91,20 @@ namespace MonApi.API.Products.Repositories
                             CreationTime = discount.CreationTime,
                             UpdateTime = discount.UpdateTime,
                             ProductId = discount.ProductId
-                        }).FirstOrDefault()
-                })
-                .FirstOrDefaultAsync(cancellationToken);
+                        }).FirstOrDefault(),
+                    Reviews = _context.Reviews.Where(r => r.ProductId == product.ProductId)
+                        .Select(r => new ReturnReviewDto
+                        {
+                            UserId = r.UserId,
+                            ProductId = r.ProductId,
+                            Rating = r.Rating,
+                            Comment = r.Comment,
+                            CreationTime = r.CreationTime,
+                            UpdateTime = r.UpdateTime,
+                            CustomerFirstName = r.User.FirstName,
+                            CustomerLastName = r.User.LastName
+                        }).ToList()
+                }).FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters,
@@ -157,7 +169,7 @@ namespace MonApi.API.Products.Repositories
                             EndDate = discount.EndDate,
                             CreationTime = discount.CreationTime,
                             UpdateTime = discount.UpdateTime,
-                            ProductId = product.ProductId
+                            ProductId = discount.ProductId
                         }).FirstOrDefault()
                 });
 
@@ -176,7 +188,6 @@ namespace MonApi.API.Products.Repositories
             {
                 query = query.Where(p => p.UnitPrice >= queryParameters.price_min);
             }
-
             if (queryParameters.price_max != null)
             {
                 query = query.Where(p => p.UnitPrice <= queryParameters.price_max);
@@ -220,6 +231,12 @@ namespace MonApi.API.Products.Repositories
                 PageSize = queryParameters.size,
                 TotalCount = totalCount
             };
+        }
+
+        public async Task UpdateRange(List<Product> products, CancellationToken cancellationToken = default)
+        {
+            _context.Set<Product>().UpdateRange(products);
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }
