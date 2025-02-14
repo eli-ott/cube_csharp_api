@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
+using MonApi.API.CartLines.Models;
+using MonApi.API.Carts.Models;
 using MonApi.API.Customers.Models;
 using MonApi.API.Discounts.Models;
 using MonApi.API.Families.Models;
@@ -186,6 +188,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("CartLine_Product_FK");
         });
+        modelBuilder.Entity<CartLine>().HasKey(line => new { line.ProductId, line.CartId });
 
         modelBuilder.Entity<Customer>(entity =>
         {

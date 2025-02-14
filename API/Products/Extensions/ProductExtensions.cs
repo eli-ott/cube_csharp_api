@@ -32,6 +32,7 @@ namespace MonApi.API.Products.Extensions
         {
             return new Product()
             {
+                ProductId = product.ProductId,
                 Name = product.Name,
                 Cuvee = product.Cuvee,
                 Year = product.Year,
@@ -43,7 +44,8 @@ namespace MonApi.API.Products.Extensions
                 AutoRestock = product.AutoRestock,
                 AutoRestockTreshold = product.AutoRestockTreshold,
                 FamilyId = product.Family.FamilyId,
-                SupplierId = product.Supplier.SupplierId
+                SupplierId = product.Supplier.SupplierId,
+                DeletionTime = product.DeletionTime
             };
         }
 
