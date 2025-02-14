@@ -7,6 +7,7 @@ using MonApi.API.Passwords.DTOs;
 using MonApi.Shared.Data;
 using MonApi.Shared.Pagination;
 using MonApi.API.Customers.Filters;
+using MonApi.API.Reviews.DTOs;
 
 namespace MonApi.API.Customers.Repositories
 {
@@ -43,11 +44,24 @@ namespace MonApi.API.Customers.Repositories
                         CreationTime = address.CreationTime,
                         UpdateTime = address.UpdateTime,
                         DeletionTime = address.DeletionTime
-                    }
+                    },
+                    Reviews = _context.Reviews.Where(r => r.UserId == customer.CustomerId)
+                        .Select(r => new ReturnReviewDto
+                        {
+                            UserId = r.UserId,
+                            ProductId = r.ProductId,
+                            Rating = r.Rating,
+                            Comment = r.Comment,
+                            CreationTime = r.CreationTime,
+                            UpdateTime = r.UpdateTime,
+                            CustomerFirstName = r.User.FirstName,
+                            CustomerLastName = r.User.LastName
+                        }).ToList()
                 }).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<ReturnCustomerDto?> FindWithPasswordAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ReturnCustomerDto?> FindWithPasswordAsync(int id,
+            CancellationToken cancellationToken = default)
         {
             return await (from customer in _context.Customers
                 join address in _context.Addresses on customer.AddressId equals address.AddressId
@@ -85,81 +99,95 @@ namespace MonApi.API.Customers.Repositories
                         AttemptCount = password.AttemptCount,
                         UpdateTime = password.UpdateTime,
                         CreationTime = password.CreationTime
+                    },
+                    Reviews = _context.Reviews.Where(r => r.UserId == customer.CustomerId)
+                        .Select(r => new ReturnReviewDto
+                        {
+                            UserId = r.UserId,
+                            ProductId = r.ProductId,
+                            Rating = r.Rating,
+                            Comment = r.Comment,
+                            CreationTime = r.CreationTime,
+                            UpdateTime = r.UpdateTime,
+                            CustomerFirstName = r.User.FirstName,
+                            CustomerLastName = r.User.LastName
+                        }).ToList()
+                }).FirstOrDefaultAsync(cancellationToken);
+        }
+
+        public async Task<ReturnCustomerDto?> FindByEmailAsync(string email,
+            CancellationToken cancellationToken = default)
+        {
+            return await (from customer in _context.Customers
+                join address in _context.Addresses on customer.AddressId equals address.AddressId
+                join password in _context.Passwords on customer.PasswordId equals password.PasswordId
+                where customer.Email == email
+                select new ReturnCustomerDto
+                {
+                    CustomerId = customer.CustomerId,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    Phone = customer.Phone,
+                    Active = customer.Active,
+                    CreationTime = customer.CreationTime,
+                    UpdateTime = customer.UpdateTime,
+                    DeletionTime = customer.DeletionTime,
+                    ValidationId = customer.ValidationId,
+                    Address = new ReturnAddressDto
+                    {
+                        AddressId = address.AddressId,
+                        AddressLine = address.AddressLine,
+                        City = address.City,
+                        Country = address.Country,
+                        ZipCode = address.ZipCode,
+                        Complement = address.Complement,
+                        CreationTime = address.CreationTime,
+                        UpdateTime = address.UpdateTime,
+                        DeletionTime = address.DeletionTime
+                    },
+                    Password = new ReturnPasswordDto
+                    {
+                        PasswordId = password.PasswordId,
+                        PasswordHash = password.PasswordHash,
+                        PasswordSalt = password.PasswordSalt,
+                        AttemptCount = password.AttemptCount,
+                        UpdateTime = password.UpdateTime,
+                        CreationTime = password.CreationTime
                     }
                 }).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<ReturnCustomerDto?> FindByEmailAsync(string email, CancellationToken cancellationToken = default)
-        {
-            return await (from customer in _context.Customers
-                    join address in _context.Addresses on customer.AddressId equals address.AddressId
-                    join password in _context.Passwords on customer.PasswordId equals password.PasswordId
-                    where customer.Email == email
-                        select new ReturnCustomerDto
-                        {
-                            CustomerId = customer.CustomerId,
-                            FirstName = customer.FirstName,
-                            LastName = customer.LastName,
-                            Email = customer.Email,
-                            Phone = customer.Phone,
-                            Active = customer.Active,
-                            CreationTime = customer.CreationTime,
-                            UpdateTime = customer.UpdateTime,
-                            DeletionTime = customer.DeletionTime,
-                            ValidationId = customer.ValidationId,
-                            Address = new ReturnAddressDto
-                            {
-                                AddressId = address.AddressId,
-                                AddressLine = address.AddressLine,
-                                City = address.City,
-                                Country = address.Country,
-                                ZipCode = address.ZipCode,
-                                Complement = address.Complement,
-                                CreationTime = address.CreationTime,
-                                UpdateTime = address.UpdateTime,
-                                DeletionTime = address.DeletionTime
-                            },
-                            Password = new ReturnPasswordDto
-                            {
-                                PasswordId = password.PasswordId,
-                                PasswordHash = password.PasswordHash,
-                                PasswordSalt = password.PasswordSalt,
-                                AttemptCount = password.AttemptCount,
-                                UpdateTime = password.UpdateTime,
-                                CreationTime = password.CreationTime
-                            }
-                        }).FirstOrDefaultAsync(cancellationToken);
-        }
-
-        public async Task<PagedResult<ReturnCustomerDto>> ListAsync(CustomerQueryParameters queryParameters, CancellationToken cancellationToken = default)
+        public async Task<PagedResult<ReturnCustomerDto>> ListAsync(CustomerQueryParameters queryParameters,
+            CancellationToken cancellationToken = default)
         {
             IQueryable<ReturnCustomerDto> query =
-                    from customer in _context.Customers
-                    join address in _context.Addresses on customer.AddressId equals address.AddressId
-                    select new ReturnCustomerDto
+                from customer in _context.Customers
+                join address in _context.Addresses on customer.AddressId equals address.AddressId
+                select new ReturnCustomerDto
+                {
+                    CustomerId = customer.CustomerId,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Email = customer.Email,
+                    Phone = customer.Phone,
+                    Active = customer.Active,
+                    CreationTime = customer.CreationTime,
+                    UpdateTime = customer.UpdateTime,
+                    DeletionTime = customer.DeletionTime,
+                    Address = new ReturnAddressDto
                     {
-                        CustomerId = customer.CustomerId,
-                        FirstName = customer.FirstName,
-                        LastName = customer.LastName,
-                        Email = customer.Email,
-                        Phone = customer.Phone,
-                        Active = customer.Active,
-                        CreationTime = customer.CreationTime,
-                        UpdateTime = customer.UpdateTime,
-                        DeletionTime = customer.DeletionTime,
-                        Address = new ReturnAddressDto
-                        {
-                            AddressId = address.AddressId,
-                            AddressLine = address.AddressLine,
-                            City = address.City,
-                            Country = address.Country,
-                            ZipCode = address.ZipCode,
-                            Complement = address.Complement,
-                            CreationTime = address.CreationTime,
-                            UpdateTime = address.UpdateTime,
-                            DeletionTime = address.DeletionTime
-                        }
-                    };
+                        AddressId = address.AddressId,
+                        AddressLine = address.AddressLine,
+                        City = address.City,
+                        Country = address.Country,
+                        ZipCode = address.ZipCode,
+                        Complement = address.Complement,
+                        CreationTime = address.CreationTime,
+                        UpdateTime = address.UpdateTime,
+                        DeletionTime = address.DeletionTime
+                    }
+                };
 
             // Apply filters
             if (!string.IsNullOrWhiteSpace(queryParameters.email))
@@ -190,7 +218,7 @@ namespace MonApi.API.Customers.Repositories
             {
             }
             else
-            // Default to only returning undeleted items
+                // Default to only returning undeleted items
             {
                 query = query.Where(f => f.DeletionTime == null);
             }
@@ -203,7 +231,7 @@ namespace MonApi.API.Customers.Repositories
             {
             }
             else
-            // Default to only returning undeleted items
+                // Default to only returning undeleted items
             {
                 query = query.Where(f => f.Active == false);
             }
