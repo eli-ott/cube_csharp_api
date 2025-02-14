@@ -12,5 +12,6 @@ namespace MonApi.API.Products.Repositories
     {
         Task<ReturnProductDTO?> FindProduct(int id, CancellationToken cancellationToken = default);
         Task<PagedResult<ReturnProductDTO>> GetAll(ProductQueryParameters queryParameters, CancellationToken cancellationToken = default);
+        Task UpdateRange(List<Product> products, CancellationToken cancellationToken = default);
     }
 }

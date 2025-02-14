@@ -13,6 +13,9 @@ using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
+using MonApi.API.Reviews.Extensions;
+using MonApi.API.Reviews.Models;
+using MonApi.API.Reviews.Repositories;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 using MonApi.Shared.Utils;
@@ -24,14 +27,16 @@ namespace MonApi.API.Customers.Services
         private readonly ICustomersRepository _customersRepository;
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IEmailSender _emailSender;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository, IEmailSender emailSender)
+            IAddressRepository addressRepository, IReviewRepository reviewRepository, IEmailSender emailSender)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;
             _addressRepository = addressRepository;
+            _reviewRepository = reviewRepository;
             _emailSender = emailSender;
         }
 
@@ -175,7 +180,7 @@ namespace MonApi.API.Customers.Services
 
             customer.Active = true;
             var customerModel = customer.MapToCustomerModel();
-            
+
             await _customersRepository.UpdateAsync(customerModel);
         }
 
@@ -269,7 +274,12 @@ namespace MonApi.API.Customers.Services
             if (foundPassword.DeletionTime != null)
                 throw new SoftDeletedException("This password has been deleted already.");
 
-            // Penser par la suite à mettre à jour ses reviews, commandes, panier etc...
+            var reviews = foundCustomer.Reviews;
+            if (reviews != null && reviews.Count > 0)
+            {
+                var mappedReviews = reviews.Select(x => x.MapReviewToModel()).ToList();
+                await _reviewRepository.RemoveRangeAsync(mappedReviews);
+            }
 
             // Update the password deletion time
             foundPassword.DeletionTime = DateTime.UtcNow;

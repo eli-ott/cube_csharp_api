@@ -1,5 +1,7 @@
-﻿using MonApi.API.Addresses.Repositories;
+﻿using System.Text.Json;
+using MonApi.API.Addresses.Repositories;
 using MonApi.API.Families.Repositories;
+using MonApi.API.Images.Extensions;
 using MonApi.API.Images.Models;
 using MonApi.API.Products.DTOs;
 using MonApi.API.Products.Extensions;
@@ -10,6 +12,9 @@ using MonApi.API.Suppliers.Repositories;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 using MonApi.API.Images.Repositories;
+using MonApi.API.Reviews.Extensions;
+using MonApi.API.Reviews.Models;
+using MonApi.API.Reviews.Repositories;
 using MonApi.Shared.Utils;
 
 namespace MonApi.API.Products.Services
@@ -20,8 +25,9 @@ namespace MonApi.API.Products.Services
         private readonly IImagesRepository _imagesRepository;
         private readonly IFamiliesRepository _familiesRepository;
         private readonly ISuppliersRepository _suppliersRepository;
+        private readonly IReviewRepository _reviewRepository;
 
-        public ProductService(ISuppliersRepository suppliersRepository, IAddressRepository addressesRepository,
+        public ProductService(ISuppliersRepository suppliersRepository, IReviewRepository reviewRepository,
             IFamiliesRepository familiesRepository, IProductsRepository productsRepository,
             IImagesRepository imagesRepository)
         {
@@ -29,6 +35,7 @@ namespace MonApi.API.Products.Services
             _suppliersRepository = suppliersRepository;
             _productsRepository = productsRepository;
             _familiesRepository = familiesRepository;
+            _reviewRepository = reviewRepository;
         }
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
@@ -85,16 +92,19 @@ namespace MonApi.API.Products.Services
             if (product.DeletionTime != null) throw new SoftDeletedException("This product has been deleted already.");
 
             var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
-            var mappedImages = productImages.Select(x => new Image
-            {
-                ImageId = x.ImageId,
-                FormatType = x.FormatType
-            }).ToList();
-            
+            var mappedImages = productImages.Select(x => x.MapToImageModel()).ToList();
+
             if (productImages.Count > 0)
             {
                 ImageUtils.DeleteImageList(mappedImages);
                 await _imagesRepository.RemoveRangeAsync(mappedImages);
+            }
+
+            var reviews = await _reviewRepository.GetReviewsByProductAsync(product.ProductId);
+            if (reviews.Count > 0)
+            {
+                var mappedReviews = reviews.Select(x => x.MapReviewToModel()).ToList();
+                await _reviewRepository.RemoveRangeAsync(mappedReviews);
             }
 
             product.DeletionTime = DateTime.UtcNow;
@@ -108,10 +118,22 @@ namespace MonApi.API.Products.Services
         public async Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO toUpdateProduct)
         {
             var imagesToUpload = toUpdateProduct.Images ?? new List<IFormFile>();
-
+            var foundProduct = await _productsRepository.FindProduct(id);
             Product productToModify = toUpdateProduct.MapToProductModel(id);
 
             var currentImagesCount = await _imagesRepository.CountAsync(x => x.ProductId == productToModify.ProductId);
+
+            var foundSupplier = await _suppliersRepository.FindAsync(productToModify.SupplierId)
+                                ?? throw new KeyNotFoundException("Supplier not found");
+            if (foundSupplier.DeletionTime != null)
+            {
+                if (toUpdateProduct.AutoRestock != foundProduct!.AutoRestock
+                    || toUpdateProduct.Quantity != foundProduct.Quantity)
+                {
+                    throw new BadHttpRequestException(
+                        "The supplier has been deleted so you can't change the autorestock or the quantity");
+                }
+            }
 
             // If the total of the old and new images are bigger than 5
             if (imagesToUpload.Count + currentImagesCount > 5)
