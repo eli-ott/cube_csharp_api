@@ -1,5 +1,7 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.Discounts.Extensions;
+using MonApi.API.Discounts.Repositories;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Images.Extensions;
 using MonApi.API.Images.Models;
@@ -26,16 +28,18 @@ namespace MonApi.API.Products.Services
         private readonly IFamiliesRepository _familiesRepository;
         private readonly ISuppliersRepository _suppliersRepository;
         private readonly IReviewRepository _reviewRepository;
+        private readonly IDiscountRepository _discountRepository;
 
         public ProductService(ISuppliersRepository suppliersRepository, IReviewRepository reviewRepository,
             IFamiliesRepository familiesRepository, IProductsRepository productsRepository,
-            IImagesRepository imagesRepository)
+            IImagesRepository imagesRepository, IDiscountRepository discountRepository)
         {
             _imagesRepository = imagesRepository;
             _suppliersRepository = suppliersRepository;
             _productsRepository = productsRepository;
             _familiesRepository = familiesRepository;
             _reviewRepository = reviewRepository;
+            _discountRepository = discountRepository;
         }
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
@@ -88,7 +92,7 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> SoftDeleteAsync(int id)
         {
-            Product product = await _productsRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+            var product = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
             if (product.DeletionTime != null) throw new SoftDeletedException("This product has been deleted already.");
 
             var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
@@ -100,6 +104,12 @@ namespace MonApi.API.Products.Services
                 await _imagesRepository.RemoveRangeAsync(mappedImages);
             }
 
+            // Delete the discounts associated with this product
+            if (product.Discount != null)
+            {
+                await _discountRepository.DeleteAsync(product.Discount.MapToDiscountModel());
+            }
+
             var reviews = await _reviewRepository.GetReviewsByProductAsync(product.ProductId);
             if (reviews.Count > 0)
             {
@@ -108,11 +118,9 @@ namespace MonApi.API.Products.Services
             }
 
             product.DeletionTime = DateTime.UtcNow;
-            await _productsRepository.UpdateAsync(product);
-            ReturnProductDTO returnProductDTO = await _productsRepository.FindProduct(product.ProductId)
-                                                ?? throw new KeyNotFoundException("Product not found");
+            await _productsRepository.UpdateAsync(product.MapToProductModel());
 
-            return returnProductDTO;
+            return product;
         }
 
         public async Task<ReturnProductDTO> UpdateAsync(int id, UpdateProductDTO toUpdateProduct)

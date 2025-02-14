@@ -2,6 +2,8 @@
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Models;
 using System.ComponentModel.DataAnnotations;
+using MonApi.API.Discounts.DTOs;
+using MonApi.API.Discounts.Models;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Reviews.DTOs;
 
@@ -53,5 +55,6 @@ namespace MonApi.API.Products.DTOs
         [Required]
         public required List<ReturnImageDto> Images { get; set; }
         public List<ReturnReviewDto>? Reviews { get; set; }
+        public ReturnDiscountDto? Discount { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.DTOs;
 using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
+using MonApi.API.Discounts.DTOs;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Products.Filters;
 using MonApi.API.Reviews.DTOs;
@@ -79,6 +80,18 @@ namespace MonApi.API.Products.Repositories
                         CreationTime = image.CreationTime,
                         UpdateTime = image.UpdateTime
                     }).ToList(),
+                    Discount = product.Discounts.Where(discount => discount.ProductId == product.ProductId)
+                        .Select(discount => new ReturnDiscountDto
+                        {
+                            DiscountId = discount.DiscountId,
+                            Value = discount.Value,
+                            Name = discount.Name,
+                            StartDate = discount.StartDate,
+                            EndDate = discount.EndDate,
+                            CreationTime = discount.CreationTime,
+                            UpdateTime = discount.UpdateTime,
+                            ProductId = discount.ProductId
+                        }).FirstOrDefault(),
                     Reviews = _context.Reviews.Where(r => r.ProductId == product.ProductId)
                         .Select(r => new ReturnReviewDto
                         {
@@ -145,7 +158,19 @@ namespace MonApi.API.Products.Repositories
                         ImageUrl = _apiPath + image.ImageId + image.FormatType,
                         CreationTime = image.CreationTime,
                         UpdateTime = image.UpdateTime,
-                    }).ToList()
+                    }).ToList(),
+                    Discount = product.Discounts.Where(discount => discount.ProductId == product.ProductId)
+                        .Select(discount => new ReturnDiscountDto
+                        {
+                            DiscountId = discount.DiscountId,
+                            Value = discount.Value,
+                            Name = discount.Name,
+                            StartDate = discount.StartDate,
+                            EndDate = discount.EndDate,
+                            CreationTime = discount.CreationTime,
+                            UpdateTime = discount.UpdateTime,
+                            ProductId = discount.ProductId
+                        }).FirstOrDefault()
                 });
 
             // Apply filters
@@ -163,7 +188,6 @@ namespace MonApi.API.Products.Repositories
             {
                 query = query.Where(p => p.UnitPrice >= queryParameters.price_min);
             }
-
             if (queryParameters.price_max != null)
             {
                 query = query.Where(p => p.UnitPrice <= queryParameters.price_max);
