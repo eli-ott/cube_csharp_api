@@ -1,5 +1,6 @@
 using System.Text.Json;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.CartLines.Repositories;
 using MonApi.API.Discounts.Extensions;
 using MonApi.API.Discounts.Repositories;
 using MonApi.API.Families.Repositories;
@@ -29,10 +30,12 @@ namespace MonApi.API.Products.Services
         private readonly ISuppliersRepository _suppliersRepository;
         private readonly IReviewRepository _reviewRepository;
         private readonly IDiscountRepository _discountRepository;
+        private readonly ICartLineRepository _cartLineRepository;
 
         public ProductService(ISuppliersRepository suppliersRepository, IReviewRepository reviewRepository,
             IFamiliesRepository familiesRepository, IProductsRepository productsRepository,
-            IImagesRepository imagesRepository, IDiscountRepository discountRepository)
+            IImagesRepository imagesRepository, IDiscountRepository discountRepository,
+            ICartLineRepository cartLineRepository)
         {
             _imagesRepository = imagesRepository;
             _suppliersRepository = suppliersRepository;
@@ -40,6 +43,7 @@ namespace MonApi.API.Products.Services
             _familiesRepository = familiesRepository;
             _reviewRepository = reviewRepository;
             _discountRepository = discountRepository;
+            _cartLineRepository = cartLineRepository;
         }
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
@@ -94,6 +98,9 @@ namespace MonApi.API.Products.Services
         {
             var product = await _productsRepository.FindProduct(id) ?? throw new KeyNotFoundException("Id not found");
             if (product.DeletionTime != null) throw new SoftDeletedException("This product has been deleted already.");
+            
+            var cartLines = await _cartLineRepository.ListAsync(line => line.ProductId == product.ProductId);
+            await _cartLineRepository.RemoveRangeAsync(cartLines);
 
             var productImages = await _imagesRepository.GetImagesByProductIdAsync(product.ProductId);
             var mappedImages = productImages.Select(x => x.MapToImageModel()).ToList();
@@ -118,7 +125,8 @@ namespace MonApi.API.Products.Services
             }
 
             product.DeletionTime = DateTime.UtcNow;
-            await _productsRepository.UpdateAsync(product.MapToProductModel());
+            Console.WriteLine(JsonSerializer.Serialize(product.MapToProductModel()));
+            await _productsRepository.SoftDeleteAsync(product.MapToProductModel());
 
             return product;
         }

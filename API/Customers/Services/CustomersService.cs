@@ -7,12 +7,19 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.CartLines.DTOs;
+using MonApi.API.CartLines.Extensions;
+using MonApi.API.CartLines.Repositories;
+using MonApi.API.Carts.DTOs;
+using MonApi.API.Carts.Extensions;
+using MonApi.API.Carts.Repositories;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Extensions;
 using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
+using MonApi.API.Products.Repositories;
 using MonApi.API.Reviews.Extensions;
 using MonApi.API.Reviews.Models;
 using MonApi.API.Reviews.Repositories;
@@ -28,15 +35,23 @@ namespace MonApi.API.Customers.Services
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
         private readonly IReviewRepository _reviewRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly ICartLineRepository _cartLineRepository;
+        private readonly IProductsRepository _productsRepository;
         private readonly IEmailSender _emailSender;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository, IReviewRepository reviewRepository, IEmailSender emailSender)
+            IAddressRepository addressRepository, IReviewRepository reviewRepository, IEmailSender emailSender,
+            ICartRepository cartRepository, ICartLineRepository cartLineRepository,
+            IProductsRepository productsRepository)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;
             _addressRepository = addressRepository;
             _reviewRepository = reviewRepository;
+            _cartRepository = cartRepository;
+            _cartLineRepository = cartLineRepository;
+            _productsRepository = productsRepository;
             _emailSender = emailSender;
         }
 
@@ -68,8 +83,6 @@ namespace MonApi.API.Customers.Services
             await _emailSender.SendEmailAsync(registerDto.Email, emailSubject,
                 emailContent);
 
-            //Penser à creer aussi son panier etc
-
             var addedPassword = await _passwordRepository.AddAsync(password);
 
             var customer = registerDto.MapToCustomerModel(addedPassword, addedAddress, guid);
@@ -77,7 +90,11 @@ namespace MonApi.API.Customers.Services
             var newCustomer = await _customersRepository.AddAsync(customer);
             var newCustomerDetails = await _customersRepository.FindAsync(newCustomer.CustomerId);
 
-            return newCustomerDetails!;
+            // We create the user's cart
+            var newCart = CartExtensions.MapToModel(newCustomerDetails!.CustomerId);
+            await _cartRepository.AddAsync(newCart);
+
+            return newCustomerDetails;
         }
 
         public async Task<string> LogCustomer(LoginDTO loginDto)
@@ -281,6 +298,14 @@ namespace MonApi.API.Customers.Services
                 await _reviewRepository.RemoveRangeAsync(mappedReviews);
             }
 
+            var foundCart = await _cartRepository.FirstOrDefaultAsync(cart => cart.CustomerId == customerId)
+                            ?? throw new NullReferenceException("Can't find user's cart");
+
+            var foundCartLines = await _cartLineRepository.ListAsync(x => x.CartId == foundCart.CartId);
+            await _cartLineRepository.RemoveRangeAsync(foundCartLines);
+
+            await _cartRepository.DeleteAsync(foundCart);
+
             // Update the password deletion time
             foundPassword.DeletionTime = DateTime.UtcNow;
             await _passwordRepository.UpdateAsync(foundPassword);
@@ -291,6 +316,45 @@ namespace MonApi.API.Customers.Services
 
             foundCustomer.DeletionTime = DateTime.UtcNow;
             await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
+        }
+
+        public async Task<ReturnCartDto> GetCart(int customerId)
+        {
+            var foundUser = await _customersRepository.FindAsync(customerId)
+                            ?? throw new NullReferenceException("Can't find the user");
+            if (foundUser.DeletionTime != null)
+                throw new SoftDeletedException("User has been deleted");
+
+            var foundCart = await _cartRepository.GetCart(customerId)
+                            ?? throw new NullReferenceException("Can't find the user cart");
+
+            return foundCart;
+        }
+
+        public async Task AddToCart(int customerId, CreateCartLineDto createCartLineDto)
+        {
+            var foundUser = await _customersRepository.FindAsync(customerId)
+                            ?? throw new NullReferenceException("Can't find the user");
+            if (foundUser.DeletionTime != null)
+                throw new SoftDeletedException("User has been deleted");
+
+            var foundProduct = await _productsRepository.FindProduct(createCartLineDto.ProductId)
+                               ?? throw new NullReferenceException("Can't find the product");
+            if (foundProduct.DeletionTime != null)
+                throw new SoftDeletedException("Product has been deleted");
+
+            var foundCart = await _cartRepository.GetCart(customerId)
+                            ?? throw new NullReferenceException("Can't find the user cart");
+
+            foreach (var line in foundCart.CartLines)
+            {
+                if (line.Product.ProductId == createCartLineDto.ProductId)
+                    throw new BadHttpRequestException("Product is already in the cart");
+            }
+
+            var mappedCartLine = createCartLineDto.MapToModel(foundCart.CartId);
+
+            await _cartLineRepository.AddAsync(mappedCartLine);
         }
     }
 }
