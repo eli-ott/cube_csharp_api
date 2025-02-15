@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MonApi.API.CartLines.DTOs;
+using MonApi.API.Carts.DTOs;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Services;
@@ -20,7 +22,8 @@ public class CustomerController : ControllerBase
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<PagedResult<ReturnCustomerDto>>> GetCustomers([FromQuery] CustomerQueryParameters queryParameters)
+    public async Task<ActionResult<PagedResult<ReturnCustomerDto>>> GetCustomers(
+        [FromQuery] CustomerQueryParameters queryParameters)
     {
         return Ok(await _customersService.GetAllCustomers(queryParameters));
     }
@@ -30,6 +33,13 @@ public class CustomerController : ControllerBase
     public async Task<ActionResult<ReturnCustomerDto>> GetCustomer(int id)
     {
         return Ok(await _customersService.GetCustomerById(id));
+    }
+
+    [Authorize]
+    [HttpGet("{id}/get-cart")]
+    public async Task<ActionResult<ReturnCartDto>> GetCart(int id)
+    {
+        return Ok(await _customersService.GetCart(id));
     }
 
     [AllowAnonymous]
@@ -63,6 +73,14 @@ public class CustomerController : ControllerBase
     public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
     {
         await _customersService.ResetPassword(resetPasswordDto);
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpPost("{id}/add-to-cart")]
+    public async Task<ActionResult> AddToCart(int id, CreateCartLineDto cartLineDto)
+    {
+        await _customersService.AddToCart(id, cartLineDto);
         return Ok();
     }
 
