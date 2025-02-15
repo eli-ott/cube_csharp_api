@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using MonApi.API.Carts.Models;
 using MonApi.API.Products.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.CartLines.Models;
 
 public partial class CartLine
 {

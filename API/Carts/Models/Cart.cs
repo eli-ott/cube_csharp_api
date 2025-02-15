@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace MonApi.Models;
+namespace MonApi.API.Carts.Models;
 
 public partial class Cart
 {
