@@ -1,7 +1,6 @@
 ﻿using MonApi.API.Families.Models;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Models;
-using MonApi.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace MonApi.API.Products.DTOs

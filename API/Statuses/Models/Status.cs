@@ -1,5 +1,5 @@
-﻿using MonApi.Models;
-using MonApi.API.Orders.Models;
+﻿using MonApi.API.Orders.Models;
+using MonApi.API.SupplierOrders.Models;
 
 namespace MonApi.API.Statuses.Models;
 

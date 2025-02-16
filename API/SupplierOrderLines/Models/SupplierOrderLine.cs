@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Products.Models;
+using MonApi.API.SupplierOrders.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.SupplierOrderLines.Models;
 
 public partial class SupplierOrderLine
 {
@@ -17,6 +18,8 @@ public partial class SupplierOrderLine
     public DateTime UpdateTime { get; set; }
 
     public DateTime CreationTime { get; set; }
+    
+    public DateTime? DeletionTime { get; set; }
 
     public virtual SupplierOrder Order { get; set; } = null!;
 
