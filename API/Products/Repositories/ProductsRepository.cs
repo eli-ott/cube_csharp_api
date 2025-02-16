@@ -41,7 +41,7 @@ namespace MonApi.API.Products.Repositories
                     ProducerName = product.ProducerName,
                     IsBio = product.IsBio,
                     UnitPrice = product.UnitPrice,
-                    CartonPrice = product.CartonPrice,
+                    BoxPrice = product.BoxPrice,
                     Quantity = product.Quantity,
                     AutoRestock = product.AutoRestock,
                     AutoRestockTreshold = product.AutoRestockTreshold,
@@ -120,7 +120,7 @@ namespace MonApi.API.Products.Repositories
                     ProducerName = product.ProducerName,
                     IsBio = product.IsBio,
                     UnitPrice = product.UnitPrice,
-                    CartonPrice = product.CartonPrice,
+                    BoxPrice = product.BoxPrice,
                     Quantity = product.Quantity,
                     AutoRestock = product.AutoRestock,
                     AutoRestockTreshold = product.AutoRestockTreshold,
@@ -200,7 +200,7 @@ namespace MonApi.API.Products.Repositories
 
             if (queryParameters.supplier_id != null)
             {
-                query = query.Where(p => p.Supplier.SupplierId == queryParameters.supplier_id);
+                query = query.Where(p => p.Supplier!.SupplierId == queryParameters.supplier_id);
             }
 
             // deleted=all, deleted=only, deleted=none

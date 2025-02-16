@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MonApi.API.Addresses.DTOs;
 using MonApi.API.Addresses.Models;
+using MonApi.API.Orders.DTOs;
 using MonApi.API.Passwords.DTOs;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Reviews.DTOs;
@@ -23,4 +24,5 @@ public class ReturnCustomerDto
     public string? ValidationId { get; set; }
     public ReturnPasswordDto? Password { get; set; }
     public List<ReturnReviewDto>? Reviews { get; set; }
+    public List<ReturnOrderDto>? Orders { get; set; }
 }

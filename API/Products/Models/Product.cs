@@ -1,10 +1,9 @@
-﻿using MonApi.API.Families.Models;
-using MonApi.API.Suppliers.Models;
-using MonApi.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using MonApi.API.Discounts.Models;
+using MonApi.API.Families.Models;
 using MonApi.API.Images.Models;
+using MonApi.API.Suppliers.Models;
 
 namespace MonApi.API.Products.Models;
 
@@ -24,7 +23,7 @@ public partial class Product
 
     public float? UnitPrice { get; set; }
 
-    public float? CartonPrice { get; set; }
+    public float? BoxPrice { get; set; }
 
     public int Quantity { get; set; }
 

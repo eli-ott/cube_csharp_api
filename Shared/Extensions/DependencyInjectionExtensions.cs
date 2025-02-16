@@ -19,6 +19,9 @@ using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
 using MonApi.API.Images.Repositories;
 using MonApi.API.Images.Services;
+using MonApi.API.OrderLines.Repositories;
+using MonApi.API.Orders.Repositories;
+using MonApi.API.Orders.Services;
 using MonApi.API.Roles.Repositories;
 using MonApi.API.Roles.Services;
 using MonApi.API.Statuses.Repositories;
@@ -60,6 +63,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IDiscountService, DiscountService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<ICartLineService, CartLineService>();
+            builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
         }
 
@@ -78,6 +82,8 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
             builder.Services.AddScoped<ICartLineRepository, CartLineRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

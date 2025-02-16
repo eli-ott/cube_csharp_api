@@ -34,7 +34,7 @@ namespace MonApi.API.Products.DTOs
 
         public float? UnitPrice { get; set; } //pas obligatoire mais doit avoir au moins un des deux type de prix
 
-        public float? CartonPrice { get; set; }
+        public float? BoxPrice { get; set; }
 
         [Required]
         public required int Quantity { get; set; }

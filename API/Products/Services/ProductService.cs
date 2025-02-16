@@ -48,11 +48,11 @@ namespace MonApi.API.Products.Services
 
         public async Task<ReturnProductDTO> AddAsync(CreateProductDTO productToCreate)
         {
-            if (productToCreate.UnitPrice == null && productToCreate.CartonPrice == null)
+            if (productToCreate.UnitPrice == null && productToCreate.BoxPrice == null)
                 throw new ArgumentException("At least one type of price is required");
             if (productToCreate.AutoRestock && productToCreate.AutoRestockTreshold == null)
                 throw new ArgumentException("Treshold is needed if the automatic restock is activated");
-            if (productToCreate.CartonPrice <= 0 || productToCreate.UnitPrice <= 0)
+            if (productToCreate.BoxPrice <= 0 || productToCreate.UnitPrice <= 0)
                 throw new ArgumentException("The prices have to be superior to zero");
             if (productToCreate.AutoRestockTreshold < 0)
                 throw new ArgumentException("The restock treshold has to be superior to zero");
