@@ -1,9 +1,7 @@
 ﻿using MonApi.API.Statuses.Models;
 using MonApi.API.Employees.Models;
-using System;
-using System.Collections.Generic;
 
-namespace MonApi.Models;
+namespace MonApi.API.SupplierOrders.Models;
 
 public partial class SupplierOrder
 {

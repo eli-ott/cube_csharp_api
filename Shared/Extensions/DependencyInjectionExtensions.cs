@@ -17,7 +17,6 @@ using MonApi.API.Carts.Repositories;
 using MonApi.API.Discounts.Repositories;
 using MonApi.API.Discounts.Services;
 using MonApi.API.Passwords.Services;
-using MonApi.Models;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
 using MonApi.API.Images.Repositories;
@@ -37,6 +36,9 @@ using MonApi.API.Products.Repositories;
 using MonApi.API.Products.Services;
 using MonApi.API.Reviews.Repositories;
 using MonApi.API.Reviews.Services;
+using MonApi.API.SupplierOrderLines.Repositories;
+using MonApi.API.SupplierOrders.Repositories;
+using MonApi.API.SupplierOrders.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -69,6 +71,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IEmployeeService, EmployeeServices>();
+            builder.Services.AddScoped<ISupplierOrdersService, SupplierOrderService>();
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -89,6 +92,8 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<ISupplierOrdersRepository, SupplierOrdersRepository>();
+            builder.Services.AddScoped<ISupplierOrderLinesRepository, SupplierOrderLinesRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

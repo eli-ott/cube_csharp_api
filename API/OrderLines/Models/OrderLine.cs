@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using MonApi.API.Orders.Models;
 using MonApi.API.Products.Models;
-using MonApi.Models;
 
 namespace MonApi.API.OrderLines.Models;
 

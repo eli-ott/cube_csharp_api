@@ -1,21 +1,25 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
 using MonApi.API.CartLines.Models;
 using MonApi.API.Carts.Models;
 using MonApi.API.Customers.Models;
 using MonApi.API.Discounts.Models;
+using MonApi.API.Employees.Models;
 using MonApi.API.Families.Models;
 using MonApi.API.Images.Models;
 using MonApi.API.OrderLines.Models;
 using MonApi.API.Orders.Models;
-using MonApi.API.Employees.Models;
 using MonApi.API.Passwords.Models;
-using MonApi.API.Roles.Models;
 using MonApi.API.Products.Models;
 using MonApi.API.Reviews.Models;
+using MonApi.API.Roles.Models;
 using MonApi.API.Statuses.Models;
+using MonApi.API.SupplierOrderLines.Models;
+using MonApi.API.SupplierOrders.Models;
 using MonApi.API.Suppliers.Models;
-using MonApi.Models;
+using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace MonApi.Shared.Data;
 
@@ -495,7 +499,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("OrderLine_Product_FK");
         });
-        modelBuilder.Entity<OrderLine>().HasKey(r => new { r.OrderId, r.ProductId });
+        modelBuilder.Entity<OrderLine>().HasKey(orderLine => new { orderLine.ProductId, orderLine.OrderId });
 
         modelBuilder.Entity<Password>(entity =>
         {
@@ -802,6 +806,9 @@ public partial class StockManagementContext : DbContext
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime")
                 .HasColumnName("creation_time");
+            entity.Property(e => e.DeletionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("deletion_time");
             entity.Property(e => e.OrderId)
                 .HasColumnType("int(11)")
                 .HasColumnName("order_id");
@@ -828,6 +835,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("SupplierOrderLine_Product_FK");
         });
+        modelBuilder.Entity<SupplierOrderLine>().HasKey(orderLine => new { orderLine.ProductId, orderLine.OrderId });
 
         OnModelCreatingPartial(modelBuilder);
     }
