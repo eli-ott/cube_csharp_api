@@ -1,5 +1,4 @@
 ﻿using MonApi.Shared.Pagination;
-using System.ComponentModel.DataAnnotations;
 
 namespace MonApi.API.Customers.Filters
 {

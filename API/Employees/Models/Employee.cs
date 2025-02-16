@@ -1,12 +1,13 @@
-﻿using MonApi.API.Passwords.Models;
+using MonApi.API.Passwords.Models;
 using System;
 using System.Collections.Generic;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Roles.Models;
+using MonApi.Models;
 
-namespace MonApi.Models;
+namespace MonApi.API.Employees.Models;
 
-public partial class Employeeatyhthgt
+public partial class Employee
 {
     public int EmployeeId { get; set; }
 

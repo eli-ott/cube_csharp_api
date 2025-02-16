@@ -1,4 +1,4 @@
-using MonApi.Models;
+using MonApi.API.Employees.Models;
 
 namespace MonApi.API.Roles.Models;
 
