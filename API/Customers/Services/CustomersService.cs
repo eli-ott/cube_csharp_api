@@ -80,8 +80,7 @@ namespace MonApi.API.Customers.Services
                 $"Bienvenue sur NegoSud, pour confirmer votre compte veuillez utiliser sur le lien suivant : {completeUrl}";
             var emailSubject = "Inscription a NegoSud";
 
-            await _emailSender.SendEmailAsync(registerDto.Email, emailSubject,
-                emailContent);
+            await _emailSender.SendEmailAsync(registerDto.Email, emailSubject, emailContent);
 
             var addedPassword = await _passwordRepository.AddAsync(password);
 

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
 using MonApi.API.CartLines.Models;
 using MonApi.API.Carts.Models;
@@ -10,14 +8,14 @@ using MonApi.API.Families.Models;
 using MonApi.API.Images.Models;
 using MonApi.API.OrderLines.Models;
 using MonApi.API.Orders.Models;
+using MonApi.API.Employees.Models;
 using MonApi.API.Passwords.Models;
+using MonApi.API.Roles.Models;
 using MonApi.API.Products.Models;
 using MonApi.API.Reviews.Models;
-using MonApi.API.Roles.Models;
 using MonApi.API.Statuses.Models;
 using MonApi.API.Suppliers.Models;
 using MonApi.Models;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace MonApi.Shared.Data;
 

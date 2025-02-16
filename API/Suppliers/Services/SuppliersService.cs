@@ -1,25 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore.Scaffolding;
-using MonApi.API.Addresses.DTOs;
-using MonApi.API.Addresses.Extensions;
+﻿using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Models;
 using MonApi.API.Addresses.Repositories;
-using MonApi.API.Images.DTOs;
-using MonApi.API.Images.Models;
-using MonApi.API.Products.DTOs;
 using MonApi.API.Products.Extensions;
-using MonApi.API.Products.Models;
 using MonApi.API.Products.Repositories;
-using MonApi.API.Reviews.DTOs;
-using MonApi.API.Reviews.Models;
 using MonApi.API.Reviews.Repositories;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.API.Suppliers.Extensions;
 using MonApi.API.Suppliers.Filters;
-using MonApi.API.Suppliers.Models;
 using MonApi.API.Suppliers.Repositories;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
-using MonApi.Shared.Utils;
 
 namespace MonApi.API.Suppliers.Services
 {
@@ -28,15 +18,13 @@ namespace MonApi.API.Suppliers.Services
         private readonly ISuppliersRepository _suppliersRepository;
         private readonly IAddressRepository _addressesRepository;
         private readonly IProductsRepository _productsRepository;
-        private readonly IReviewRepository _reviewRepository;
 
         public SuppliersService(ISuppliersRepository suppliersRepository, IAddressRepository addressRepository,
-            IProductsRepository productsRepository, IReviewRepository reviewRepository)
+            IProductsRepository productsRepository)
         {
             _addressesRepository = addressRepository;
             _suppliersRepository = suppliersRepository;
             _productsRepository = productsRepository;
-            _reviewRepository = reviewRepository;
         }
 
         public async Task<ReturnSupplierDTO> AddAsync(CreateSupplierDTO createSupplierDTO)

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using MonApi.API.Customers.Models;
+﻿using MonApi.API.Customers.Models;
 using MonApi.API.Statuses.Models;
+using System;
+using System.Collections.Generic;
 
 namespace MonApi.API.Orders.Models;
 
