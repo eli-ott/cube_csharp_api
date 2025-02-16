@@ -55,7 +55,7 @@ public class CartRepository : BaseRepository<Cart>, ICartRepository
                                 ProducerName = product.ProducerName,
                                 IsBio = product.IsBio,
                                 UnitPrice = product.UnitPrice,
-                                CartonPrice = product.CartonPrice,
+                                BoxPrice = product.BoxPrice,
                                 Quantity = product.Quantity,
                                 AutoRestock = product.AutoRestock,
                                 AutoRestockTreshold = product.AutoRestockTreshold,

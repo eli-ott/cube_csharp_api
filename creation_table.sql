@@ -251,6 +251,7 @@ CREATE TABLE IF NOT EXISTS order_line(
     unit_price FLOAT NOT NULL,
     update_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     creation_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deletion_time DATETIME DEFAULT NULL,
     CONSTRAINT OrderLine_Order_FK FOREIGN KEY (order_id) REFERENCES `order`(order_id),
     CONSTRAINT OrderLine_Product_FK FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
