@@ -9,6 +9,8 @@ using MonApi.API.Passwords.Repositories;
 using System.Text;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.Employees.Repositories;
+using MonApi.API.Employees.Services;
 using MonApi.API.Passwords.Services;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
@@ -46,6 +48,8 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeServices>();
+
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -57,6 +61,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
         }
 
