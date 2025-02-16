@@ -66,7 +66,7 @@ namespace MonApi.API.Suppliers.Repositories
                             Name = product.Name,
                             AutoRestock = product.AutoRestock,
                             AutoRestockTreshold = product.AutoRestockTreshold,
-                            CartonPrice = product.CartonPrice,
+                            BoxPrice = product.BoxPrice,
                             Cuvee = product.Cuvee,
                             CreationTime = product.CreationTime,
                             UpdateTime = product.UpdateTime,

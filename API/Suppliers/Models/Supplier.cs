@@ -2,6 +2,7 @@
 using MonApi.API.Products.Models;
 using System;
 using System.Collections.Generic;
+using MonApi.Models;
 
 namespace MonApi.API.Suppliers.Models;
 

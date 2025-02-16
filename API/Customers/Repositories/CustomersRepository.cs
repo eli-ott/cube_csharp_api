@@ -7,14 +7,30 @@ using MonApi.API.Passwords.DTOs;
 using MonApi.Shared.Data;
 using MonApi.Shared.Pagination;
 using MonApi.API.Customers.Filters;
+using MonApi.API.Discounts.DTOs;
+using MonApi.API.Families.Models;
+using MonApi.API.Images.DTOs;
+using MonApi.API.OrderLines.DTOs;
+using MonApi.API.Orders.DTOs;
+using MonApi.API.Products.DTOs;
 using MonApi.API.Reviews.DTOs;
+using MonApi.API.Statuses.DTOs;
+using MonApi.API.Suppliers.DTOs;
 
 namespace MonApi.API.Customers.Repositories
 {
     public class CustomersRepository : BaseRepository<Customer>, ICustomersRepository
     {
+        private readonly string _apiPath;
+
         public CustomersRepository(StockManagementContext context) : base(context)
         {
+            var apiUrl = Environment.GetEnvironmentVariable("URL_API")
+                         ?? throw new NullReferenceException("URL_API is null");
+            var uploadDir = Environment.GetEnvironmentVariable("UPLOAD_DIR")
+                            ?? throw new NullReferenceException("UPLOAD_DIR is null");
+
+            _apiPath = apiUrl + uploadDir;
         }
 
         public async Task<ReturnCustomerDto?> FindAsync(int id, CancellationToken cancellationToken = default)
@@ -56,7 +72,94 @@ namespace MonApi.API.Customers.Repositories
                             UpdateTime = r.UpdateTime,
                             CustomerFirstName = r.User.FirstName,
                             CustomerLastName = r.User.LastName
-                        }).ToList()
+                        }).ToList(),
+                    Orders = customer.Orders.Select(order => new ReturnOrderDto
+                    {
+                        OrderId = order.OrderId,
+                        DeliveryDate = order.DeliveryDate,
+                        DeletionTime = order.DeletionTime,
+                        CreationTime = order.CreationTime,
+                        UpdateTime = order.CreationTime,
+                        Status = new ReturnStatusDto
+                        {
+                            StatusId = order.Status.StatusId,
+                            Name = order.Status.Name,
+                            DeletionTime = order.Status.DeletionTime
+                        },
+                        Lines = (from orderLine in _context.OrderLines
+                            join product in _context.Products on orderLine.ProductId equals product.ProductId
+                            where orderLine.OrderId == order.OrderId
+                            select new ReturnOrderLineDto
+                            {
+                                Quantity = orderLine.Quantity,
+                                UnitPrice = orderLine.UnitPrice,
+                                UpdateTime = orderLine.UpdateTime,
+                                CreationTime = orderLine.CreationTime,
+                                DeletionTime = orderLine.DeletionTime,
+                                Product = new ReturnProductDTO
+                                {
+                                    ProductId = product.ProductId,
+                                    Name = product.Name,
+                                    Cuvee = product.Cuvee,
+                                    Year = product.Year,
+                                    ProducerName = product.ProducerName,
+                                    IsBio = product.IsBio,
+                                    UnitPrice = product.UnitPrice,
+                                    BoxPrice = product.BoxPrice,
+                                    Quantity = product.Quantity,
+                                    AutoRestock = product.AutoRestock,
+                                    AutoRestockTreshold = product.AutoRestockTreshold,
+                                    DeletionTime = product.DeletionTime,
+                                    UpdateTime = product.UpdateTime,
+                                    CreationTime = product.CreationTime,
+                                    Family = new Family
+                                    {
+                                        FamilyId = product.FamilyId,
+                                        Name = product.Family.Name
+                                    },
+                                    Supplier = new ReturnSupplierDTO
+                                    {
+                                        SupplierId = product.SupplierId,
+                                        LastName = product.Supplier.LastName,
+                                        FirstName = product.Supplier.FirstName,
+                                        Contact = product.Supplier.Contact,
+                                        Email = product.Supplier.Email,
+                                        Phone = product.Supplier.Phone,
+                                        Siret = product.Supplier.Siret,
+                                        Address = new ReturnAddressDto
+                                        {
+                                            AddressId = product.Supplier.Address.AddressId,
+                                            AddressLine = product.Supplier.Address.AddressLine,
+                                            City = product.Supplier.Address.City,
+                                            ZipCode = product.Supplier.Address.ZipCode,
+                                            Country = product.Supplier.Address.Country,
+                                            Complement = product.Supplier.Address.Complement,
+                                        }
+                                    },
+                                    Images = product.Images.Select(image => new ReturnImageDto
+                                    {
+                                        ImageId = image.ImageId,
+                                        FormatType = image.FormatType,
+                                        ImageUrl = _apiPath + image.ImageId + image.FormatType,
+                                        CreationTime = image.CreationTime,
+                                        UpdateTime = image.UpdateTime
+                                    }).ToList(),
+                                    Discount = product.Discounts
+                                        .Where(discount => discount.ProductId == product.ProductId)
+                                        .Select(discount => new ReturnDiscountDto
+                                        {
+                                            DiscountId = discount.DiscountId,
+                                            Value = discount.Value,
+                                            Name = discount.Name,
+                                            StartDate = discount.StartDate,
+                                            EndDate = discount.EndDate,
+                                            CreationTime = discount.CreationTime,
+                                            UpdateTime = discount.UpdateTime,
+                                            ProductId = discount.ProductId
+                                        }).FirstOrDefault()
+                                }
+                            }).ToList()
+                    }).ToList()
                 }).FirstOrDefaultAsync(cancellationToken);
         }
 
@@ -111,7 +214,94 @@ namespace MonApi.API.Customers.Repositories
                             UpdateTime = r.UpdateTime,
                             CustomerFirstName = r.User.FirstName,
                             CustomerLastName = r.User.LastName
-                        }).ToList()
+                        }).ToList(),
+                    Orders = customer.Orders.Select(order => new ReturnOrderDto
+                    {
+                        OrderId = order.OrderId,
+                        DeliveryDate = order.DeliveryDate,
+                        DeletionTime = order.DeletionTime,
+                        CreationTime = order.CreationTime,
+                        UpdateTime = order.CreationTime,
+                        Status = new ReturnStatusDto
+                        {
+                            StatusId = order.Status.StatusId,
+                            Name = order.Status.Name,
+                            DeletionTime = order.Status.DeletionTime
+                        },
+                        Lines = (from orderLine in _context.OrderLines
+                            join product in _context.Products on orderLine.ProductId equals product.ProductId
+                            where orderLine.OrderId == order.OrderId
+                            select new ReturnOrderLineDto
+                            {
+                                Quantity = orderLine.Quantity,
+                                UnitPrice = orderLine.UnitPrice,
+                                UpdateTime = orderLine.UpdateTime,
+                                CreationTime = orderLine.CreationTime,
+                                DeletionTime = orderLine.DeletionTime,
+                                Product = new ReturnProductDTO
+                                {
+                                    ProductId = product.ProductId,
+                                    Name = product.Name,
+                                    Cuvee = product.Cuvee,
+                                    Year = product.Year,
+                                    ProducerName = product.ProducerName,
+                                    IsBio = product.IsBio,
+                                    UnitPrice = product.UnitPrice,
+                                    BoxPrice = product.BoxPrice,
+                                    Quantity = product.Quantity,
+                                    AutoRestock = product.AutoRestock,
+                                    AutoRestockTreshold = product.AutoRestockTreshold,
+                                    DeletionTime = product.DeletionTime,
+                                    UpdateTime = product.UpdateTime,
+                                    CreationTime = product.CreationTime,
+                                    Family = new Family
+                                    {
+                                        FamilyId = product.FamilyId,
+                                        Name = product.Family.Name
+                                    },
+                                    Supplier = new ReturnSupplierDTO
+                                    {
+                                        SupplierId = product.SupplierId,
+                                        LastName = product.Supplier.LastName,
+                                        FirstName = product.Supplier.FirstName,
+                                        Contact = product.Supplier.Contact,
+                                        Email = product.Supplier.Email,
+                                        Phone = product.Supplier.Phone,
+                                        Siret = product.Supplier.Siret,
+                                        Address = new ReturnAddressDto
+                                        {
+                                            AddressId = product.Supplier.Address.AddressId,
+                                            AddressLine = product.Supplier.Address.AddressLine,
+                                            City = product.Supplier.Address.City,
+                                            ZipCode = product.Supplier.Address.ZipCode,
+                                            Country = product.Supplier.Address.Country,
+                                            Complement = product.Supplier.Address.Complement,
+                                        }
+                                    },
+                                    Images = product.Images.Select(image => new ReturnImageDto
+                                    {
+                                        ImageId = image.ImageId,
+                                        FormatType = image.FormatType,
+                                        ImageUrl = _apiPath + image.ImageId + image.FormatType,
+                                        CreationTime = image.CreationTime,
+                                        UpdateTime = image.UpdateTime
+                                    }).ToList(),
+                                    Discount = product.Discounts
+                                        .Where(discount => discount.ProductId == product.ProductId)
+                                        .Select(discount => new ReturnDiscountDto
+                                        {
+                                            DiscountId = discount.DiscountId,
+                                            Value = discount.Value,
+                                            Name = discount.Name,
+                                            StartDate = discount.StartDate,
+                                            EndDate = discount.EndDate,
+                                            CreationTime = discount.CreationTime,
+                                            UpdateTime = discount.UpdateTime,
+                                            ProductId = discount.ProductId
+                                        }).FirstOrDefault()
+                                }
+                            }).ToList()
+                    }).ToList()
                 }).FirstOrDefaultAsync(cancellationToken);
         }
 
