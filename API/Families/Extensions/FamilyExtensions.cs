@@ -21,5 +21,15 @@ namespace MonApi.API.Families.Extensions
                 Name = updateFamilyDTO.Name
             };
         }
+
+        public static ReturnFamilyDTO MapToReturnDTO(this Family family)
+        {
+            return new ReturnFamilyDTO()
+            {
+                FamilyId = family.FamilyId,
+                Name = family.Name,
+                DeletionTime = family.DeletionTime,
+            };
+        }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Employees.DTOs;
+using MonApi.API.Employees.Filters;
 using MonApi.API.Employees.Models;
 using MonApi.API.Employees.Services;
 
@@ -34,9 +35,9 @@ public class EmployeeController : ControllerBase
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetAllEmployeesAsync()
+    public async Task<IActionResult> GetAllEmployeesAsync([FromQuery] EmployeeQueryParameters queryParameters)
     {
-        var employees = await _employeeService.GetAllEmployeesAsync();
+        var employees = await _employeeService.GetAllEmployeesAsync(queryParameters);
         return Ok(employees);
     }
     

@@ -49,6 +49,5 @@ namespace MonApi.API.Suppliers.Extensions
                 AddressId = address.AddressId
             };
         }
-
     }
 }

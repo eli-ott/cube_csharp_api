@@ -1,16 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.Models;
+using MonApi.API.CartLines.Models;
+using MonApi.API.Carts.Models;
 using MonApi.API.Customers.Models;
+using MonApi.API.Discounts.Models;
 using MonApi.API.Families.Models;
+using MonApi.API.Images.Models;
+using MonApi.API.OrderLines.Models;
+using MonApi.API.Orders.Models;
 using MonApi.API.Employees.Models;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Roles.Models;
+using MonApi.API.Products.Models;
+using MonApi.API.Reviews.Models;
 using MonApi.API.Statuses.Models;
 using MonApi.API.Suppliers.Models;
 using MonApi.Models;
-using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace MonApi.Shared.Data;
 
@@ -183,6 +188,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("CartLine_Product_FK");
         });
+        modelBuilder.Entity<CartLine>().HasKey(line => new { line.ProductId, line.CartId });
 
         modelBuilder.Entity<Customer>(entity =>
         {
@@ -460,6 +466,9 @@ public partial class StockManagementContext : DbContext
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime")
                 .HasColumnName("creation_time");
+            entity.Property(e => e.DeletionTime)
+                .HasColumnType("datetime")
+                .HasColumnName("deletion_time");
             entity.Property(e => e.OrderId)
                 .HasColumnType("int(11)")
                 .HasColumnName("order_id");
@@ -486,6 +495,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("OrderLine_Product_FK");
         });
+        modelBuilder.Entity<OrderLine>().HasKey(r => new { r.OrderId, r.ProductId });
 
         modelBuilder.Entity<Password>(entity =>
         {
@@ -539,7 +549,7 @@ public partial class StockManagementContext : DbContext
             entity.Property(e => e.AutoRestockTreshold)
                 .HasColumnType("int(11)")
                 .HasColumnName("auto_restock_treshold");
-            entity.Property(e => e.CartonPrice).HasColumnName("carton_price");
+            entity.Property(e => e.BoxPrice).HasColumnName("box_price");
             entity.Property(e => e.CreationTime)
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime")
@@ -627,6 +637,7 @@ public partial class StockManagementContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Review_User_FK");
         });
+        modelBuilder.Entity<Review>().HasKey(r => new { r.ProductId, r.UserId });
 
         modelBuilder.Entity<Role>(entity =>
         {

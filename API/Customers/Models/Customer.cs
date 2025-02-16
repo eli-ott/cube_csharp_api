@@ -3,6 +3,8 @@ using MonApi.API.Passwords.Models;
 using MonApi.Models;
 using System;
 using System.Collections.Generic;
+using MonApi.API.Carts.Models;
+using MonApi.API.Orders.Models;
 
 namespace MonApi.API.Customers.Models;
 

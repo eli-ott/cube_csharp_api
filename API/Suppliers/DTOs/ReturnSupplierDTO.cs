@@ -2,50 +2,37 @@
 using MonApi.API.Addresses.Models;
 using MonApi.Models;
 using System.ComponentModel.DataAnnotations;
+using MonApi.API.Products.DTOs;
 
 namespace MonApi.API.Suppliers.DTOs
 {
     public class ReturnSupplierDTO
     {
-        [Required]
-        [StringLength(255)]
-        public int SupplierId { get; set; }
+        [Required] public int SupplierId { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string LastName { get; set; } = null!;
+        [Required] [StringLength(255)] public required string LastName { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string FirstName { get; set; } = null!;
+        [Required] [StringLength(255)] public required string FirstName { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string Contact { get; set; } = null!;
+        [Required] [StringLength(255)] public required string Contact { get; set; }
 
 
         [Required]
         [StringLength(255)]
         [EmailAddress]
-        public string Email { get; set; } = null!;
+        public required string Email { get; set; }
 
-        [Required]
-        [StringLength(15)]
-        [Phone]
-        public string Phone { get; set; } = null!;
+        [Required] [StringLength(15)] [Phone] public required string Phone { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        public string Siret { get; set; } = null!;
+        [Required] [StringLength(255)] public required string Siret { get; set; }
 
         public DateTime? DeletionTime { get; set; }
 
-        public DateTime UpdateTime { get; set; }
+        [Required] public required DateTime UpdateTime { get; set; }
 
-        public DateTime CreationTime { get; set; }
+        [Required] public required DateTime CreationTime { get; set; }
 
-        [Required]
-        public ReturnAddressDto Address { get; set; } = null!;
-
+        [Required] public required ReturnAddressDto Address { get; set; }
+        public List<ReturnProductDTO>? Products { get; set; }
     }
 }

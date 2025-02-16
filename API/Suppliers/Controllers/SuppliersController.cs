@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using MonApi.API.Suppliers.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using MonApi.API.Suppliers.Filters;
 
 namespace MonApi.API.Suppliers.Controllers;
 
@@ -24,10 +25,10 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAllSuppliers()
+    public async Task<IActionResult> GetAllSuppliers([FromQuery] SupplierQueryParameters queryParameters)
     {
-        var Suppliers = await _suppliersService.GetAll();
-        return Ok(Suppliers);
+        var suppliers = await _suppliersService.GetAll(queryParameters);
+        return Ok(suppliers);
     }
 
 

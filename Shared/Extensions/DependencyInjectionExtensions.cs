@@ -11,9 +11,20 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using MonApi.API.Addresses.Repositories;
 using MonApi.API.Employees.Repositories;
 using MonApi.API.Employees.Services;
+using MonApi.API.CartLines.Repositories;
+using MonApi.API.CartLines.Services;
+using MonApi.API.Carts.Repositories;
+using MonApi.API.Discounts.Repositories;
+using MonApi.API.Discounts.Services;
 using MonApi.API.Passwords.Services;
+using MonApi.Models;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
+using MonApi.API.Images.Repositories;
+using MonApi.API.Images.Services;
+using MonApi.API.OrderLines.Repositories;
+using MonApi.API.Orders.Repositories;
+using MonApi.API.Orders.Services;
 using MonApi.API.Roles.Repositories;
 using MonApi.API.Roles.Services;
 using MonApi.API.Statuses.Repositories;
@@ -22,6 +33,10 @@ using MonApi.Shared.Data;
 using MonApi.Shared.Utils;
 using MonApi.API.Suppliers.Repositories;
 using MonApi.API.Suppliers.Services;
+using MonApi.API.Products.Repositories;
+using MonApi.API.Products.Services;
+using MonApi.API.Reviews.Repositories;
+using MonApi.API.Reviews.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -44,12 +59,16 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IPasswordService, PasswordService>();
             builder.Services.AddScoped<IFamiliesService, FamiliesService>();
             builder.Services.AddScoped<IStatusService, StatusService>();
-            builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IImagesService, ImagesService>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IDiscountService, DiscountService>();
+            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<ICartLineService, CartLineService>();
+            builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IEmployeeService, EmployeeServices>();
-
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -59,10 +78,17 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IAddressRepository, AddressRepository>();
             builder.Services.AddScoped<IFamiliesRepository, FamiliesRepository>();
             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
-            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<ISuppliersRepository, SuppliersRepository>();
+            builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
+            builder.Services.AddScoped<IProductsRepository, ProductsRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+            builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+            builder.Services.AddScoped<ICartLineRepository, CartLineRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

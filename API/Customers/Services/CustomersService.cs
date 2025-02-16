@@ -7,31 +7,52 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.IdentityModel.Tokens;
 using MonApi.API.Addresses.Extensions;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.CartLines.DTOs;
+using MonApi.API.CartLines.Extensions;
+using MonApi.API.CartLines.Repositories;
+using MonApi.API.Carts.DTOs;
+using MonApi.API.Carts.Extensions;
+using MonApi.API.Carts.Repositories;
 using MonApi.API.Customers.DTOs;
 using MonApi.API.Customers.Extensions;
+using MonApi.API.Customers.Filters;
 using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
+using MonApi.API.Products.Repositories;
+using MonApi.API.Reviews.Extensions;
+using MonApi.API.Reviews.Models;
+using MonApi.API.Reviews.Repositories;
+using MonApi.Shared.Exceptions;
+using MonApi.Shared.Pagination;
 using MonApi.Shared.Utils;
 
 namespace MonApi.API.Customers.Services
 {
     public class CustomersService : ICustomersService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ICustomersRepository _customersRepository;
         private readonly IPasswordRepository _passwordRepository;
         private readonly IAddressRepository _addressRepository;
+        private readonly IReviewRepository _reviewRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly ICartLineRepository _cartLineRepository;
+        private readonly IProductsRepository _productsRepository;
         private readonly IEmailSender _emailSender;
 
         public CustomersService(ICustomersRepository customersRepository, IPasswordRepository passwordRepository,
-            IAddressRepository addressRepository, IEmailSender emailSender, IHttpContextAccessor httpContextAccessor)
+            IAddressRepository addressRepository, IReviewRepository reviewRepository, IEmailSender emailSender,
+            ICartRepository cartRepository, ICartLineRepository cartLineRepository,
+            IProductsRepository productsRepository)
         {
             _customersRepository = customersRepository;
             _passwordRepository = passwordRepository;
             _addressRepository = addressRepository;
+            _reviewRepository = reviewRepository;
+            _cartRepository = cartRepository;
+            _cartLineRepository = cartLineRepository;
+            _productsRepository = productsRepository;
             _emailSender = emailSender;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto)
@@ -69,7 +90,11 @@ namespace MonApi.API.Customers.Services
             var newCustomer = await _customersRepository.AddAsync(customer);
             var newCustomerDetails = await _customersRepository.FindAsync(newCustomer.CustomerId);
 
-            return newCustomerDetails!;
+            // We create the user's cart
+            var newCart = CartExtensions.MapToModel(newCustomerDetails!.CustomerId);
+            await _cartRepository.AddAsync(newCart);
+
+            return newCustomerDetails;
         }
 
         public async Task<string> LogCustomer(LoginDTO loginDto)
@@ -145,11 +170,11 @@ namespace MonApi.API.Customers.Services
         {
             var customer = await _customersRepository.FindByEmailAsync(resetPasswordDto.Email)
                            ?? throw new NullReferenceException("L'utilisateur n'existe pas");
-            if (customer.DeletionTime != null) throw new BadHttpRequestException("L'utilisateur a été supprimé");
+            if (customer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             var password = await _passwordRepository.FindAsync(customer.Password!.PasswordId)
                            ?? throw new NullReferenceException("Le mot de passe à réinitialiser est introuvable");
-            if (password.DeletionTime != null) throw new BadHttpRequestException("Le mot de passe a été supprimé");
+            if (password.DeletionTime != null) throw new SoftDeletedException("This password has been deleted.");
 
             var passwordHash = PasswordUtils.HashPassword(resetPasswordDto.Password, out var salt);
 
@@ -165,15 +190,171 @@ namespace MonApi.API.Customers.Services
         {
             var customer = await _customersRepository.FindByEmailAsync(email)
                            ?? throw new NullReferenceException("Le clent n'éxiste pas");
-            if (customer.DeletionTime != null) throw new BadHttpRequestException("Le client a été supprimé");
+            if (customer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             if (customer.ValidationId != guid)
                 throw new BadHttpRequestException("Le guid n'est pas valide");
 
             customer.Active = true;
-            var customerModel = customer.MapTocustomerMode();
-            Console.WriteLine(JsonSerializer.Serialize(customerModel));
+            var customerModel = customer.MapToCustomerModel();
+
             await _customersRepository.UpdateAsync(customerModel);
+        }
+
+        public async Task<PagedResult<ReturnCustomerDto>> GetAllCustomers(CustomerQueryParameters queryParameters)
+        {
+            return await _customersRepository.ListAsync(queryParameters);
+        }
+
+        public async Task<ReturnCustomerDto> GetCustomerById(int customerId)
+        {
+            var customer = await _customersRepository.FindAsync(customerId)
+                           ?? throw new NullReferenceException("Le client n'éxiste pas");
+
+            return customer;
+        }
+
+        public async Task<ReturnCustomerDto> UpdateCustomer(int customerId, UpdateCustomerDto updateCustomerDto)
+        {
+            var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
+                                ?? throw new NullReferenceException("Le client n'éxiste pas");
+            if (foundCustomer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
+
+            foundCustomer.LastName = updateCustomerDto.LastName;
+            foundCustomer.FirstName = updateCustomerDto.FirstName;
+            foundCustomer.Phone = updateCustomerDto.Phone;
+
+            var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
+                               ?? throw new NullReferenceException("L'adresse relié à l'utilisateur est introuvable");
+            if (foundAddress.DeletionTime != null)
+                throw new SoftDeletedException("This address has been deleted.");
+
+            if (foundAddress.AddressId != updateCustomerDto.Address.AddressId)
+                throw new BadHttpRequestException("L'adresse ne correspond pas au client");
+
+            // Updating the address values
+            foundAddress.Country = updateCustomerDto.Address.Country;
+            foundAddress.AddressLine = updateCustomerDto.Address.AddressLine;
+            foundAddress.City = updateCustomerDto.Address.City;
+            foundAddress.ZipCode = updateCustomerDto.Address.ZipCode;
+            foundCustomer.Address.Complement = updateCustomerDto.Address.Complement;
+
+            // Updating the address
+            await _addressRepository.UpdateAsync(foundAddress);
+
+            // Checking if the user email changed
+            // If it changed we set its active status to 0 and resend an email to confirm the new email it's his
+            if (foundCustomer.Email != updateCustomerDto.Email)
+            {
+                foundCustomer.Active = false;
+                foundCustomer.Email = updateCustomerDto.Email;
+
+                var baseUrl = Environment.GetEnvironmentVariable("URL_FRONT")
+                              ?? throw new KeyNotFoundException("L'url du front n'est pas disponible");
+
+                var guid = Guid.NewGuid();
+                var completeUrl = $"{baseUrl}/confirm-registration/{foundCustomer.Email}/{guid}";
+
+                var emailContent =
+                    $"Pour confirmer votre nouvelle adresse veuillez utiliser le lien suivant : {completeUrl}";
+                var emailSubject = "Changement d'email sur NegoSud";
+
+                await _emailSender.SendEmailAsync(foundCustomer.Email, emailSubject,
+                    emailContent);
+
+                foundCustomer.ValidationId = guid.ToString();
+            }
+
+            await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
+
+            // Removing useless properties for return
+            foundCustomer.Password = null;
+            foundCustomer.ValidationId = null;
+            return foundCustomer;
+        }
+
+        public async Task SoftDeleteCustomer(int customerId)
+        {
+            var foundCustomer = await _customersRepository.FindWithPasswordAsync(customerId)
+                                ?? throw new NullReferenceException("L'utilisateur est introuvable");
+            if (foundCustomer.DeletionTime != null)
+                throw new SoftDeletedException("This customer has been deleted already.");
+
+            var foundAddress = await _addressRepository.FindAsync(foundCustomer.Address.AddressId)
+                               ?? throw new NullReferenceException("L'adresse est introuvable");
+            if (foundAddress.DeletionTime != null)
+                throw new SoftDeletedException("This address has been deleted already.");
+
+            var foundPassword = await _passwordRepository.FindAsync(foundCustomer.Password!.PasswordId)
+                                ?? throw new NullReferenceException(
+                                    "Le mot de passe associé à l'utilisateur est introuvable");
+            if (foundPassword.DeletionTime != null)
+                throw new SoftDeletedException("This password has been deleted already.");
+
+            var reviews = foundCustomer.Reviews;
+            if (reviews != null && reviews.Count > 0)
+            {
+                var mappedReviews = reviews.Select(x => x.MapReviewToModel()).ToList();
+                await _reviewRepository.RemoveRangeAsync(mappedReviews);
+            }
+
+            var foundCart = await _cartRepository.FirstOrDefaultAsync(cart => cart.CustomerId == customerId)
+                            ?? throw new NullReferenceException("Can't find user's cart");
+
+            var foundCartLines = await _cartLineRepository.ListAsync(x => x.CartId == foundCart.CartId);
+            await _cartLineRepository.RemoveRangeAsync(foundCartLines);
+
+            await _cartRepository.DeleteAsync(foundCart);
+
+            // Update the password deletion time
+            foundPassword.DeletionTime = DateTime.UtcNow;
+            await _passwordRepository.UpdateAsync(foundPassword);
+
+            // Update the address deletion time
+            foundAddress.DeletionTime = DateTime.UtcNow;
+            await _addressRepository.UpdateAsync(foundAddress);
+
+            foundCustomer.DeletionTime = DateTime.UtcNow;
+            await _customersRepository.UpdateAsync(foundCustomer.MapToCustomerModel());
+        }
+
+        public async Task<ReturnCartDto> GetCart(int customerId)
+        {
+            var foundUser = await _customersRepository.FindAsync(customerId)
+                            ?? throw new NullReferenceException("Can't find the user");
+            if (foundUser.DeletionTime != null)
+                throw new SoftDeletedException("User has been deleted");
+
+            var foundCart = await _cartRepository.GetCart(customerId)
+                            ?? throw new NullReferenceException("Can't find the user cart");
+
+            return foundCart;
+        }
+
+        public async Task AddToCart(int customerId, CreateCartLineDto createCartLineDto)
+        {
+            var foundUser = await _customersRepository.FindAsync(customerId)
+                            ?? throw new NullReferenceException("Can't find the user");
+            if (foundUser.DeletionTime != null)
+                throw new SoftDeletedException("User has been deleted");
+
+            var foundProduct = await _productsRepository.FindProduct(createCartLineDto.ProductId)
+                               ?? throw new NullReferenceException("Can't find the product");
+            if (foundProduct.DeletionTime != null)
+                throw new SoftDeletedException("Product has been deleted");
+
+            var foundCart = await _cartRepository.GetCart(customerId)
+                            ?? throw new NullReferenceException("Can't find the user cart");
+
+            foreach (var line in foundCart.CartLines)
+            {
+                if (line.Product.ProductId == createCartLineDto.ProductId)
+                    throw new BadHttpRequestException("Product is already in the cart");
+            }
+
+            var mappedCartLine = createCartLineDto.MapToModel(foundCart.CartId);
+
+            await _cartLineRepository.AddAsync(mappedCartLine);
         }
     }
 }

@@ -1,7 +1,5 @@
 ﻿using MonApi.API.Addresses.Models;
-using MonApi.Models;
-using System;
-using System.Collections.Generic;
+using MonApi.API.Products.Models;
 
 namespace MonApi.API.Suppliers.Models;
 

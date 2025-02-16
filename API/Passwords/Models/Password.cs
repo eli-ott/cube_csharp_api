@@ -1,7 +1,5 @@
 ﻿using MonApi.API.Customers.Models;
 using MonApi.API.Employees.Models;
-using System;
-using System.Collections.Generic;
 
 namespace MonApi.API.Passwords.Models;
 
