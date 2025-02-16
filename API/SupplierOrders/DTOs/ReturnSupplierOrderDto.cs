@@ -12,7 +12,7 @@ public class ReturnSupplierOrderDto
     public DateTime? DeletionTime { get; set; }
     [Required] public required DateTime CreationTime { get; set; }
     [Required] public required DateTime UpdateTime { get; set; }
-    [Required] public required ReturnEmployeeDto Employee { get; set; } // TODO Wait for the employee crud
+    [Required] public required ReturnEmployeeDto Employee { get; set; }
     [Required] public required ReturnStatusDto Status { get; set; }
     public List<ReturnSupplierOrderLineDto>? Lines { get; set; }
 }
