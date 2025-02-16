@@ -1,6 +1,5 @@
 ﻿using MonApi.API.Addresses.DTOs;
 using MonApi.API.Addresses.Models;
-using MonApi.Models;
 using System.ComponentModel.DataAnnotations;
 using MonApi.API.Products.DTOs;
 

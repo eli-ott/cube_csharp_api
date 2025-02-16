@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using MonApi.API.Passwords.Models;
 using MonApi.API.Roles.Models;
-using MonApi.Models;
+using MonApi.API.SupplierOrders.Models;
 
 namespace MonApi.API.Employees.Models;
 
