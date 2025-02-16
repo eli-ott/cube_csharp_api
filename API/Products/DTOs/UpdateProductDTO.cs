@@ -16,7 +16,7 @@ namespace MonApi.API.Products.DTOs
 
         public float? UnitPrice { get; set; }
 
-        public float? CartonPrice { get; set; }
+        public float? BoxPrice { get; set; }
 
         [Required] public required int Quantity { get; set; }
 
