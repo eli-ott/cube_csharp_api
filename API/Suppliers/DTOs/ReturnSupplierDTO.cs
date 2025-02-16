@@ -8,7 +8,7 @@ namespace MonApi.API.Suppliers.DTOs
 {
     public class ReturnSupplierDTO
     {
-        [Required] [StringLength(255)] public int SupplierId { get; set; }
+        [Required] public int SupplierId { get; set; }
 
         [Required] [StringLength(255)] public required string LastName { get; set; }
 
@@ -28,9 +28,9 @@ namespace MonApi.API.Suppliers.DTOs
 
         public DateTime? DeletionTime { get; set; }
 
-        public DateTime UpdateTime { get; set; }
+        [Required] public required DateTime UpdateTime { get; set; }
 
-        public DateTime CreationTime { get; set; }
+        [Required] public required DateTime CreationTime { get; set; }
 
         [Required] public required ReturnAddressDto Address { get; set; }
         public List<ReturnProductDTO>? Products { get; set; }

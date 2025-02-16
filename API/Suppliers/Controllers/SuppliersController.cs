@@ -27,8 +27,8 @@ public class SuppliersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllSuppliers([FromQuery] SupplierQueryParameters queryParameters)
     {
-        var Suppliers = await _suppliersService.GetAll(queryParameters);
-        return Ok(Suppliers);
+        var suppliers = await _suppliersService.GetAll(queryParameters);
+        return Ok(suppliers);
     }
 
 

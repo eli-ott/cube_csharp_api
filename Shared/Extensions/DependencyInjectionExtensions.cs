@@ -9,12 +9,15 @@ using MonApi.API.Passwords.Repositories;
 using System.Text;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MonApi.API.Addresses.Repositories;
+using MonApi.API.Employees.Repositories;
+using MonApi.API.Employees.Services;
 using MonApi.API.CartLines.Repositories;
 using MonApi.API.CartLines.Services;
 using MonApi.API.Carts.Repositories;
 using MonApi.API.Discounts.Repositories;
 using MonApi.API.Discounts.Services;
 using MonApi.API.Passwords.Services;
+using MonApi.Models;
 using MonApi.API.Families.Repositories;
 using MonApi.API.Families.Services;
 using MonApi.API.Images.Repositories;
@@ -65,6 +68,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ICartLineService, CartLineService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IEmployeeService, EmployeeServices>();
         }
 
         public static void AddRepositories(this WebApplicationBuilder builder)
@@ -84,6 +88,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IOrderLineRepository, OrderLineRepository>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
 
         public static void AddJWT(this WebApplicationBuilder builder)

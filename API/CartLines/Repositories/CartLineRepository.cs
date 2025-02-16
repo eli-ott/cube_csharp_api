@@ -69,6 +69,8 @@ public class CartLineRepository : BaseRepository<CartLine>, ICartLineRepository
                             Email = product.Supplier.Email,
                             Phone = product.Supplier.Phone,
                             Siret = product.Supplier.Siret,
+                            CreationTime = product.Supplier.CreationTime,
+                            UpdateTime = product.Supplier.UpdateTime,
                             Address = new ReturnAddressDto
                             {
                                 AddressId = product.Supplier.Address.AddressId,
