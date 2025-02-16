@@ -1,4 +1,5 @@
 using DotNetEnv;
+using Microsoft.Extensions.FileProviders;
 using MonApi.API.Middleware;
 using MonApi.Shared.Extensions;
 
@@ -21,6 +22,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Environment.CurrentDirectory, "Uploads")),
+    RequestPath = "/Uploads"
+});
+//Enable directory browsing
+app.UseDirectoryBrowser(new DirectoryBrowserOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Environment.CurrentDirectory, "Uploads")),
+    RequestPath = "/Uploads"
+});
 
 // Activation de l'authentification et de l'autorisation
 app.UseAuthentication();
