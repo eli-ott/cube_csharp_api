@@ -28,7 +28,7 @@ public static class EmployeeExtensions
             LastName = returnEmployeeDto.LastName,
             Email = returnEmployeeDto.Email,
             Phone = returnEmployeeDto.Phone,
-            RoleId = returnEmployeeDto.RoleId,
+            RoleId = returnEmployeeDto.Role.RoleId,
             PasswordId = returnEmployeeDto.PasswordId
         };
     }

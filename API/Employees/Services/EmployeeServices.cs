@@ -27,17 +27,14 @@ public class EmployeeServices : IEmployeeService
 
     public async Task<ReturnEmployeeDto> GetEmployeeByIdAsync(int id)
     {
-        Console.WriteLine("GetEmployeeByIdAsync");
         ReturnEmployeeDto employee =
             await _employeeRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
-        if (employee.DeletionTime != null) throw new Exception("Employee deleted");
 
         return employee;
     }
 
     public async Task<ReturnEmployeeDto> AddEmployeeAsync(CreateEmployeeDto createEmployeeDto)
     {
-        Console.WriteLine("adding new employee");
         if (await _employeeRepository.AnyAsync(s => s.Email == createEmployeeDto.Email))
             throw new ArgumentException("Employee already exist");
 

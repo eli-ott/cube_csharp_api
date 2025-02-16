@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using MonApi.API.Passwords.DTOs;
+using MonApi.API.Roles.DTOs;
 
 namespace MonApi.API.Employees.DTOs;
 
@@ -27,10 +29,10 @@ public class ReturnEmployeeDto
     
     [Required]
 
-    public int RoleId { get; set; }
+    public required ReturnRoleDTO Role { get; set; }
 
-    [Required]
     public int PasswordId { get; set; }
+    public ReturnPasswordDto? Password { get; set; }
     
     public DateTime? DeletionTime { get; set; }
 
