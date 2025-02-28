@@ -10,4 +10,5 @@ public interface IEmployeeRepository : IBaseRepository<Employee>
 {
     Task<ReturnEmployeeDto?> FindAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResult<ReturnEmployeeDto>> GetAll(EmployeeQueryParameters queryParameters, CancellationToken cancellationToken = default);
+    Task<ReturnEmployeeDto?> FindAsyncWithPassword(int id, CancellationToken cancellationToken = default);
 }

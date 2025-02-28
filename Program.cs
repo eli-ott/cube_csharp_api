@@ -11,6 +11,7 @@ builder.InjectDependencies();
 
 var app = builder.Build();
 
+app.UseCors("AllowReactApp");
 app.UseCustomExceptionHandler();
 app.UseApiKeyMiddleware();
 

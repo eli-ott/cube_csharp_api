@@ -53,6 +53,7 @@ namespace MonApi.Shared.Extensions
             builder.AddJWT();
             builder.AddSwagger();
             builder.AddEFCoreConfiguration();
+            builder.ConfigureCors();
         }
 
         public static void AddServices(this WebApplicationBuilder builder)
@@ -162,6 +163,20 @@ namespace MonApi.Shared.Extensions
 
             builder.Services.AddDbContext<StockManagementContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+        }
+
+        public static void ConfigureCors(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowReactApp",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3001")
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+            });
         }
     }
 }

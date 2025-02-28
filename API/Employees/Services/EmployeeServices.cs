@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MonApi.API.Employees.DTOs;
 using MonApi.API.Employees.Models;
 using MonApi.API.Employees.Extensions;
@@ -6,9 +7,11 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using MonApi.API.Employees.Filters;
 using MonApi.API.Passwords.Repositories;
 using MonApi.API.Passwords.Extensions;
+using MonApi.API.Roles.Models;
 using MonApi.API.Suppliers.DTOs;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
+using MonApi.Shared.Utils;
 
 
 namespace MonApi.API.Employees.Services;
@@ -39,6 +42,12 @@ public class EmployeeServices : IEmployeeService
             throw new ArgumentException("Employee already exist");
 
         var newPassword = createEmployeeDto.MapToPasswordModel();
+        
+        // Hachage du mot de passe
+        var hashedPassword = PasswordUtils.HashPassword(createEmployeeDto.Password, out var salt);
+        newPassword.PasswordHash = hashedPassword;
+        newPassword.PasswordSalt = Convert.ToBase64String(salt);
+        
         var createdPassword = await _passwordRepository.AddAsync(newPassword);
 
         var newEmployee = createEmployeeDto.MapToEmployeeModel(createdPassword);
@@ -56,13 +65,19 @@ public class EmployeeServices : IEmployeeService
 
     public async Task<ReturnEmployeeDto> UpdateEmployeeAsync(int id, UpdateEmployeeDto employee)
     {
-        var model = await _employeeRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+        var model = await _employeeRepository.FindAsyncWithPassword(id) ??
+                    throw new KeyNotFoundException("Id not found");
 
         if (model.DeletionTime != null) throw new Exception("Employee deleted");
 
         var updateEmployee = employee.MapToEmployeeModel(id);
 
-        updateEmployee.PasswordId = model.PasswordId;
+        updateEmployee.PasswordId = model.Password!.PasswordId;
+        updateEmployee.Role = new Role
+        {
+            RoleId = updateEmployee.Role.RoleId,
+            Name = updateEmployee.Role.Name
+        };
 
         await _employeeRepository.UpdateAsync(updateEmployee);
         ReturnEmployeeDto newModifiedEmployeeDetails =
@@ -75,14 +90,15 @@ public class EmployeeServices : IEmployeeService
     public async Task<ReturnEmployeeDto> SoftDeleteEmployeeAsync(int id)
     {
         ReturnEmployeeDto employee =
-            await _employeeRepository.FindAsync(id) ?? throw new KeyNotFoundException("Id not found");
+            await _employeeRepository.FindAsyncWithPassword(id) ?? throw new KeyNotFoundException("Id not found");
         if (employee.DeletionTime != null) throw new Exception("Employee deleted");
 
-        var foundPassword = await _passwordRepository.FindAsync(employee.PasswordId)
+        var foundPassword = await _passwordRepository.FindAsync(employee.Password!.PasswordId)
                             ?? throw new NullReferenceException("Can't find password");
         if (foundPassword.DeletionTime != null)
-            throw new SoftDeletedException("Password already deleted");
-        
+            Console.Error.WriteLine($"" +
+                                    $"Password with id {foundPassword.PasswordId} already deleted");
+
         foundPassword.DeletionTime = DateTime.UtcNow;
         await _passwordRepository.UpdateAsync(foundPassword);
 

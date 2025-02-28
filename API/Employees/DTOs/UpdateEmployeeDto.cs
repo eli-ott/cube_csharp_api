@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using MonApi.API.Roles.DTOs;
 
 namespace MonApi.API.Employees.DTOs;
 
@@ -23,6 +24,6 @@ public class UpdateEmployeeDto
     public required string Phone { get; set; }
     
     [Required]
-    public required int RoleId { get; set; }
+    public required CreateRoleDTO Role { get; set; }
     
 }

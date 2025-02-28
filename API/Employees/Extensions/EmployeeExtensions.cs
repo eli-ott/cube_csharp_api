@@ -1,6 +1,7 @@
 using MonApi.API.Employees.DTOs;
 using MonApi.API.Employees.Models;
 using MonApi.API.Passwords.Models;
+using MonApi.API.Roles.Extensions;
 
 namespace MonApi.API.Employees.Extensions;
 
@@ -29,7 +30,7 @@ public static class EmployeeExtensions
             Email = returnEmployeeDto.Email,
             Phone = returnEmployeeDto.Phone,
             RoleId = returnEmployeeDto.Role.RoleId,
-            PasswordId = returnEmployeeDto.PasswordId
+            PasswordId =  returnEmployeeDto.Password != null ? returnEmployeeDto.Password.PasswordId : returnEmployeeDto.PasswordId
         };
     }
     
@@ -42,7 +43,7 @@ public static class EmployeeExtensions
             LastName = updateEmployeeDto.LastName,
             Email = updateEmployeeDto.Email,
             Phone = updateEmployeeDto.Phone,
-            RoleId = updateEmployeeDto.RoleId
+            Role = updateEmployeeDto.Role.MapToRoleModel()
         };
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MonApi.API.Employees.DTOs;
 using MonApi.API.Employees.Filters;
@@ -10,7 +11,6 @@ namespace MonApi.API.Employees.Controllers;
 [ApiController]
 [Route("employees")]
 [Authorize]
-
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
