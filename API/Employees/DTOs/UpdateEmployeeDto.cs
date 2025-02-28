@@ -24,6 +24,6 @@ public class UpdateEmployeeDto
     public required string Phone { get; set; }
     
     [Required]
-    public required CreateRoleDTO Role { get; set; }
+    public required UpdateRoleDTO Role { get; set; }
     
 }

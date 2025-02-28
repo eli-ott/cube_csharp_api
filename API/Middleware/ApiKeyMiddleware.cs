@@ -23,8 +23,6 @@ public class ApiKeyMiddleware
 
         if (!isSwagger && !isUploads)
         {
-            Console.WriteLine(context.Request.Headers["x-api-key"]);
-            Console.WriteLine(context.Request.Headers.TryGetValue(ApiKeyName, out var test));
             // Check if the api key was provided in the headers
             if (!context.Request.Headers.TryGetValue(ApiKeyName, out var extractedApiKey))
             {

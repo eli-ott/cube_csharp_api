@@ -17,6 +17,7 @@ public static class RoleExtensions
     {
         return new Role()
         {
+            RoleId = updateRoleDto.RoleId,
             Name = updateRoleDto.Name
         };
     }

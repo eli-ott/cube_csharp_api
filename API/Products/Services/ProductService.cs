@@ -125,7 +125,6 @@ namespace MonApi.API.Products.Services
             }
 
             product.DeletionTime = DateTime.UtcNow;
-            Console.WriteLine(JsonSerializer.Serialize(product.MapToProductModel()));
             await _productsRepository.SoftDeleteAsync(product.MapToProductModel());
 
             return product;

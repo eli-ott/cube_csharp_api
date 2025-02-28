@@ -51,14 +51,12 @@ public class EmployeeServices : IEmployeeService
         var createdPassword = await _passwordRepository.AddAsync(newPassword);
 
         var newEmployee = createEmployeeDto.MapToEmployeeModel(createdPassword);
-        Console.WriteLine("creating new employee");
 
         await _employeeRepository.AddAsync(newEmployee);
 
 
         ReturnEmployeeDto newEmployeeDetails = await _employeeRepository.FindAsync(newEmployee.EmployeeId) ??
                                                throw new KeyNotFoundException("Id not found");
-        Console.WriteLine("retrieving employee details");
 
         return newEmployeeDetails;
     }
@@ -108,6 +106,7 @@ public class EmployeeServices : IEmployeeService
 
         employee.DeletionTime = employeeToDelete.DeletionTime;
 
+        Console.WriteLine(JsonSerializer.Serialize(employeeToDelete.Role));
         await _employeeRepository.UpdateAsync(employeeToDelete);
 
         return employee;
