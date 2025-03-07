@@ -12,6 +12,7 @@ builder.InjectDependencies();
 var app = builder.Build();
 
 app.UseCors("AllowReactApp");
+app.UseCors("AllowBacklog");
 app.UseCustomExceptionHandler();
 app.UseApiKeyMiddleware();
 
