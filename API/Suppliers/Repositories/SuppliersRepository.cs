@@ -14,6 +14,7 @@ using System.Security.Cryptography.X509Certificates;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Products.DTOs;
 using MonApi.API.Reviews.DTOs;
+using MonApi.API.Families.DTOs;
 
 namespace MonApi.API.Suppliers.Repositories
 {
@@ -75,7 +76,10 @@ namespace MonApi.API.Suppliers.Repositories
                             ProducerName = product.ProducerName,
                             IsBio = product.IsBio,
                             Quantity = product.Quantity,
-                            Family = product.Family,
+                            Family = new ReturnFamilyDTO { 
+                                FamilyId = product.FamilyId,
+                                Name = product.Name
+                            },
                             Images = product.Images.Select(image => new ReturnImageDto
                             {
                                 ImageId = image.ImageId,

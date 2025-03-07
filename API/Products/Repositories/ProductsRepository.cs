@@ -11,6 +11,7 @@ using MonApi.API.Images.DTOs;
 using MonApi.API.Products.Filters;
 using MonApi.API.Reviews.DTOs;
 using MonApi.Shared.Pagination;
+using MonApi.API.Families.DTOs;
 
 namespace MonApi.API.Products.Repositories
 {
@@ -48,7 +49,7 @@ namespace MonApi.API.Products.Repositories
                     DeletionTime = product.DeletionTime,
                     UpdateTime = product.UpdateTime,
                     CreationTime = product.CreationTime,
-                    Family = new Family
+                    Family = new ReturnFamilyDTO
                     {
                         FamilyId = product.FamilyId,
                         Name = product.Family.Name
@@ -129,7 +130,7 @@ namespace MonApi.API.Products.Repositories
                     DeletionTime = product.DeletionTime,
                     UpdateTime = product.UpdateTime,
                     CreationTime = product.CreationTime,
-                    Family = new Family
+                    Family = new ReturnFamilyDTO
                     {
                         FamilyId = product.FamilyId,
                         Name = product.Family.Name

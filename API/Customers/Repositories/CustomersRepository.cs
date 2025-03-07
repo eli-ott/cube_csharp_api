@@ -16,6 +16,7 @@ using MonApi.API.Products.DTOs;
 using MonApi.API.Reviews.DTOs;
 using MonApi.API.Statuses.DTOs;
 using MonApi.API.Suppliers.DTOs;
+using MonApi.API.Families.DTOs;
 
 namespace MonApi.API.Customers.Repositories
 {
@@ -112,7 +113,7 @@ namespace MonApi.API.Customers.Repositories
                                     DeletionTime = product.DeletionTime,
                                     UpdateTime = product.UpdateTime,
                                     CreationTime = product.CreationTime,
-                                    Family = new Family
+                                    Family = new ReturnFamilyDTO
                                     {
                                         FamilyId = product.FamilyId,
                                         Name = product.Family.Name
@@ -256,7 +257,7 @@ namespace MonApi.API.Customers.Repositories
                                     DeletionTime = product.DeletionTime,
                                     UpdateTime = product.UpdateTime,
                                     CreationTime = product.CreationTime,
-                                    Family = new Family
+                                    Family = new ReturnFamilyDTO
                                     {
                                         FamilyId = product.FamilyId,
                                         Name = product.Family.Name

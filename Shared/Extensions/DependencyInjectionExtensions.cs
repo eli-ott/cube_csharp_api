@@ -172,7 +172,16 @@ namespace MonApi.Shared.Extensions
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
+                        policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader();
+                    });
+                options.AddPolicy("AllowBackLog",
+                    policy =>
+                    {
                         policy.WithOrigins("http://localhost:3001")
+                            .AllowCredentials()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
                     });
