@@ -6,6 +6,7 @@ using MonApi.API.Discounts.DTOs;
 using MonApi.API.Discounts.Models;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Reviews.DTOs;
+using MonApi.API.Families.DTOs;
 
 namespace MonApi.API.Products.DTOs
 {
@@ -50,7 +51,7 @@ namespace MonApi.API.Products.DTOs
         public DateTime CreationTime { get; set; }
 
         [Required]
-        public required Family Family { get; set; } = null!;
+        public required ReturnFamilyDTO Family { get; set; } = null!;
         public ReturnSupplierDTO? Supplier { get; set; }
         [Required]
         public required List<ReturnImageDto> Images { get; set; }

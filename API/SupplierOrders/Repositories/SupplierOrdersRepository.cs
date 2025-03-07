@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MonApi.API.Addresses.DTOs;
 using MonApi.API.Discounts.DTOs;
 using MonApi.API.Employees.DTOs;
+using MonApi.API.Families.DTOs;
 using MonApi.API.Families.Models;
 using MonApi.API.Images.DTOs;
 using MonApi.API.Products.DTOs;
@@ -98,7 +99,7 @@ public class SupplierOrdersRepository : BaseRepository<SupplierOrder>, ISupplier
                             DeletionTime = product.DeletionTime,
                             UpdateTime = product.UpdateTime,
                             CreationTime = product.CreationTime,
-                            Family = new Family
+                            Family = new ReturnFamilyDTO
                             {
                                 FamilyId = product.FamilyId,
                                 Name = product.Family.Name

@@ -39,6 +39,7 @@ using MonApi.API.Reviews.Services;
 using MonApi.API.SupplierOrderLines.Repositories;
 using MonApi.API.SupplierOrders.Repositories;
 using MonApi.API.SupplierOrders.Services;
+using MonApi.API.Carts.Services;
 
 namespace MonApi.Shared.Extensions
 {
@@ -69,6 +70,7 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<IDiscountService, DiscountService>();
             builder.Services.AddScoped<IReviewService, ReviewService>();
             builder.Services.AddScoped<ICartLineService, CartLineService>();
+            builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
             builder.Services.AddScoped<IEmployeeService, EmployeeServices>();
@@ -172,7 +174,8 @@ namespace MonApi.Shared.Extensions
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3001")
+                        policy.WithOrigins("http://localhost:3000/")
+                        .AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
                     });
