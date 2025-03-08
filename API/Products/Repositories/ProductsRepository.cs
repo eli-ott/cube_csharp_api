@@ -175,10 +175,27 @@ namespace MonApi.API.Products.Repositories
                             CreationTime = discount.CreationTime,
                             UpdateTime = discount.UpdateTime,
                             ProductId = discount.ProductId
-                        }).FirstOrDefault()
+                        }).FirstOrDefault(),
+                    Reviews = _context.Reviews.Where(r => r.ProductId == product.ProductId)
+                    .Select(r => new ReturnReviewDto
+                    {
+                        UserId = r.UserId,
+                        ProductId = r.ProductId,
+                        Rating = r.Rating,
+                        Comment = r.Comment,
+                        CreationTime = r.CreationTime,
+                        UpdateTime = r.UpdateTime,
+                        CustomerFirstName = r.User.FirstName,
+                        CustomerLastName = r.User.LastName
+                    }).ToList()
                 });
 
             // Apply filters
+            if (queryParameters.name != null)
+            {
+                query = query.Where(p => p.Name.ToLower().StartsWith(queryParameters.name.ToLower()));
+            }
+
             if (queryParameters.year != null)
             {
                 query = query.Where(p => p.Year == queryParameters.year);

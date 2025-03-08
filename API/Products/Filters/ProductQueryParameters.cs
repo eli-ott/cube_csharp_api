@@ -4,6 +4,7 @@ namespace MonApi.API.Products.Filters
 {
     public class ProductQueryParameters : PagedQueryParameters
     {
+        public string? name { get; set; }
         public string? deleted { get; set; }
         public int? year { get; set; }
         public bool? is_bio { get; set; }
