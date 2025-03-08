@@ -29,6 +29,7 @@ namespace MonApi.API.Products.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll([FromQuery] ProductQueryParameters queryParameters)
         {
             var returnedProducts = await _productService.GetAll(queryParameters);
