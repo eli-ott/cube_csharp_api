@@ -23,7 +23,7 @@ public class DiscountService : IDiscountService
     public async Task<ReturnDiscountDto> Create(CreateDiscountDto discountDto)
     {
         var foundProduct = await _productsRepository.FindAsync(discountDto.ProductId)
-                           ?? throw new NullReferenceException("Product not found");
+                           ?? throw new KeyNotFoundException("Product not found");
         if (foundProduct.DeletionTime != null)
             throw new SoftDeletedException("Product is already deleted");
 
@@ -44,7 +44,7 @@ public class DiscountService : IDiscountService
     public async Task<ReturnDiscountDto> Update(int discountId, UpdateDiscountDto discountDto)
     {
         var foundDiscount = await _discountRepository.FindAsync(discountId)
-                            ?? throw new NullReferenceException("Discount not found");
+                            ?? throw new KeyNotFoundException("Discount not found");
 
         if (discountDto.Value < 0 || discountDto.Value > 100)
             throw new BadHttpRequestException("The discount pourcentage should be between 0 and 100");
@@ -53,7 +53,7 @@ public class DiscountService : IDiscountService
 
         foundDiscount.Name = discountDto.Name;
         foundDiscount.Value = discountDto.Value;
-        foundDiscount.StartDate = discountDto.StartDate;
+        foundDiscount.StartDate = discountDto.StartDate ?? foundDiscount.StartDate;
         foundDiscount.EndDate = discountDto.EndDate;
 
         await _discountRepository.UpdateAsync(foundDiscount.MapToDiscountModel());
@@ -64,7 +64,7 @@ public class DiscountService : IDiscountService
     public async Task<ReturnDiscountDto> Delete(int discountId)
     {
         var foundDiscount = await _discountRepository.FindAsync(discountId)
-                            ?? throw new NullReferenceException("Discount not found");
+                            ?? throw new KeyNotFoundException("Discount not found");
 
         await _discountRepository.DeleteAsync(foundDiscount.MapToDiscountModel());
 
