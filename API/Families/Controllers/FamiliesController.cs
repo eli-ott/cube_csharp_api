@@ -25,6 +25,7 @@ public class FamiliesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllFamilies([FromQuery] FamilyQueryParameters queryParameters)
     {
         var families = await _familiesService.GetAll(queryParameters);
