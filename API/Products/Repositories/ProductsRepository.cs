@@ -114,6 +114,7 @@ namespace MonApi.API.Products.Repositories
             CancellationToken cancellationToken = default)
         {
             IQueryable<ReturnProductDTO> query = _context.Products
+                .OrderBy(product => product.ProductId)
                 .Select(product => new ReturnProductDTO
                 {
                     ProductId = product.ProductId,
@@ -205,7 +206,6 @@ namespace MonApi.API.Products.Repositories
             {
                 query = query.Where(p => p.IsBio == queryParameters.is_bio);
             }
-
             if (queryParameters.price_min != null)
             {
                 query = query.Where(p => p.UnitPrice >= queryParameters.price_min);

@@ -16,9 +16,14 @@ namespace MonApi.API.Families.Repositories
 
         public async Task<PagedResult<ReturnFamilyDTO>> GetPagedFamiliesAsync(FamilyQueryParameters queryParameters)
         {
-            IQueryable<ReturnFamilyDTO> query = from family in _context.Families select new ReturnFamilyDTO { FamilyId = family.FamilyId, Name = family.Name, DeletionTime = family.DeletionTime }; ;
+            IQueryable<ReturnFamilyDTO> query = from family in _context.Families orderby family.FamilyId select new ReturnFamilyDTO { FamilyId = family.FamilyId, Name = family.Name, DeletionTime = family.DeletionTime }; ;
 
-            if(queryParameters.deleted == "only")
+            if (queryParameters.name != null)
+            {
+                query = query.Where(f => f.Name.ToLower().StartsWith(queryParameters.name.ToLower()));
+            }
+
+            if (queryParameters.deleted == "only")
             {
                 query = query.Where(f => f.DeletionTime != null);
             }
