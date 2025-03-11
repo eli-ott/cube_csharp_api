@@ -136,13 +136,17 @@ namespace MonApi.API.Customers.Services
             var passwordModel = foundCustomer.Password.MapToPasswordModel();
             await _passwordRepository.UpdateAsync(passwordModel);
 
+            var userCart = await _cartRepository.GetCart(foundCustomer.CustomerId)
+                           ?? throw new NullReferenceException("Can't find the user cart");
+
             // Faire une liste de Claims 
             List<Claim> claims = new List<Claim>
             {
                 new(ClaimTypes.Role, "Customer"),
                 new("CustomerID", foundCustomer.CustomerId.ToString()),
                 new("Email", foundCustomer.Email),
-                new("FirstName", foundCustomer.FirstName)
+                new("FirstName", foundCustomer.FirstName),
+                new("CartId", userCart.CartId.ToString())
             };
 
             // Signer le token de connexion JWT
