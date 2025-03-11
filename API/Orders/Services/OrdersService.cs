@@ -7,6 +7,8 @@ using MonApi.API.Orders.Extensions;
 using MonApi.API.Orders.Filters;
 using MonApi.API.Orders.Repositories;
 using MonApi.API.Statuses.Repositories;
+using MonApi.API.SupplierOrders.Models;
+using MonApi.API.SupplierOrders.Repositories;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 
@@ -18,14 +20,16 @@ public class OrdersService : IOrdersService
     private readonly IOrderLineRepository _orderLineRepository;
     private readonly IStatusRepository _statusRepository;
     private readonly ICustomersRepository _customersRepository;
+    private readonly ISupplierOrdersRepository _supplierOrdersRepository;
 
     public OrdersService(IOrderRepository orderRepository, IOrderLineRepository orderLineRepository,
-        IStatusRepository statusRepository, ICustomersRepository customersRepository)
+        IStatusRepository statusRepository, ICustomersRepository customersRepository, ISupplierOrdersRepository supplierOrdersRepository)
     {
         _orderRepository = orderRepository;
         _orderLineRepository = orderLineRepository;
         _statusRepository = statusRepository;
         _customersRepository = customersRepository;
+        _supplierOrdersRepository = supplierOrdersRepository;
     }
 
     public async Task<PagedResult<ReturnOrderDto>> GetAllOrders(OrderQueryParameters queryParameters)
@@ -55,6 +59,19 @@ public class OrdersService : IOrdersService
 
         var orderLinesToAdd = createOrderDto.OrderLines;
         var mappedLines = orderLinesToAdd.Select(x => x.MapToModel(addedOrder.OrderId)).ToList();
+        
+        mappedLines.ForEach((line) =>
+        {
+            if (line.Product.AutoRestock && line.Product.Quantity <= line.Product.AutoRestockTreshold)
+            {
+                _supplierOrdersRepository.AddAsync(new SupplierOrder
+                {
+                    EmployeeId = 999999,
+                    StatusId = 1,
+                    DeliveryDate = new DateTime()
+                });
+            }
+        });
 
         await _orderLineRepository.AddRangeAsync(mappedLines);
 

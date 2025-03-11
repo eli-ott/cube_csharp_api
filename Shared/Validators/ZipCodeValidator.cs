@@ -13,15 +13,15 @@ public class ZipCodeValidator : ValidationAttribute
 
         if (string.IsNullOrEmpty(input))
         {
-            ErrorMessage = "Le numéro de téléphone doit être renseigné";
+            ErrorMessage = "Le code postal doit être renseigné";
             return false;
         }
 
-        var regex = new Regex(@"[0-9]{10}");
+        var regex = new Regex(@"[0-9]{5}");
 
         if (!regex.IsMatch(input))
         {
-            ErrorMessage = "Le numéro de téléphone n'est pas valide";
+            ErrorMessage = "Le code postal n'est pas valide";
             return false;
         }
 
