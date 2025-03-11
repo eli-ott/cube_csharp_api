@@ -23,7 +23,6 @@ namespace MonApi.API.Products.DTOs
         public required string ProducerName { get; set; } = null!;
 
         [Required]
-        [StringLength(255)]
         public string Description { get; set; } = null!;
 
         [Required]
