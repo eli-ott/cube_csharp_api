@@ -21,6 +21,8 @@ public partial class Product
 
     public string ProducerName { get; set; } = null!;
 
+    public string Description { get; set; } = null!;
+
     public bool IsBio { get; set; }
 
     public float? UnitPrice { get; set; }
