@@ -76,6 +76,7 @@ public class EmployeeServices : IEmployeeService
             RoleId = updateEmployee.Role.RoleId,
             Name = updateEmployee.Role.Name
         };
+        updateEmployee.Email = updateEmployee.Email.ToLower();
 
         await _employeeRepository.UpdateAsync(updateEmployee);
         ReturnEmployeeDto newModifiedEmployeeDetails =

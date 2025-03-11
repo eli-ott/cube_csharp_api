@@ -9,7 +9,10 @@ using MonApi.API.Orders.Repositories;
 using MonApi.API.Products.Repositories;
 using MonApi.API.Statuses.Repositories;
 using MonApi.API.SupplierOrderLines.DTOs;
+using MonApi.API.SupplierOrderLines.Models;
+using MonApi.API.SupplierOrderLines.Repositories;
 using MonApi.API.SupplierOrders.DTOs;
+using MonApi.API.SupplierOrders.Extensions;
 using MonApi.API.SupplierOrders.Models;
 using MonApi.API.SupplierOrders.Repositories;
 using MonApi.Shared.Exceptions;
@@ -25,10 +28,12 @@ public class OrdersService : IOrdersService
     private readonly ICustomersRepository _customersRepository;
     private readonly ISupplierOrdersRepository _supplierOrdersRepository;
     private readonly IProductsRepository _productsRepository;
+    private readonly ISupplierOrderLinesRepository _supplierOrderLinesRepository;
 
     public OrdersService(IOrderRepository orderRepository, IOrderLineRepository orderLineRepository,
         IStatusRepository statusRepository, ICustomersRepository customersRepository,
-        ISupplierOrdersRepository supplierOrdersRepository, IProductsRepository productsRepository)
+        ISupplierOrdersRepository supplierOrdersRepository, IProductsRepository productsRepository,
+        ISupplierOrderLinesRepository supplierOrderLinesRepository)
     {
         _orderRepository = orderRepository;
         _orderLineRepository = orderLineRepository;
@@ -36,6 +41,7 @@ public class OrdersService : IOrdersService
         _customersRepository = customersRepository;
         _supplierOrdersRepository = supplierOrdersRepository;
         _productsRepository = productsRepository;
+        _supplierOrderLinesRepository = supplierOrderLinesRepository;
     }
 
     public async Task<PagedResult<ReturnOrderDto>> GetAllOrders(OrderQueryParameters queryParameters)
@@ -66,29 +72,42 @@ public class OrdersService : IOrdersService
         var orderLinesToAdd = createOrderDto.OrderLines;
         var mappedLines = orderLinesToAdd.Select(x => x.MapToModel(addedOrder.OrderId)).ToList();
 
-        mappedLines.ForEach(async (line) =>
+        // Does an automatic order and remove the quantity from the product
+        //mappedLines.ForEach(async line =>
+        foreach (var line in mappedLines)
         {
-            var productForLine = await _productsRepository.FindAsync(line.Product.ProductId)
+            var productForLine = await _productsRepository.FindAsync(line.ProductId)
                                  ?? throw new NullReferenceException("Can't find a product for the line");
 
-            if (line.Product.AutoRestock && line.Product.Quantity <= line.Product.AutoRestockTreshold)
-            {
-                await _supplierOrdersRepository.AddAsync(new CreateSupplierOrderDto
-                {
-                    EmployeeId = 999999,
-                    StatusId = 1,
-                    DeliveryDate = new DateTime(),
-                    OrderLines = new CreateSupplierOrderLineDto
-                    {
-                        
-                    }
-                });
-            }
-
+            // Check if there is enough quantity for the product
+            if (productForLine.Quantity < line.Quantity) throw new BadHttpRequestException("Not enough quantity");
+            
             // Update the product to remove the quantity ordered
             productForLine.Quantity -= line.Quantity;
             await _productsRepository.UpdateAsync(productForLine);
-        });
+
+
+            if (productForLine.AutoRestock && productForLine.Quantity <= productForLine.AutoRestockTreshold)
+            {
+                var newOrder = new SupplierOrder
+                {
+                    EmployeeId = 999999,
+                    StatusId = 1,
+                    DeliveryDate = new DateTime()
+                };
+                var addedSupplierOrder = await _supplierOrdersRepository.AddAsync(newOrder);
+
+                var newLine = new SupplierOrderLine
+                {
+                    OrderId = addedSupplierOrder.OrderId,
+                    ProductId = productForLine.ProductId,
+                    Quantity = line.Quantity * 3,
+                    UnitPrice = productForLine.UnitPrice ?? productForLine.BoxPrice / 6 ??
+                        throw new Exception("Aucun prix pour le produit")
+                };
+                await _supplierOrderLinesRepository.AddAsync(newLine);
+            }
+        }
 
         await _orderLineRepository.AddRangeAsync(mappedLines);
 

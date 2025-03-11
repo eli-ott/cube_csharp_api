@@ -37,6 +37,8 @@ namespace MonApi.API.Suppliers.Services
 
             var supplier = createSupplierDTO.MapToSupplierModel(addedAdress);
 
+            supplier.Email = supplier.Email.ToLower();
+
             var newSupplier = await _suppliersRepository.AddAsync(supplier);
             var newSupplierDetails = await _suppliersRepository.FindAsync(newSupplier.SupplierId) ??
                                      throw new KeyNotFoundException("Id not found");

@@ -86,6 +86,8 @@ namespace MonApi.API.Customers.Services
 
             var customer = registerDto.MapToCustomerModel(addedPassword, addedAddress, guid);
 
+            customer.Email = customer.Email.ToLower();
+
             var newCustomer = await _customersRepository.AddAsync(customer);
             var newCustomerDetails = await _customersRepository.FindAsync(newCustomer.CustomerId);
 
