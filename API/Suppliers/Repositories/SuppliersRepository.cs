@@ -74,6 +74,7 @@ namespace MonApi.API.Suppliers.Repositories
                             DeletionTime = product.DeletionTime,
                             Year = product.Year,
                             ProducerName = product.ProducerName,
+                            Description = product.Description,
                             IsBio = product.IsBio,
                             Quantity = product.Quantity,
                             Family = new ReturnFamilyDTO { 
