@@ -6,7 +6,10 @@ using MonApi.API.Orders.DTOs;
 using MonApi.API.Orders.Extensions;
 using MonApi.API.Orders.Filters;
 using MonApi.API.Orders.Repositories;
+using MonApi.API.Products.Repositories;
 using MonApi.API.Statuses.Repositories;
+using MonApi.API.SupplierOrderLines.DTOs;
+using MonApi.API.SupplierOrders.DTOs;
 using MonApi.API.SupplierOrders.Models;
 using MonApi.API.SupplierOrders.Repositories;
 using MonApi.Shared.Exceptions;
@@ -21,15 +24,18 @@ public class OrdersService : IOrdersService
     private readonly IStatusRepository _statusRepository;
     private readonly ICustomersRepository _customersRepository;
     private readonly ISupplierOrdersRepository _supplierOrdersRepository;
+    private readonly IProductsRepository _productsRepository;
 
     public OrdersService(IOrderRepository orderRepository, IOrderLineRepository orderLineRepository,
-        IStatusRepository statusRepository, ICustomersRepository customersRepository, ISupplierOrdersRepository supplierOrdersRepository)
+        IStatusRepository statusRepository, ICustomersRepository customersRepository,
+        ISupplierOrdersRepository supplierOrdersRepository, IProductsRepository productsRepository)
     {
         _orderRepository = orderRepository;
         _orderLineRepository = orderLineRepository;
         _statusRepository = statusRepository;
         _customersRepository = customersRepository;
         _supplierOrdersRepository = supplierOrdersRepository;
+        _productsRepository = productsRepository;
     }
 
     public async Task<PagedResult<ReturnOrderDto>> GetAllOrders(OrderQueryParameters queryParameters)
@@ -59,18 +65,29 @@ public class OrdersService : IOrdersService
 
         var orderLinesToAdd = createOrderDto.OrderLines;
         var mappedLines = orderLinesToAdd.Select(x => x.MapToModel(addedOrder.OrderId)).ToList();
-        
-        mappedLines.ForEach((line) =>
+
+        mappedLines.ForEach(async (line) =>
         {
+            var productForLine = await _productsRepository.FindAsync(line.Product.ProductId)
+                                 ?? throw new NullReferenceException("Can't find a product for the line");
+
             if (line.Product.AutoRestock && line.Product.Quantity <= line.Product.AutoRestockTreshold)
             {
-                _supplierOrdersRepository.AddAsync(new SupplierOrder
+                await _supplierOrdersRepository.AddAsync(new CreateSupplierOrderDto
                 {
                     EmployeeId = 999999,
                     StatusId = 1,
-                    DeliveryDate = new DateTime()
+                    DeliveryDate = new DateTime(),
+                    OrderLines = new CreateSupplierOrderLineDto
+                    {
+                        
+                    }
                 });
             }
+
+            // Update the product to remove the quantity ordered
+            productForLine.Quantity -= line.Quantity;
+            await _productsRepository.UpdateAsync(productForLine);
         });
 
         await _orderLineRepository.AddRangeAsync(mappedLines);
@@ -106,7 +123,7 @@ public class OrdersService : IOrdersService
             throw new SoftDeletedException("Order already deleted");
 
         foundOrder.DeletionTime = DateTime.UtcNow;
-        
+
         var linesToDelete = foundOrder.Lines!;
         var mappedLines = linesToDelete.Select(line =>
         {
