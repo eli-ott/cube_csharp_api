@@ -90,6 +90,7 @@ public class SupplierOrdersRepository : BaseRepository<SupplierOrder>, ISupplier
                             Cuvee = product.Cuvee,
                             Year = product.Year,
                             ProducerName = product.ProducerName,
+                            Description = product.Description,
                             IsBio = product.IsBio,
                             UnitPrice = product.UnitPrice,
                             BoxPrice = product.BoxPrice,

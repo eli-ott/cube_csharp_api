@@ -23,6 +23,9 @@ namespace MonApi.API.Products.DTOs
         public required string ProducerName { get; set; } = null!;
 
         [Required]
+        public string Description { get; set; } = null!;
+
+        [Required]
         public required bool IsBio { get; set; }
 
         public float? UnitPrice { get; set; }
