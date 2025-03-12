@@ -589,6 +589,9 @@ public partial class StockManagementContext : DbContext
             entity.Property(e => e.Year)
                 .HasColumnType("int(11)")
                 .HasColumnName("year");
+            entity.Property(e => e.Description)
+                .HasColumnName("description");
+
 
             entity.HasOne(d => d.Family).WithMany(p => p.Products)
                 .HasForeignKey(d => d.FamilyId)
