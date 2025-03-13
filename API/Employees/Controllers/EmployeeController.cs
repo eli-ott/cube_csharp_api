@@ -61,7 +61,23 @@ public class EmployeeController : ControllerBase
         var isAdded = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
         return Ok(isAdded);
     }
-    
+
+    [AllowAnonymous]
+    [HttpPost("request-password-reset")]
+    public async Task<ActionResult> RequestPasswordReset([FromBody] EmployeeRequestPasswordResetDto requestResetDto)
+    {
+        await _employeeService.RequestPasswordReset(requestResetDto);
+        return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password/{guid}")]
+    public async Task<ActionResult> ResetPassword([FromRoute] string guid, [FromBody] ResetEmployeePasswordDto resetPasswordDto)
+    {
+        await _employeeService.ResetPassword(guid, resetPasswordDto);
+        return Ok();
+    }
+
     [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> SoftDeleteEmployeeAsync([FromRoute] int id)
