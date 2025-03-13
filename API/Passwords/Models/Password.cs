@@ -13,6 +13,8 @@ public partial class Password
 
     public int AttemptCount { get; set; }
 
+    public string? ResetToken { get; set; }
+
     public DateTime? ResetDate { get; set; }
 
     public DateTime? DeletionTime { get; set; }
