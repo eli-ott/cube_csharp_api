@@ -13,7 +13,8 @@ namespace MonApi.API.Customers.Services
     {
         Task<ReturnCustomerDto> RegisterCustomer(RegisterDTO registerDto);
         Task<string> LogCustomer(LoginDTO loginDto);
-        Task ResetPassword(ResetPasswordDto resetPasswordDto);
+        Task RequestPasswordReset(CustomerRequestPasswordResetDto requestResetDto);
+        Task ResetPassword(string guid, ResetPasswordDto resetPasswordDto);
         Task ConfirmRegistration(string email, string guid);
         Task<PagedResult<ReturnCustomerDto>> GetAllCustomers(CustomerQueryParameters queryParameters);
         Task<ReturnCustomerDto> GetCustomerById(int customerId);

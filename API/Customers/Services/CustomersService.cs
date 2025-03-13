@@ -172,14 +172,46 @@ namespace MonApi.API.Customers.Services
             return token;
         }
 
-        public async Task ResetPassword(ResetPasswordDto resetPasswordDto)
+        public async Task RequestPasswordReset(CustomerRequestPasswordResetDto requestResetDto)
         {
-            var customer = await _customersRepository.FindByEmailAsync(resetPasswordDto.Email)
-                           ?? throw new NullReferenceException("L'utilisateur n'existe pas");
+            var customer = await _customersRepository.FindByEmailAsync(requestResetDto.Email);
+
+            //  Si l'utilisateur n'existe pas on ne fait rien
+            if (customer == null) return;
+
             if (customer.DeletionTime != null) throw new SoftDeletedException("This customer has been deleted.");
 
             var password = await _passwordRepository.FindAsync(customer.Password!.PasswordId)
-                           ?? throw new NullReferenceException("Le mot de passe à réinitialiser est introuvable");
+                           ?? throw new KeyNotFoundException("Le mot de passe à réinitialiser est introuvable");
+
+            var baseUrl = Environment.GetEnvironmentVariable("URL_FRONT")
+                         ?? throw new KeyNotFoundException("L'url du front n'est pas disponible");
+
+            var guid = Guid.NewGuid();
+
+            password.ResetToken = guid.ToString();
+
+            await _passwordRepository.UpdateAsync(password);
+
+            var completeUrl = $"{baseUrl}/forgot-password/confirmation/{guid}";
+
+            var emailContent =
+                $"Pour réinitialiser votre mot de passe veuillez utiliser sur le lien suivant : {completeUrl}";
+            var emailSubject = "Réinitialisation de mot de passe";
+
+            await _emailSender.SendEmailAsync(requestResetDto.Email, emailSubject, emailContent);
+
+            return;
+        }
+
+        public async Task ResetPassword(string guid, ResetPasswordDto resetPasswordDto)
+        {
+            var customer = await _customersRepository.FirstOrDefaultAsync(customer => customer.Password!.ResetToken == guid)
+                           ?? throw new KeyNotFoundException("Le client n'éxiste pas");
+
+            var password = await _passwordRepository.FindAsync(customer.PasswordId)
+                           ?? throw new KeyNotFoundException("Le mot de passe à réinitialiser est introuvable");
+
             if (password.DeletionTime != null) throw new SoftDeletedException("This password has been deleted.");
 
             var passwordHash = PasswordUtils.HashPassword(resetPasswordDto.Password, out var salt);
@@ -188,6 +220,7 @@ namespace MonApi.API.Customers.Services
             password.PasswordSalt = Convert.ToBase64String(salt);
             password.AttemptCount = 0;
             password.ResetDate = DateTime.UtcNow;
+            password.ResetToken = null;
 
             await _passwordRepository.UpdateAsync(password);
         }
