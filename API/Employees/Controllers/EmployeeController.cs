@@ -10,7 +10,6 @@ namespace MonApi.API.Employees.Controllers;
 
 [ApiController]
 [Route("employees")]
-[Authorize]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -31,6 +30,7 @@ public class EmployeeController : ControllerBase
         });
     }
     
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddEmployeeAsync([FromBody] CreateEmployeeDto createEmployeeDto)
     {
@@ -38,6 +38,7 @@ public class EmployeeController : ControllerBase
         return Ok(isAdded);
     }
     
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEmployeeByIdAsync([FromRoute] int id)
     {
@@ -45,6 +46,7 @@ public class EmployeeController : ControllerBase
         return Ok(employee);
     }
     
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAllEmployeesAsync([FromQuery] EmployeeQueryParameters queryParameters)
     {
@@ -52,6 +54,7 @@ public class EmployeeController : ControllerBase
         return Ok(employees);
     }
     
+    [Authorize]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEmployeeAsync([FromRoute] int id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
     {
@@ -59,6 +62,7 @@ public class EmployeeController : ControllerBase
         return Ok(isAdded);
     }
     
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> SoftDeleteEmployeeAsync([FromRoute] int id)
     {
