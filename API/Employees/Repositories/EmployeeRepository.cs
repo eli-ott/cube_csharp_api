@@ -15,6 +15,40 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     public EmployeeRepository(StockManagementContext context) : base(context)
     {
     }
+    
+    public async Task<ReturnEmployeeDto?> FindByEmailAsync(string email,
+            CancellationToken cancellationToken = default)
+        {
+            return await (from employee in _context.Employees
+                join password in _context.Passwords on employee.PasswordId equals password.PasswordId
+                where employee.Email == email
+                select new ReturnEmployeeDto
+                {
+                    EmployeeId = employee.EmployeeId,
+                    FirstName = employee.FirstName,
+                    LastName = employee.LastName,
+                    Email = employee.Email,
+                    Phone = employee.Phone,
+                    CreationTime = employee.CreationTime,
+                    UpdateTime = employee.UpdateTime,
+                    DeletionTime = employee.DeletionTime,
+                    Role = new ReturnRoleDTO()
+                    {
+                        RoleId = employee.Role.RoleId,
+                        Name = employee.Role.Name
+                    },
+                    Password = new ReturnPasswordDto
+                    {
+                        PasswordId = password.PasswordId,
+                        PasswordHash = password.PasswordHash,
+                        PasswordSalt = password.PasswordSalt,
+                        AttemptCount = password.AttemptCount,
+                        UpdateTime = password.UpdateTime,
+                        CreationTime = password.CreationTime
+                    }
+                }).FirstOrDefaultAsync(cancellationToken);
+        }
+
 
     public async Task<ReturnEmployeeDto?> FindAsync(int id, CancellationToken cancellationToken = default)
     {

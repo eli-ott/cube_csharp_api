@@ -8,6 +8,8 @@ namespace MonApi.API.Employees.Services;
 
 public interface IEmployeeService
 {
+    
+    Task<string> LogEmployee(EmployeeLoginDto loginDto);
     public Task<ReturnEmployeeDto> AddEmployeeAsync(CreateEmployeeDto employee);
     public Task<ReturnEmployeeDto> GetEmployeeByIdAsync(int id);
     

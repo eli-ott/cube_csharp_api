@@ -20,6 +20,17 @@ public class EmployeeController : ControllerBase
         _employeeService = employeeService;
     }
     
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<ActionResult> LogCustomer(EmployeeLoginDto loginDto)
+    {
+        var token = await _employeeService.LogEmployee(loginDto);
+        return Ok(new
+        {
+            token
+        });
+    }
+    
     [HttpPost]
     public async Task<IActionResult> AddEmployeeAsync([FromBody] CreateEmployeeDto createEmployeeDto)
     {

@@ -1,9 +1,14 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 using MonApi.API.Employees.DTOs;
 using MonApi.API.Employees.Models;
 using MonApi.API.Employees.Extensions;
 using MonApi.API.Employees.Repositories;
 using Microsoft.EntityFrameworkCore.Scaffolding;
+using Microsoft.IdentityModel.Tokens;
 using MonApi.API.Employees.Filters;
 using MonApi.API.Passwords.Repositories;
 using MonApi.API.Passwords.Extensions;
@@ -26,6 +31,75 @@ public class EmployeeServices : IEmployeeService
         _employeeRepository = employeeRepository;
         _passwordRepository = passwordRepository;
     }
+    
+    
+    public async Task<string> LogEmployee(EmployeeLoginDto loginDto)
+        {
+            var foundEmployee = await _employeeRepository.FindByEmailAsync(loginDto.Email);
+
+            if (foundEmployee == null)
+                throw new KeyNotFoundException("Utilisateur introuvable");
+            if (foundEmployee.DeletionTime != null)
+                throw new BadHttpRequestException("L'utilisateur est supprimé");
+
+            var passwordValid = PasswordUtils.VerifyPassword(
+                loginDto.Password,
+                foundEmployee.Password!.PasswordHash,
+                Convert.FromBase64String(foundEmployee.Password.PasswordSalt)
+            );
+
+            // Si le mot de passe est mauvais on incrémente le nombre d'essais
+            if (!passwordValid)
+            {
+                // Si il y a trop d'essais on retourne une erreur
+                if (foundEmployee.Password!.AttemptCount >= 3)
+                    throw new AuthenticationException(
+                        "Nombre d'essais trop important, veuillez réinitialiser votre mot de passe");
+
+                // On incrémente le nombre d'essais
+                foundEmployee.Password.AttemptCount++;
+
+                var passwordModelInvalid = foundEmployee.Password.MapToPasswordModel();
+                await _passwordRepository.UpdateAsync(passwordModelInvalid);
+
+                throw new AuthenticationException("Mot de passe incorrect");
+            }
+
+            // Mise à jour du nombre d'essais si l'utilisateur se connecte correctement
+            foundEmployee.Password.AttemptCount = 0;
+
+            var passwordModel = foundEmployee.Password.MapToPasswordModel();
+            await _passwordRepository.UpdateAsync(passwordModel);
+            
+            // Faire une liste de Claims 
+            List<Claim> claims = new List<Claim>
+            {
+                new(ClaimTypes.Role, "Employee"),
+                new("EmployeeID", foundEmployee.EmployeeId.ToString()),
+                new("Email", foundEmployee.Email),
+                new("FirstName", foundEmployee.FirstName)
+            };
+
+            // Signer le token de connexion JWT
+            var key = Environment.GetEnvironmentVariable("JWT_SECRET")
+                      ?? throw new KeyNotFoundException("JWT_SECRET");
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+                SecurityAlgorithms.HmacSha256);
+
+            // On créer un objet de token à partir de la clé de sécurité et l'on y ajoute une expiration, une audience et un issuer de sorte à pouvoir cibler nos clients d'API et éviter les tokens qui trainent trop longtemps dans la nature
+            JwtSecurityToken jwt = new JwtSecurityToken(
+                claims: claims,
+                issuer: "Issuer",
+                audience: "Audience",
+                signingCredentials: signingCredentials,
+                expires: DateTime.UtcNow.AddHours(12));
+
+            // Générer le JWT à partir de l'objet JWT 
+            string token = new JwtSecurityTokenHandler().WriteToken(jwt);
+
+            return token;
+        }
+
 
 
     public async Task<ReturnEmployeeDto> GetEmployeeByIdAsync(int id)
