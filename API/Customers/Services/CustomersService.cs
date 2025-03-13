@@ -20,6 +20,7 @@ using MonApi.API.Customers.Repositories;
 using MonApi.API.Passwords.Extensions;
 using MonApi.API.Passwords.Repositories;
 using MonApi.API.Products.Repositories;
+using MonApi.API.Reviews.DTOs;
 using MonApi.API.Reviews.Extensions;
 using MonApi.API.Reviews.Models;
 using MonApi.API.Reviews.Repositories;
@@ -360,6 +361,23 @@ namespace MonApi.API.Customers.Services
             var mappedCartLine = createCartLineDto.MapToModel(foundCart.CartId);
 
             await _cartLineRepository.AddAsync(mappedCartLine);
+        }
+
+        public async Task<ReturnReviewDto?> GetCustomerProductReview(int customerId, int productId)
+        {
+            var foundUser = await _customersRepository.FindAsync(customerId)
+                            ?? throw new KeyNotFoundException("Can't find the user");
+            if (foundUser.DeletionTime != null)
+                throw new SoftDeletedException("User has been deleted");
+
+            var foundProduct = await _productsRepository.FindProduct(productId)
+                               ?? throw new KeyNotFoundException("Can't find the product");
+            if (foundProduct.DeletionTime != null)
+                throw new SoftDeletedException("Product has been deleted");
+
+            var foundReview = await _reviewRepository.FindAsync(customerId, productId);
+
+            return foundReview;
         }
     }
 }
