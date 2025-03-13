@@ -98,4 +98,11 @@ public class CustomerController : ControllerBase
         await _customersService.SoftDeleteCustomer(id);
         return Ok();
     }
+
+    [Authorize]
+    [HttpGet("{id}/products/{productId}/review")]
+    public async Task<ActionResult> GetCustomerProductReview(int id, int productId)
+    {
+        return Ok(await _customersService.GetCustomerProductReview(id, productId));
+    }
 }
