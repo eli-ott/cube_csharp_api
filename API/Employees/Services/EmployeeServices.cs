@@ -17,6 +17,7 @@ using MonApi.API.Suppliers.DTOs;
 using MonApi.Shared.Exceptions;
 using MonApi.Shared.Pagination;
 using MonApi.Shared.Utils;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 
 namespace MonApi.API.Employees.Services;
@@ -25,11 +26,13 @@ public class EmployeeServices : IEmployeeService
 {
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IPasswordRepository _passwordRepository;
+    private readonly IEmailSender _emailSender;
 
-    public EmployeeServices(IEmployeeRepository employeeRepository, IPasswordRepository passwordRepository)
+    public EmployeeServices(IEmployeeRepository employeeRepository, IPasswordRepository passwordRepository, IEmailSender emailSender)
     {
         _employeeRepository = employeeRepository;
         _passwordRepository = passwordRepository;
+        _emailSender = emailSender;
     }
     
     
@@ -158,6 +161,59 @@ public class EmployeeServices : IEmployeeService
 
 
         return newModifiedEmployeeDetails;
+    }
+
+    public async Task RequestPasswordReset(EmployeeRequestPasswordResetDto requestResetDto)
+    {
+        var employee = await _employeeRepository.FindByEmailAsync(requestResetDto.Email);
+
+        //  Si l'employé n'existe pas on ne fait rien
+        if (employee == null) return;
+
+        if (employee.DeletionTime != null) throw new SoftDeletedException("This employee has been deleted.");
+
+        var password = await _passwordRepository.FindAsync(employee.Password!.PasswordId)
+                       ?? throw new KeyNotFoundException("Le mot de passe à réinitialiser est introuvable");
+
+        var baseUrl = Environment.GetEnvironmentVariable("URL_BACKOFFICE")
+                     ?? throw new KeyNotFoundException("L'url du front n'est pas disponible");
+
+        var guid = Guid.NewGuid();
+
+        password.ResetToken = guid.ToString();
+
+        await _passwordRepository.UpdateAsync(password);
+
+        var completeUrl = $"{baseUrl}/forgot-password/confirmation/{guid}";
+
+        var emailContent =
+            $"Pour réinitialiser votre mot de passe veuillez utiliser sur le lien suivant : {completeUrl}";
+        var emailSubject = "Réinitialisation de mot de passe";
+
+        await _emailSender.SendEmailAsync(requestResetDto.Email, emailSubject, emailContent);
+
+        return;
+    }
+
+    public async Task ResetPassword(string guid, ResetEmployeePasswordDto resetPasswordDto)
+    {
+        var employee = await _employeeRepository.FirstOrDefaultAsync(employee => employee.Password!.ResetToken == guid)
+                       ?? throw new KeyNotFoundException("L'employé n'existe pas");
+
+        var password = await _passwordRepository.FindAsync(employee.PasswordId)
+                       ?? throw new KeyNotFoundException("Le mot de passe à réinitialiser est introuvable");
+
+        if (password.DeletionTime != null) throw new SoftDeletedException("This password has been deleted.");
+
+        var passwordHash = PasswordUtils.HashPassword(resetPasswordDto.Password, out var salt);
+
+        password.PasswordHash = passwordHash;
+        password.PasswordSalt = Convert.ToBase64String(salt);
+        password.AttemptCount = 0;
+        password.ResetDate = DateTime.UtcNow;
+        password.ResetToken = null;
+
+        await _passwordRepository.UpdateAsync(password);
     }
 
     public async Task<ReturnEmployeeDto> SoftDeleteEmployeeAsync(int id)
