@@ -21,6 +21,7 @@ namespace MonApi.API.Products.Controllers
             _productService = productService;
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<ActionResult<ReturnProductDTO>> AddAsync([FromForm] CreateProductDTO product)
         {
@@ -44,6 +45,7 @@ namespace MonApi.API.Products.Controllers
             return Ok(returnedProduct);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -51,6 +53,7 @@ namespace MonApi.API.Products.Controllers
             return Ok(test);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromForm] UpdateProductDTO toUpdateProduct)
         {
@@ -58,6 +61,7 @@ namespace MonApi.API.Products.Controllers
             return Ok(modifiedProduct);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPut("{id}/toggle-restock")]
         public async Task<IActionResult> ToggleAutoRestock([FromRoute] int id)
         {
@@ -65,6 +69,7 @@ namespace MonApi.API.Products.Controllers
             return Ok(toggleProduct);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPut("{id}/toggle-bio")]
         public async Task<IActionResult> ToggleBio([FromRoute] int id)
         {

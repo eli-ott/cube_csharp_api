@@ -20,7 +20,7 @@ public class CustomerController : ControllerBase
         _customersService = customersService;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpGet]
     public async Task<ActionResult<PagedResult<ReturnCustomerDto>>> GetCustomers(
         [FromQuery] CustomerQueryParameters queryParameters)

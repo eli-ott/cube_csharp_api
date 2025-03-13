@@ -13,7 +13,7 @@ namespace MonApi.API.Suppliers.Controllers;
 
 [ApiController]
 [Route("suppliers")]
-[Authorize]
+[Authorize(Roles = "Employee")]
 
 public class SuppliersController : ControllerBase
 {

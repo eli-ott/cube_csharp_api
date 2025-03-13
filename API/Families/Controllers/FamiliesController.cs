@@ -32,7 +32,6 @@ public class FamiliesController : ControllerBase
         return Ok(families);
     }
 
-
     [HttpGet("{id}")]
     public async Task<IActionResult> FindFamilyById([FromRoute] int id)
     {
@@ -40,7 +39,7 @@ public class FamiliesController : ControllerBase
         return Ok(family);
     }
 
-
+    [Authorize(Roles = "Employee")]
     [HttpPost]
     public async Task<IActionResult> AddFamily([FromBody] CreateFamilyDTO createFamilyDTO)
     {
@@ -49,6 +48,7 @@ public class FamiliesController : ControllerBase
         return Ok(isAdded);
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFamily([FromRoute] int id, [FromBody] UpdateFamilyDTO updateFamilyDTO)
     {
@@ -57,6 +57,7 @@ public class FamiliesController : ControllerBase
         return Ok(await _familiesService.UpdateAsync(id, familyToUpdate));
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteFamily([FromRoute] int id)
     {

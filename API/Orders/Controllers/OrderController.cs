@@ -39,12 +39,14 @@ public class OrderController : ControllerBase
         return Ok(await _ordersService.CreateOrderAsync(createOrderDto));
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpPut("{id}")]
     public async Task<ActionResult<ReturnOrderDto>> UpdateOrder(int id, UpdateOrderDto updateOrderDto)
     {
         return Ok(await _ordersService.UpdateOrderAsync(id, updateOrderDto));
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpDelete("{id}")]
     public async Task<ActionResult<ReturnOrderDto>> DeleteOrder(int id)
     {

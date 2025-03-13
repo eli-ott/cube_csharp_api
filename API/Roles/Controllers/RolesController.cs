@@ -9,7 +9,7 @@ namespace MonApi.API.Roles.Controllers;
 
 [ApiController]
 [Route("roles")]
-[Authorize]
+[Authorize(Roles = "Employee")]
 
 public class RolesController : ControllerBase
 {

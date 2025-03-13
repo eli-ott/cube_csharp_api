@@ -38,7 +38,7 @@ public class EmployeeController : ControllerBase
         return Ok(isAdded);
     }
     
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEmployeeByIdAsync([FromRoute] int id)
     {
@@ -46,7 +46,7 @@ public class EmployeeController : ControllerBase
         return Ok(employee);
     }
     
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpGet]
     public async Task<IActionResult> GetAllEmployeesAsync([FromQuery] EmployeeQueryParameters queryParameters)
     {
@@ -54,7 +54,7 @@ public class EmployeeController : ControllerBase
         return Ok(employees);
     }
     
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEmployeeAsync([FromRoute] int id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
     {
@@ -78,7 +78,7 @@ public class EmployeeController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> SoftDeleteEmployeeAsync([FromRoute] int id)
     {
