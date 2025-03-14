@@ -20,8 +20,9 @@ public class ApiKeyMiddleware
         // Check if the current route is the Swagger documentation to bypass the api key verification
         var isSwagger = context.Request.Path.ToString().ToLower().Contains("swagger");
         var isUploads = context.Request.Path.ToString().ToLower().Contains("uploads");
+        var isStripeWebhook = context.Request.Path.ToString().ToLower().Contains("stripe-webhook");
 
-        if (!isSwagger && !isUploads)
+        if (!isSwagger && !isUploads && !isStripeWebhook)
         {
             // Check if the api key was provided in the headers
             if (!context.Request.Headers.TryGetValue(ApiKeyName, out var extractedApiKey))
