@@ -169,12 +169,19 @@ namespace MonApi.Shared.Extensions
 
         public static void ConfigureCors(this WebApplicationBuilder builder)
         {
+
+            string reactAppUrl = Environment.GetEnvironmentVariable("URL_FRONT") ??
+                                       throw new InvalidOperationException("React app URL 'URL_FRONT' not found.");
+
+            string backofficeUrl = Environment.GetEnvironmentVariable("URL_BACKOFFICE") ??
+                                throw new InvalidOperationException("Backlog URL 'URL_BACKOFFICE' not found.");
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000")
+                        policy.WithOrigins(reactAppUrl)
                         .AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
@@ -182,7 +189,7 @@ namespace MonApi.Shared.Extensions
                 options.AddPolicy("AllowBackLog",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3001")
+                        policy.WithOrigins(backofficeUrl)
                             .AllowCredentials()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
