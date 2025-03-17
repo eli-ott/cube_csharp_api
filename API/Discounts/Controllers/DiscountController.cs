@@ -9,7 +9,7 @@ namespace MonApi.API.Discounts.Controllers;
 
 [ApiController]
 [Route("discounts")]
-[Authorize]
+[Authorize(Roles = "Employee")]
 public class DiscountController : ControllerBase
 {
     private readonly IDiscountService _discountService;

@@ -30,6 +30,7 @@ public class ReviewController : ControllerBase
         return Ok(await _reviewService.UpdateReview(updateReviewDto));
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpPost("delete")]
     public async Task<ActionResult<ReturnReviewDto>> DeleteReview(DeleteReviewDto deleteReviewDto)
     {

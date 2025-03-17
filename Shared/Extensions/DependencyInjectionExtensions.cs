@@ -39,6 +39,7 @@ using MonApi.API.Reviews.Services;
 using MonApi.API.SupplierOrderLines.Repositories;
 using MonApi.API.SupplierOrders.Repositories;
 using MonApi.API.SupplierOrders.Services;
+using Stripe;
 
 namespace MonApi.Shared.Extensions
 {
@@ -54,6 +55,7 @@ namespace MonApi.Shared.Extensions
             builder.AddSwagger();
             builder.AddEFCoreConfiguration();
             builder.ConfigureCors();
+            builder.ConfigureStripe();
         }
 
         public static void AddServices(this WebApplicationBuilder builder)
@@ -65,9 +67,9 @@ namespace MonApi.Shared.Extensions
             builder.Services.AddScoped<ISuppliersService, SuppliersService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IImagesService, ImagesService>();
-            builder.Services.AddScoped<IProductService, ProductService>();
-            builder.Services.AddScoped<IDiscountService, DiscountService>();
-            builder.Services.AddScoped<IReviewService, ReviewService>();
+            builder.Services.AddScoped<IProductService, API.Products.Services.ProductService>();
+            builder.Services.AddScoped<IDiscountService, API.Discounts.Services.DiscountService>();
+            builder.Services.AddScoped<IReviewService, API.Reviews.Services.ReviewService>();
             builder.Services.AddScoped<ICartLineService, CartLineService>();
             builder.Services.AddScoped<IOrdersService, OrdersService>();
             builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -167,12 +169,19 @@ namespace MonApi.Shared.Extensions
 
         public static void ConfigureCors(this WebApplicationBuilder builder)
         {
+
+            string reactAppUrl = Environment.GetEnvironmentVariable("URL_FRONT") ??
+                                       throw new InvalidOperationException("React app URL 'URL_FRONT' not found.");
+
+            string backofficeUrl = Environment.GetEnvironmentVariable("URL_BACKOFFICE") ??
+                                throw new InvalidOperationException("Backlog URL 'URL_BACKOFFICE' not found.");
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000")
+                        policy.WithOrigins(reactAppUrl)
                         .AllowAnyOrigin()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
@@ -180,12 +189,18 @@ namespace MonApi.Shared.Extensions
                 options.AddPolicy("AllowBackLog",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3001")
+                        policy.WithOrigins(backofficeUrl)
                             .AllowCredentials()
                             .AllowAnyMethod()
                             .AllowAnyHeader();
                     });
             });
+        }
+
+        public static void ConfigureStripe(this WebApplicationBuilder builder)
+        {
+            StripeConfiguration.ApiKey = Environment.GetEnvironmentVariable("STRIPE_SECRET") ??
+                                  throw new InvalidOperationException("Stripe secret 'STRIPE_SECRET' not found.");
         }
     }
 }

@@ -20,7 +20,7 @@ public class CustomerController : ControllerBase
         _customersService = customersService;
     }
 
-    [Authorize]
+    [Authorize(Roles = "Employee")]
     [HttpGet]
     public async Task<ActionResult<PagedResult<ReturnCustomerDto>>> GetCustomers(
         [FromQuery] CustomerQueryParameters queryParameters)
@@ -69,10 +69,18 @@ public class CustomerController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost("reset-password")]
-    public async Task<ActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
+    [HttpPost("request-password-reset")]
+    public async Task<ActionResult> RequestPasswordReset([FromBody] CustomerRequestPasswordResetDto requestResetDto)
     {
-        await _customersService.ResetPassword(resetPasswordDto);
+        await _customersService.RequestPasswordReset(requestResetDto);
+        return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password/{guid}")]
+    public async Task<ActionResult> ResetPassword([FromRoute] string guid, [FromBody] ResetPasswordDto resetPasswordDto)
+    {
+        await _customersService.ResetPassword(guid, resetPasswordDto);
         return Ok();
     }
 
@@ -97,5 +105,12 @@ public class CustomerController : ControllerBase
     {
         await _customersService.SoftDeleteCustomer(id);
         return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("{id}/products/{productId}/review")]
+    public async Task<ActionResult> GetCustomerProductReview(int id, int productId)
+    {
+        return Ok(await _customersService.GetCustomerProductReview(id, productId));
     }
 }

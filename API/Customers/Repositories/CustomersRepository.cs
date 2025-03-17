@@ -450,5 +450,10 @@ namespace MonApi.API.Customers.Repositories
                 TotalCount = totalCount
             };
         }
+
+        public Task<Customer?> FindByResetTokenAsync(string guid)
+        {
+            return _context.Customers.FirstOrDefaultAsync(c => c.Password.ResetToken == guid);
+        }
     }
 }

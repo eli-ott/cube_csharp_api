@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using MonApi.Shared.Validators;
 
-namespace MonApi.API.Customers.DTOs;
+namespace MonApi.API.Employees.DTOs;
 
-public class ResetPasswordDto
+public class ResetEmployeePasswordDto
 {
     [Required] [PasswordValidator] public required string Password { get; set; }
 }

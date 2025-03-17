@@ -80,10 +80,13 @@ public class OrdersService : IOrdersService
                                  ?? throw new NullReferenceException("Can't find a product for the line");
 
             // Check if there is enough quantity for the product
-            if (productForLine.Quantity < line.Quantity) throw new BadHttpRequestException("Not enough quantity");
+            if (productForLine.Quantity < line.Quantity && !productForLine.AutoRestock) throw new BadHttpRequestException("Not enough quantity in stock");
             
             // Update the product to remove the quantity ordered
             productForLine.Quantity -= line.Quantity;
+
+            if (productForLine.Quantity < 0) productForLine.Quantity = 0;
+
             await _productsRepository.UpdateAsync(productForLine);
 
 

@@ -18,6 +18,7 @@ public class ImagesController : ControllerBase
         _imagesService = imagesService;
     }
 
+    [Authorize(Roles = "Employee")]
     [HttpDelete("{imageId}")]
     public async Task<ActionResult> DeleteImage(string imageId)
     {

@@ -10,7 +10,6 @@ namespace MonApi.API.Employees.Controllers;
 
 [ApiController]
 [Route("employees")]
-[Authorize]
 public class EmployeeController : ControllerBase
 {
     private readonly IEmployeeService _employeeService;
@@ -20,6 +19,18 @@ public class EmployeeController : ControllerBase
         _employeeService = employeeService;
     }
     
+    [AllowAnonymous]
+    [HttpPost("login")]
+    public async Task<ActionResult> LogCustomer(EmployeeLoginDto loginDto)
+    {
+        var token = await _employeeService.LogEmployee(loginDto);
+        return Ok(new
+        {
+            token
+        });
+    }
+    
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddEmployeeAsync([FromBody] CreateEmployeeDto createEmployeeDto)
     {
@@ -27,6 +38,7 @@ public class EmployeeController : ControllerBase
         return Ok(isAdded);
     }
     
+    [Authorize(Roles = "Employee")]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetEmployeeByIdAsync([FromRoute] int id)
     {
@@ -34,6 +46,7 @@ public class EmployeeController : ControllerBase
         return Ok(employee);
     }
     
+    [Authorize(Roles = "Employee")]
     [HttpGet]
     public async Task<IActionResult> GetAllEmployeesAsync([FromQuery] EmployeeQueryParameters queryParameters)
     {
@@ -41,13 +54,31 @@ public class EmployeeController : ControllerBase
         return Ok(employees);
     }
     
+    [Authorize(Roles = "Employee")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEmployeeAsync([FromRoute] int id, [FromBody] UpdateEmployeeDto updateEmployeeDto)
     {
         var isAdded = await _employeeService.UpdateEmployeeAsync(id, updateEmployeeDto);
         return Ok(isAdded);
     }
-    
+
+    [AllowAnonymous]
+    [HttpPost("request-password-reset")]
+    public async Task<ActionResult> RequestPasswordReset([FromBody] EmployeeRequestPasswordResetDto requestResetDto)
+    {
+        await _employeeService.RequestPasswordReset(requestResetDto);
+        return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpPost("reset-password/{guid}")]
+    public async Task<ActionResult> ResetPassword([FromRoute] string guid, [FromBody] ResetEmployeePasswordDto resetPasswordDto)
+    {
+        await _employeeService.ResetPassword(guid, resetPasswordDto);
+        return Ok();
+    }
+
+    [Authorize(Roles = "Employee")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> SoftDeleteEmployeeAsync([FromRoute] int id)
     {

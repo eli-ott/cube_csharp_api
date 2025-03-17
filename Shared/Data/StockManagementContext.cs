@@ -534,6 +534,9 @@ public partial class StockManagementContext : DbContext
                 .HasDefaultValueSql("current_timestamp()")
                 .HasColumnType("datetime")
                 .HasColumnName("update_time");
+            entity.Property(e => e.ResetToken)
+                .HasMaxLength(255)
+                .HasColumnName("reset_token");
         });
 
         modelBuilder.Entity<Product>(entity =>

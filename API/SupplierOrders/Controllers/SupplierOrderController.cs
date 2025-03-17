@@ -9,7 +9,8 @@ namespace MonApi.API.SupplierOrders.Controllers;
 
 [ApiController]
 [Route("supplier-orders")]
-[Authorize]
+[Authorize(Roles = "Employee")]
+
 public class SupplierOrderController : ControllerBase
 {
     private readonly ISupplierOrdersService _ordersService;
