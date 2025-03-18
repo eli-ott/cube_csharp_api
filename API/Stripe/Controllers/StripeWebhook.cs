@@ -62,7 +62,7 @@ public class StripeWebHook : Controller
                     {
                         ProductId = item.ProductId,
                         Quantity = item.Quantity,
-                        UnitPrice = item.DiscountedAmount ?? item.Amount
+                        UnitPrice = (item.DiscountedAmount ?? item.Amount) / 100f
                     }).ToList()
                 };
                 await _ordersService.CreateOrderAsync(createOrder);

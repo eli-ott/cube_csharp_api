@@ -70,7 +70,7 @@ Then you can create a webhook to listen to the events from the Stripe API.
 [Stripe CLI documentation](https://stripe.com/docs/stripe-cli)
 
 ```bash
-stripe listen --forward-to {API_URL}/stripe-webhook
+stripe listen --forward-to {API_URL}/stripe-webhook --skip-verify
 ```
 
 > Ready! You are using Stripe API Version [2025-02-24.acacia]. Your webhook signing secret is whsec_...
